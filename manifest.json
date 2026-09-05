@@ -1,0 +1,15 @@
+{
+  "name": "Eurolux Doors and Windows, Installation Planner",
+  "short_name": "Install Planner",
+  "description": "Installation planner with client, scope, dates, progress, team and value tracking, shared across the team.",
+  "start_url": "./InstallPlanner.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "landscape-primary",
+  "background_color": "#F3F1EA",
+  "theme_color": "#2E5C8A",
+  "icons": [
+    { "src": "./icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "./icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}

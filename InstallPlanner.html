@@ -1,0 +1,1634 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>Eurolux Doors and Windows, Installation Planner</title>
+<meta name="description" content="Installation planner with client, scope, dates, progress, team and value tracking.">
+<meta name="theme-color" content="#2E5C8A">
+<link rel="manifest" href="./manifest.json">
+<link rel="icon" href="./icon-192.png" type="image/png">
+<link rel="apple-touch-icon" href="./icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Install Planner">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F3F1EA;
+    --surface:#FFFFFF;
+    --surface-2:#EAE6DB;
+    --border:#DAD4C5;
+    --border-strong:#C4BCA8;
+    --text:#1C2129;
+    --text-muted:#636B74;
+    --text-faint:#8B9099;
+    --accent:#2E5C8A;
+    --accent-soft:#DCE7F2;
+    --accent-strong:#1F4468;
+    --danger:#A6432E;
+    --danger-soft:#F3DFD9;
+    --shadow:0 1px 2px rgba(28,33,41,.06), 0 6px 16px rgba(28,33,41,.06);
+
+    --team-mark:#2E6F95;
+    --team-alex:#2F8F72;
+    --team-angelo:#C98A2D;
+    --team-albert:#B3542E;
+    --team-bert:#7A5C99;
+    --team-sammy:#5B7B3F;
+    --team-none:#7C8493;
+
+    --w-idx:40px; --w-name:195px; --w-team:122px; --w-divider:10px;
+    --base-w-client:108px; --base-w-scope:160px; --base-w-start:124px;
+    --base-w-finish:124px; --base-w-pct:78px; --base-w-value:112px; --base-w-comments:175px;
+    --detail-scale:1;
+    --w-client: calc(var(--base-w-client) * var(--detail-scale));
+    --w-scope: calc(var(--base-w-scope) * var(--detail-scale));
+    --w-start: calc(var(--base-w-start) * var(--detail-scale));
+    --w-finish: calc(var(--base-w-finish) * var(--detail-scale));
+    --w-pct: calc(var(--base-w-pct) * var(--detail-scale));
+    --w-value: calc(var(--base-w-value) * var(--detail-scale));
+    --w-comments: calc(var(--base-w-comments) * var(--detail-scale));
+    --day:30px;
+    --w-alloc-team:150px; --aday:26px;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#14181D; --surface:#1B2029; --surface-2:#232B36;
+      --border:#2E3742; --border-strong:#3C4753;
+      --text:#E9E7E0; --text-muted:#9AA3AD; --text-faint:#6E7680;
+      --accent:#6FA8DB; --accent-soft:#223A52; --accent-strong:#8FC0EA;
+      --danger:#E08A73; --danger-soft:#4A2C24;
+      --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 20px rgba(0,0,0,.35);
+      --team-mark:#6FA8DB; --team-alex:#5FBB9B; --team-angelo:#E3AC55;
+      --team-albert:#D4805C; --team-bert:#A488C7; --team-sammy:#8AAD5F; --team-none:#9AA3B4;
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#14181D; --surface:#1B2029; --surface-2:#232B36;
+    --border:#2E3742; --border-strong:#3C4753;
+    --text:#E9E7E0; --text-muted:#9AA3AD; --text-faint:#6E7680;
+    --accent:#6FA8DB; --accent-soft:#223A52; --accent-strong:#8FC0EA;
+    --danger:#E08A73; --danger-soft:#4A2C24;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 20px rgba(0,0,0,.35);
+    --team-mark:#6FA8DB; --team-alex:#5FBB9B; --team-angelo:#E3AC55;
+    --team-albert:#D4805C; --team-bert:#A488C7; --team-sammy:#8AAD5F; --team-none:#9AA3B4;
+  }
+
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  [hidden]{ display:none !important; }
+  body{
+    background:var(--bg); color:var(--text);
+    font-family:"IBM Plex Sans",system-ui,-apple-system,sans-serif;
+    font-size:13px; line-height:1.4;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2{font-family:"Archivo",system-ui,sans-serif; text-wrap:balance; margin:0;}
+  ::selection{background:var(--accent-soft);}
+  button{font-family:inherit;}
+  :focus-visible{outline:2px solid var(--accent); outline-offset:1px;}
+
+  .app{ max-width:100%; padding:20px 24px 32px; display:flex; flex-direction:column; gap:16px; }
+
+  /* ---- Toolbar ---- */
+  .toolbar{ display:flex; flex-wrap:wrap; align-items:flex-end; justify-content:space-between; gap:16px 24px; }
+  .toolbar h1{ font-size:22px; font-weight:800; letter-spacing:-0.01em; }
+  .toolbar .range{ font-family:"IBM Plex Mono",monospace; font-size:12px; color:var(--text-muted); margin-top:4px; }
+  .toolbar-actions{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+  .stat-row{ display:flex; gap:8px; align-items:center; flex-wrap:wrap; font-size:12px; color:var(--text-muted); font-family:"IBM Plex Mono",monospace; }
+  .stat-pill{ background:var(--surface); border:1px solid var(--border); border-radius:100px; padding:3px 10px; }
+  .stat-pill.clickable{ cursor:pointer; }
+  .stat-pill.clickable:hover{ border-color:var(--accent); color:var(--text); }
+  .stat-pill.active{ background:var(--accent-soft); border-color:var(--accent); color:var(--accent-strong); font-weight:600; }
+  .filter-clear{ background:none; border:none; color:var(--accent); font-family:inherit; font-size:12px; font-weight:600; cursor:pointer; padding:3px 6px; text-decoration:underline; }
+
+  .view-tabs{ display:flex; background:var(--surface-2); border:1px solid var(--border); border-radius:8px; padding:3px; gap:2px; }
+  .tab-btn{ border:none; background:transparent; color:var(--text-muted); font-family:inherit; font-size:12.5px; font-weight:600; padding:6px 12px; border-radius:6px; cursor:pointer; }
+  .tab-btn:hover{ color:var(--text); }
+  .tab-btn.active{ background:var(--surface); color:var(--text); box-shadow:var(--shadow); }
+
+  .btn{
+    display:inline-flex; align-items:center; gap:6px;
+    padding:8px 14px; border-radius:8px; border:1px solid var(--border-strong);
+    background:var(--surface); color:var(--text); font-size:13px; font-weight:600;
+    cursor:pointer; box-shadow:var(--shadow); white-space:nowrap;
+  }
+  .btn:hover{ border-color:var(--accent); }
+  .btn.primary{ background:var(--accent); border-color:var(--accent); color:#fff; }
+  .btn.primary:hover{ background:var(--accent-strong); border-color:var(--accent-strong); }
+  .btn:disabled{ opacity:.5; cursor:not-allowed; }
+  #save-status{ font-size:12px; color:var(--text-faint); font-family:"IBM Plex Mono",monospace; min-width:88px; }
+
+  /* ---- Legend ---- */
+  .legend{ display:flex; flex-wrap:wrap; gap:8px 16px; padding:10px 14px; background:var(--surface); border:1px solid var(--border); border-radius:10px; box-shadow:var(--shadow); }
+  .legend-item{ display:flex; align-items:center; gap:6px; font-size:12px; color:var(--text-muted); background:none; border:1px solid transparent; border-radius:6px; padding:3px 6px; font-family:inherit; cursor:pointer; }
+  .legend-item:hover{ background:var(--surface-2); }
+  .legend-item.active{ border-color:var(--accent); background:var(--accent-soft); color:var(--text); font-weight:600; }
+  .legend-dot{ width:10px; height:10px; border-radius:3px; flex:none; }
+
+  /* ---- Banner ---- */
+  .banner{ display:flex; align-items:center; justify-content:space-between; gap:12px; background:var(--accent-soft); border:1px solid var(--accent); color:var(--text); padding:10px 14px; border-radius:10px; font-size:12.5px; }
+  .banner button{ background:none; border:none; color:var(--text-muted); font-size:16px; cursor:pointer; line-height:1; padding:2px 4px; }
+  .banner[hidden]{ display:none; }
+
+  .conflict-banner{ display:flex; flex-direction:column; gap:5px; background:var(--danger-soft); border:1px solid var(--danger); color:var(--text); padding:10px 14px; border-radius:10px; font-size:12.5px; }
+  .conflict-banner .conflict-title{ font-weight:700; color:var(--danger); }
+  .conflict-row{ display:block; }
+  .conflict-banner[hidden]{ display:none; }
+
+  .toast{ position:fixed; bottom:20px; left:50%; transform:translateX(-50%); background:var(--text); color:var(--bg); padding:10px 16px; border-radius:8px; font-size:13px; box-shadow:var(--shadow); display:flex; gap:14px; align-items:center; z-index:100; opacity:0; pointer-events:none; transition:opacity .2s ease; }
+  .toast.show{ opacity:1; pointer-events:auto; }
+  .toast a{ color:var(--accent-strong); font-weight:600; cursor:pointer; text-decoration:underline; }
+
+  /* ---- Board ---- */
+  .board-wrap{ border:1px solid var(--border); border-radius:10px; box-shadow:var(--shadow); background:var(--surface); overflow:hidden; }
+  .board-scroll{ overflow:auto; max-height:calc(100vh - 230px); min-height:260px; }
+  .board{ display:grid; position:relative; width:max-content; }
+  .board.compact{ --day:13px; }
+  .board.compact .row-head.day .dow{ display:none; }
+  .board.compact .row-head.day .num{ font-size:8px; }
+  .board.compact .day-fill{ top:10px; bottom:10px; }
+
+  .cell{ border-right:1px solid var(--border); border-bottom:1px solid var(--border); display:flex; align-items:center; padding:0 8px; background:var(--surface); min-width:0; }
+
+  /* meta column sticky offsets */
+  .c-idx{ position:sticky; left:0; z-index:3; width:var(--w-idx); justify-content:center; padding:0; }
+  .c-name{ position:sticky; left:var(--w-idx); z-index:3; width:var(--w-name); }
+  .c-client{ position:sticky; left:calc(var(--w-idx) + var(--w-name)); z-index:3; width:var(--w-client); }
+  .c-scope{ position:sticky; left:calc(var(--w-idx) + var(--w-name) + var(--w-client)); z-index:3; width:var(--w-scope); }
+  .c-start{ position:sticky; left:calc(var(--w-idx) + var(--w-name) + var(--w-client) + var(--w-scope)); z-index:3; width:var(--w-start); }
+  .c-finish{ position:sticky; left:calc(var(--w-idx) + var(--w-name) + var(--w-client) + var(--w-scope) + var(--w-start)); z-index:3; width:var(--w-finish); }
+  .c-pct{ position:sticky; left:calc(var(--w-idx) + var(--w-name) + var(--w-client) + var(--w-scope) + var(--w-start) + var(--w-finish)); z-index:3; width:var(--w-pct); }
+  .c-team{ position:sticky; left:calc(var(--w-idx) + var(--w-name) + var(--w-client) + var(--w-scope) + var(--w-start) + var(--w-finish) + var(--w-pct)); z-index:3; width:var(--w-team); }
+  .c-value{ position:sticky; left:calc(var(--w-idx) + var(--w-name) + var(--w-client) + var(--w-scope) + var(--w-start) + var(--w-finish) + var(--w-pct) + var(--w-team)); z-index:3; width:var(--w-value); }
+  .c-comments{ position:sticky; left:calc(var(--w-idx) + var(--w-name) + var(--w-client) + var(--w-scope) + var(--w-start) + var(--w-finish) + var(--w-pct) + var(--w-team) + var(--w-value)); z-index:3; width:var(--w-comments); }
+  .c-divider{ position:sticky; left:calc(var(--w-idx) + var(--w-name) + var(--w-client) + var(--w-scope) + var(--w-start) + var(--w-finish) + var(--w-pct) + var(--w-team) + var(--w-value) + var(--w-comments)); z-index:5; width:var(--w-divider); min-width:var(--w-divider); padding:0; border-right:1px solid var(--border-strong); box-shadow:2px 0 4px rgba(0,0,0,.08); background:var(--surface-2); cursor:col-resize; display:block; }
+  .c-divider:hover, .c-divider.dragging{ background:var(--accent-soft); }
+  .c-divider::after{ content:""; position:absolute; top:50%; left:50%; width:2px; height:28px; background:var(--border-strong); border-radius:1px; transform:translate(-50%,-50%); }
+  .c-divider:hover::after, .c-divider.dragging::after{ background:var(--accent); }
+
+  /* .meta-head already establishes position:sticky below, which also serves as the
+     containing block for these absolutely-positioned resize handles. */
+  .col-handle{ position:absolute; top:0; right:-3px; width:6px; height:100%; cursor:col-resize; z-index:10; background:transparent; }
+  .col-handle:hover, .col-handle.dragging{ background:var(--accent); opacity:.55; }
+
+  .row-head{ position:sticky; top:0; z-index:6; }
+  .row-head.month{ top:0; z-index:7; font-family:"IBM Plex Mono",monospace; font-weight:600; font-size:11.5px; letter-spacing:.02em; color:var(--text-muted); background:var(--surface-2); justify-content:flex-start; padding-left:10px; border-bottom:1px solid var(--border-strong); }
+  .row-head.day{ top:30px; z-index:6; flex-direction:column; align-items:center; justify-content:center; gap:1px; font-family:"IBM Plex Mono",monospace; font-size:10.5px; color:var(--text-muted); padding:2px 0; background:var(--surface); }
+  .row-head.day.weekend{ background:var(--surface-2); }
+  .row-head.day .dow{ font-size:8.5px; letter-spacing:.03em; color:var(--text-faint); text-transform:uppercase; }
+  .row-head.day .num{ font-weight:600; color:var(--text); font-variant-numeric:tabular-nums; }
+  .row-head.day.today{ box-shadow: inset 0 0 0 1.5px var(--accent); }
+
+  .meta-head{ position:sticky; top:0; z-index:9; background:var(--surface-2); font-size:10.5px; font-weight:600; text-transform:uppercase; letter-spacing:.04em; color:var(--text-muted); border-bottom:1px solid var(--border-strong); }
+
+  .day-cell{ padding:0; border-right:1px solid var(--border); background:var(--surface); position:relative; }
+  .day-cell.weekend{ background:var(--surface-2); }
+  .day-cell.today::after{ content:""; position:absolute; inset:0; box-shadow: inset 0 0 0 1.5px var(--accent); pointer-events:none; }
+  .day-fill{ position:absolute; top:6px; bottom:6px; left:0; right:0; box-shadow:inset 0 0 0 1px rgba(0,0,0,.16); }
+  .day-fill.planned{ opacity:.6; }
+  .day-fill.progress{ opacity:1; }
+  .day-fill.cap-l{ border-top-left-radius:5px; border-bottom-left-radius:5px; left:2px; }
+  .day-fill.cap-r{ border-top-right-radius:5px; border-bottom-right-radius:5px; right:2px; }
+
+  .conflict-stripe{ position:absolute; top:6px; bottom:6px; left:0; right:0; pointer-events:none;
+    background:repeating-linear-gradient(135deg, var(--danger) 0 4px, transparent 4px 9px);
+    opacity:.85; box-shadow:inset 0 0 0 1.5px var(--danger); }
+  .conflict-stripe.cap-l{ border-top-left-radius:5px; border-bottom-left-radius:5px; left:2px; }
+  .conflict-stripe.cap-r{ border-top-right-radius:5px; border-bottom-right-radius:5px; right:2px; }
+
+  .field{ width:100%; border:1px solid transparent; background:transparent; color:var(--text); font-family:inherit; font-size:12.5px; padding:6px 4px; border-radius:6px; min-width:0; }
+  input.field{ text-overflow:ellipsis; }
+  .field:hover{ background:var(--surface-2); }
+  .field:focus{ background:var(--surface); border-color:var(--accent); outline:none; }
+  textarea.field{ resize:none; font-family:inherit; line-height:1.3; height:44px; }
+  input[type="number"].field{ font-family:"IBM Plex Mono",monospace; }
+  select.field{ font-size:12px; font-weight:600; padding:5px 4px; cursor:pointer; }
+  input[type="date"].field{ font-family:"IBM Plex Mono",monospace; font-size:11.5px; }
+
+  select.field[data-team="Mark"]{ color:var(--team-mark); }
+  select.field[data-team="Alex"]{ color:var(--team-alex); }
+  select.field[data-team="Angelo"]{ color:var(--team-angelo); }
+  select.field[data-team="Albert"]{ color:var(--team-albert); }
+  select.field[data-team="Bert"]{ color:var(--team-bert); }
+  select.field[data-team="Sammy"]{ color:var(--team-sammy); }
+
+  .row-name-wrap{ display:flex; flex-direction:column; gap:1px; min-width:0; }
+  .example-badge{ font-size:9px; font-weight:700; letter-spacing:.04em; text-transform:uppercase; color:var(--accent); background:var(--accent-soft); border-radius:4px; padding:1px 5px; width:fit-content; }
+
+  .del-btn{ width:22px; height:22px; border-radius:6px; border:1px solid transparent; background:transparent; color:var(--text-faint); cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:13px; }
+  .del-btn:hover{ background:var(--danger-soft); color:var(--danger); border-color:var(--danger); }
+
+  .pct-text{ font-family:"IBM Plex Mono",monospace; }
+  .value-input{ text-align:right; }
+  .value-unit{ font-family:"IBM Plex Mono",monospace; font-size:11px; color:var(--text-faint); }
+
+  .empty-state{ padding:40px 20px; text-align:center; color:var(--text-muted); font-size:13px; }
+
+  .import-input{ display:none; }
+
+  .app-footer{ text-align:center; font-size:11px; color:var(--text-faint); padding:8px 0 4px; }
+
+  /* ---- Dashboard ---- */
+  .dashboard{ display:flex; flex-direction:column; gap:16px; }
+  .dash-grid{ display:grid; grid-template-columns:repeat(4, 1fr); gap:12px; }
+  .kpi-card{ background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:14px 16px; box-shadow:var(--shadow); display:flex; flex-direction:column; gap:4px; }
+  .kpi-label{ font-size:11px; text-transform:uppercase; letter-spacing:.04em; color:var(--text-muted); font-weight:600; }
+  .kpi-value{ font-family:"Archivo",sans-serif; font-size:24px; font-weight:800; color:var(--text); }
+  .kpi-sub{ font-size:11px; color:var(--text-faint); font-family:"IBM Plex Mono",monospace; }
+
+  .dash-panels{ display:grid; grid-template-columns:1.1fr 1fr; gap:12px; align-items:start; }
+  .panel{ background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:16px 18px; box-shadow:var(--shadow); }
+  .panel h2{ font-size:13px; font-weight:700; margin-bottom:12px; }
+  .bar-row{ display:grid; grid-template-columns:90px 1fr 74px; align-items:center; gap:10px; font-size:12px; margin-bottom:8px; }
+  .bar-row .bar-label{ color:var(--text-muted); font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .bar-track{ height:14px; background:var(--surface-2); border-radius:4px; overflow:hidden; display:block; }
+  .bar-fill{ display:block; height:100%; border-radius:4px; }
+  .bar-row .bar-value{ font-family:"IBM Plex Mono",monospace; color:var(--text-muted); text-align:right; white-space:nowrap; }
+
+  .status-donut-wrap{ display:flex; align-items:center; gap:20px; }
+  .status-legend{ display:flex; flex-direction:column; gap:8px; font-size:12px; }
+  .status-legend .dot{ width:9px; height:9px; border-radius:2px; display:inline-block; margin-right:6px; }
+
+  .upcoming-table{ width:100%; border-collapse:collapse; font-size:12px; }
+  .upcoming-table th{ text-align:left; font-size:10.5px; text-transform:uppercase; letter-spacing:.03em; color:var(--text-muted); border-bottom:1px solid var(--border-strong); padding:0 8px 8px 0; }
+  .upcoming-table td{ padding:7px 8px 7px 0; border-bottom:1px solid var(--border); vertical-align:top; }
+  .upcoming-table tr:last-child td{ border-bottom:none; }
+  .tag-overdue{ color:var(--danger); font-weight:600; }
+  .tag-soon{ color:var(--accent); font-weight:600; }
+  .dash-empty{ color:var(--text-muted); font-size:13px; padding:24px; text-align:center; }
+
+  /* ---- Team allocation (3-month Gantt) view ---- */
+  .alloc-toolbar{ display:flex; align-items:center; gap:10px; margin-bottom:10px; }
+  .alloc-range{ font-family:"IBM Plex Mono",monospace; font-size:12.5px; font-weight:600; color:var(--text); min-width:170px; text-align:center; }
+  .alloc-meta-head{ position:sticky; left:0; top:0; z-index:9; background:var(--surface-2); font-size:10.5px; font-weight:600; text-transform:uppercase; letter-spacing:.04em; color:var(--text-muted); border-bottom:1px solid var(--border-strong); width:var(--w-alloc-team); }
+  .alloc-team-label{ position:sticky; left:0; z-index:4; width:var(--w-alloc-team); background:var(--surface); font-weight:700; font-size:12.5px; display:flex; align-items:center; gap:8px; border-right:2px solid var(--border-strong); box-shadow:2px 0 4px rgba(0,0,0,.05); }
+  .alloc-day-cell{ padding:0; border-right:1px solid var(--border); border-bottom:1px solid var(--border); background:var(--surface); }
+  .alloc-day-cell.weekend{ background:var(--surface-2); }
+  .alloc-day-cell.today{ box-shadow:inset 0 0 0 1.5px var(--accent); }
+  .alloc-bar-wrap{ position:relative; padding:3px 2px; border-bottom:1px solid var(--border); }
+  .alloc-bar{ position:relative; height:100%; display:flex; align-items:center; overflow:hidden; box-shadow:inset 0 0 0 1px rgba(0,0,0,.18); border-radius:0; }
+  .alloc-bar.cap-l{ border-top-left-radius:5px; border-bottom-left-radius:5px; }
+  .alloc-bar.cap-r{ border-top-right-radius:5px; border-bottom-right-radius:5px; }
+  .alloc-bar-progress{ position:absolute; left:0; top:0; bottom:0; background:rgba(255,255,255,.3); }
+  .alloc-bar-label{ position:relative; z-index:1; color:#fff; font-size:11px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; padding:0 6px; text-shadow:0 1px 1px rgba(0,0,0,.3); }
+  .alloc-bar.has-conflict{ box-shadow:inset 0 0 0 1px rgba(0,0,0,.18), 0 0 0 2px var(--danger); }
+  .legend-add-team{ font-weight:700; color:var(--accent); border-color:var(--border); }
+  .legend-add-team:hover{ border-color:var(--accent); background:var(--accent-soft); }
+
+  @media (max-width: 1100px){
+    .dash-grid{ grid-template-columns:repeat(2,1fr); }
+    .dash-panels{ grid-template-columns:1fr; }
+  }
+
+  @media (prefers-reduced-motion: reduce){ .toast{ transition:none; } }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <div class="toolbar">
+    <div>
+      <h1>Eurolux Doors and Windows, Installation Planner</h1>
+      <div class="range" id="date-range-label"></div>
+    </div>
+    <div class="toolbar-actions">
+      <span id="save-status"></span>
+      <div class="view-tabs" id="view-tabs" role="tablist" aria-label="View">
+        <button class="tab-btn active" id="tab-schedule" type="button" role="tab" aria-selected="true">Schedule</button>
+        <button class="tab-btn" id="tab-allocation" type="button" role="tab" aria-selected="false">Team Allocation</button>
+        <button class="tab-btn" id="tab-dashboard" type="button" role="tab" aria-selected="false">Dashboard</button>
+      </div>
+      <button class="btn" id="zoom-btn" type="button">Compact view</button>
+      <button class="btn" id="reset-cols-btn" type="button" title="Reset column widths and the details panel back to defaults">Reset columns</button>
+      <button class="btn" id="import-btn" type="button">Import Excel / CSV</button>
+      <input class="import-input" id="import-input" type="file" accept=".xlsx,.xls,.csv">
+      <button class="btn" id="export-pdf-btn" type="button">Export PDF</button>
+      <button class="btn primary" id="add-btn" type="button">+ Add project</button>
+    </div>
+  </div>
+
+  <div class="stat-row" id="stat-row"></div>
+
+  <div class="legend" id="legend"></div>
+
+  <div class="banner" id="example-banner" hidden>
+    <span>These three rows are examples so you can see how the schedule works. Edit them, delete them, or use <strong>Import Excel / CSV</strong> to bring in your real project list.</span>
+    <button type="button" id="banner-close" aria-label="Dismiss">×</button>
+  </div>
+
+  <div class="conflict-banner" id="conflict-banner" hidden></div>
+
+  <datalist id="client-list">
+    <option value="GTS"><option value="MACS"><option value="JCT"><option value="GreenBull">
+  </datalist>
+
+  <div class="board-wrap" id="schedule-view">
+    <div class="board-scroll" id="board-scroll">
+      <div class="board" id="board"></div>
+    </div>
+  </div>
+
+  <div id="allocation-view" hidden>
+    <div class="alloc-toolbar">
+      <button class="btn" id="alloc-prev" type="button">‹ Prev month</button>
+      <div class="alloc-range" id="alloc-range-label"></div>
+      <button class="btn" id="alloc-next" type="button">Next month ›</button>
+      <button class="btn" id="alloc-today" type="button">Today</button>
+    </div>
+    <div class="board-wrap">
+      <div class="board-scroll" id="alloc-scroll" style="max-height:calc(100vh - 200px);">
+        <div class="board" id="alloc-board"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="dashboard-view" class="dashboard" hidden></div>
+
+  <div class="app-footer">Developed with love by Uncle Ed, Version 4.20</div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- Shared backend (Firestore). Safe to load even when not configured — the app
+     falls back to this-device-only storage automatically. See README "Shared backend setup". -->
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+<script src="./firebase-config.js"></script>
+
+<!-- PDF export -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+
+<!-- Excel / CSV import -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+<script>
+(function(){
+  "use strict";
+
+  var TEAMS = ["Mark","Alex","Angelo","Albert","Bert","Sammy"];
+  var TEAM_KEY = { Mark:"mark", Alex:"alex", Angelo:"angelo", Albert:"albert", Bert:"bert", Sammy:"sammy" };
+
+  // ---- custom teams: anyone can add a team that isn't in the built-in list above.
+  // Custom teams are stored in state.customTeams (shared via the same backend as
+  // projects) as {name, color}, with colors handed out from this palette in order. ----
+  var EXTRA_TEAM_PALETTE = ["#C24E7C","#3E7CB1","#5C8A3A","#A85C99","#4FA6A6","#B08B2E","#7A6FD1","#D46A4E","#4E8E7C","#9C6B3F"];
+
+  function allTeamNames(){
+    return TEAMS.concat((state.customTeams||[]).map(function(t){ return t.name; }));
+  }
+  function teamColorValue(name){
+    if (!name) return "var(--team-none)";
+    if (TEAM_KEY[name]) return "var(--team-"+TEAM_KEY[name]+")";
+    var custom = (state.customTeams||[]).find(function(t){ return t.name === name; });
+    return custom ? custom.color : "var(--team-none)";
+  }
+  function addCustomTeam(name){
+    name = String(name||"").trim();
+    if (!name) return null;
+    var exists = allTeamNames().find(function(t){ return t.toLowerCase()===name.toLowerCase(); });
+    if (exists) return exists;
+    if (!state.customTeams) state.customTeams = [];
+    var color = EXTRA_TEAM_PALETTE[state.customTeams.length % EXTRA_TEAM_PALETTE.length];
+    state.customTeams.push({ name:name, color:color });
+    return name;
+  }
+  function promptAddTeam(){
+    var name = window.prompt("New team name:");
+    if (name == null) return null;
+    name = name.trim();
+    if (!name) return null;
+    return addCustomTeam(name);
+  }
+
+  // ---- date range: dynamic. Floor is fixed at July 2026 (edit BASE_START to move it);
+  // the window always extends forward to cover the latest project finish date, with a
+  // two-month minimum so the grid never looks emptier than that. ----
+  var BASE_START = { y:2026, m:7, d:1 };
+  var MIN_MONTHS_VISIBLE = 2;
+
+  function pad2(n){ return (n<10?"0":"")+n; }
+  function iso(y,m,d){ return y+"-"+pad2(m)+"-"+pad2(d); }
+  function daysInMonth(y,m){ return new Date(Date.UTC(y,m,0)).getUTCDate(); }
+  function weekdayOf(y,m,d){ return new Date(Date.UTC(y,m-1,d)).getUTCDay(); } // 0=Sun
+  function monthName(m){ return ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][m-1]; }
+  function addMonths(y,m,n){ var total = (m-1)+n; var ny = y + Math.floor(total/12); var nm = (total%12+12)%12 + 1; return {y:ny, m:nm}; }
+
+  var DAYS = [];         // {y,m,d,iso,dow,weekend} — rebuilt by rebuildCalendarRange()
+  var MONTH_GROUPS = []; // {y,m,label,count}       — rebuilt alongside DAYS
+  var TODAY_ISO = (function(){ var t=new Date(); return iso(t.getFullYear(), t.getMonth()+1, t.getDate()); })();
+
+  function latestFinishISO(){
+    var max = "";
+    (state.projects||[]).forEach(function(p){
+      if (p.finish && p.finish > max) max = p.finish;
+    });
+    return max;
+  }
+
+  function rebuildCalendarRange(){
+    var minEnd = addMonths(BASE_START.y, BASE_START.m, MIN_MONTHS_VISIBLE - 1);
+    var endY = minEnd.y, endM = minEnd.m;
+    var maxFinish = latestFinishISO();
+    if (maxFinish){
+      var fy = +maxFinish.slice(0,4), fm = +maxFinish.slice(5,7);
+      if (fy > endY || (fy===endY && fm > endM)){ endY = fy; endM = fm; }
+    }
+    DAYS = [];
+    var y = BASE_START.y, m = BASE_START.m;
+    while (y < endY || (y===endY && m<=endM)){
+      var dim = daysInMonth(y,m);
+      for (var d=1; d<=dim; d++){
+        var dow = weekdayOf(y,m,d);
+        DAYS.push({y:y,m:m,d:d,iso:iso(y,m,d),dow:dow,weekend:(dow===0||dow===6)});
+      }
+      m++; if (m>12){ m=1; y++; }
+    }
+    MONTH_GROUPS = [];
+    DAYS.forEach(function(day){
+      var last = MONTH_GROUPS[MONTH_GROUPS.length-1];
+      if (last && last.y===day.y && last.m===day.m) last.count++;
+      else MONTH_GROUPS.push({y:day.y, m:day.m, label: monthName(day.m)+" "+day.y, count:1});
+    });
+  }
+
+  // ---- state ----
+  var EXAMPLE_PROJECTS = [
+    { id:"ex1", isExample:true, name:"Marina Heights Tower — Unit 2104", client:"GTS", scope:"Supply & install ducted AC system, 3BR apartment", start:"2026-08-25", finish:"2026-09-10", pct:60, team:"Mark", value:48000, comments:"Awaiting client access confirmation for Friday visit." },
+    { id:"ex2", isExample:true, name:"Al Barari Villa 12 — Lighting Retrofit", client:"GreenBull", scope:"Retrofit lighting control panel and fixtures", start:"2026-09-08", finish:"2026-09-25", pct:15, team:"Angelo", value:76500, comments:"Materials on order, ETA Sep 8." },
+    { id:"ex3", isExample:true, name:"Downtown Office L14 — Containment", client:"MACS", scope:"First-fix electrical containment and cable tray", start:"2026-10-01", finish:"2026-10-20", pct:0, team:"Sammy", value:132000, comments:"Start pending permit approval." }
+  ];
+
+  var state = { projects: null, bannerDismissed:false, customTeams: [] };
+  var saveTimer = null;
+  var lastSnapshotForUndo = null;
+  var conflictDaysByProject = {};
+  var conflictList = [];
+  var previousConflictKeys = [];
+  var hasRenderedOnce = false;
+
+  function cloneState(){ return JSON.parse(JSON.stringify(state)); }
+
+  // ---- column widths / details-panel width: a per-device display preference,
+  // stored separately from project data (not synced to the shared backend). ----
+  var UI_PREFS_KEY = "installPlanner.uiPrefs.v1";
+  var DEFAULT_COL_W = { name:195, client:108, scope:160, start:124, finish:124, pct:78, team:122, value:112, comments:175 };
+  var COL_MIN_W = { name:110, client:60, scope:60, start:90, finish:90, pct:50, team:80, value:70, comments:60 };
+  var COL_MAX_W = { name:420, client:260, scope:420, start:170, finish:170, pct:110, team:220, value:220, comments:420 };
+  var SCALED_COLS = ["client","scope","start","finish","pct","value","comments"];
+  var colWidths = Object.assign({}, DEFAULT_COL_W);
+  var detailScale = 1;
+
+  function loadUIPrefs(){
+    try{
+      var raw = localStorage.getItem(UI_PREFS_KEY);
+      if (raw){
+        var data = JSON.parse(raw);
+        if (data && data.colWidths) colWidths = Object.assign({}, DEFAULT_COL_W, data.colWidths);
+        if (data && typeof data.detailScale === "number") detailScale = data.detailScale;
+      }
+    } catch(e){ /* ignore corrupt/inaccessible prefs */ }
+  }
+  function saveUIPrefs(){
+    try{ localStorage.setItem(UI_PREFS_KEY, JSON.stringify({ colWidths:colWidths, detailScale:detailScale })); } catch(e){}
+  }
+  function applyColumnVars(){
+    var root = document.documentElement.style;
+    root.setProperty("--w-name", colWidths.name+"px");
+    root.setProperty("--w-team", colWidths.team+"px");
+    root.setProperty("--base-w-client", colWidths.client+"px");
+    root.setProperty("--base-w-scope", colWidths.scope+"px");
+    root.setProperty("--base-w-start", colWidths.start+"px");
+    root.setProperty("--base-w-finish", colWidths.finish+"px");
+    root.setProperty("--base-w-pct", colWidths.pct+"px");
+    root.setProperty("--base-w-value", colWidths.value+"px");
+    root.setProperty("--base-w-comments", colWidths.comments+"px");
+    root.setProperty("--detail-scale", String(detailScale));
+  }
+  function resetColumnLayout(){
+    colWidths = Object.assign({}, DEFAULT_COL_W);
+    detailScale = 1;
+    applyColumnVars();
+    saveUIPrefs();
+  }
+
+  function newProject(){
+    return { id:"p"+Date.now().toString(36)+Math.random().toString(36).slice(2,7), isExample:false,
+      name:"", client:"", scope:"", start:"", finish:"", pct:0, team:"", value:0, comments:"" };
+  }
+
+  function normalizeProject(p){
+    if (p.client==null) p.client = "";
+    if (p.value==null || isNaN(Number(p.value))) p.value = 0;
+    return p;
+  }
+
+  // ---- persistence ----
+  // Two modes, chosen automatically at startup:
+  //  1) Shared (Firestore): everyone who opens the app sees the same live data.
+  //     Requires firebase-config.json to be filled in — see README "Shared backend setup".
+  //  2) Local-only (localStorage): fallback when Firestore isn't configured or unreachable.
+  //     Data then stays on that one device/browser only.
+  var STORAGE_KEY = "installPlanner.v1";
+  var backendMode = "local"; // "firestore" | "local"
+  var fsDocRef = null;
+  var applyingRemoteUpdate = false;
+
+  function firebaseConfigLooksReal(cfg){
+    return !!(cfg && cfg.apiKey && cfg.projectId &&
+      String(cfg.apiKey).indexOf("YOUR_") !== 0 && String(cfg.projectId).indexOf("YOUR_") !== 0);
+  }
+
+  function seedExamples(){
+    state.projects = JSON.parse(JSON.stringify(EXAMPLE_PROJECTS));
+    state.bannerDismissed = false;
+    state.customTeams = [];
+  }
+
+  function loadLocalState(){
+    try{
+      var raw = localStorage.getItem(STORAGE_KEY);
+      if (raw){
+        var data = JSON.parse(raw);
+        if (data && Array.isArray(data.projects)){
+          state.projects = data.projects.map(normalizeProject);
+          state.bannerDismissed = !!data.bannerDismissed;
+          state.customTeams = Array.isArray(data.customTeams) ? data.customTeams : [];
+          return;
+        }
+      }
+    } catch(e){ /* corrupt or inaccessible storage — fall through to examples */ }
+    seedExamples();
+  }
+
+  function setSaveStatus(text){
+    var el = document.getElementById("save-status");
+    if (el) el.textContent = text;
+  }
+
+  function scheduleSave(){
+    setSaveStatus(backendMode==="firestore" ? "Syncing…" : "Editing…");
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(doSave, 600);
+  }
+
+  function doSave(){
+    if (applyingRemoteUpdate) return; // don't echo back a change we just received
+    var payload = { projects: state.projects, bannerDismissed: state.bannerDismissed, customTeams: state.customTeams||[] };
+    if (backendMode === "firestore" && fsDocRef){
+      var withStamp = Object.assign({}, payload, { updatedAt: firebase.firestore.FieldValue.serverTimestamp() });
+      fsDocRef.set(withStamp)
+        .then(function(){ setSaveStatus("Synced with team"); })
+        .catch(function(){ setSaveStatus("Sync failed — will retry on next edit"); });
+      return;
+    }
+    try{
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+      setSaveStatus("Saved on this device");
+    } catch(err){
+      setSaveStatus("Couldn't save — storage full or blocked");
+    }
+  }
+
+  // Try Firestore first; resolves once we know which mode we're in.
+  function initBackend(){
+    return new Promise(function(resolve){
+      var cfg = window.FIREBASE_CONFIG;
+      if (!firebaseConfigLooksReal(cfg) || typeof firebase === "undefined"){
+        backendMode = "local";
+        loadLocalState();
+        resolve();
+        return;
+      }
+      try{
+        firebase.initializeApp(cfg);
+        var db = firebase.firestore();
+        fsDocRef = db.collection("installPlanner").doc("shared");
+        var settled = false;
+        fsDocRef.onSnapshot(function(snap){
+          applyingRemoteUpdate = true;
+          if (snap.exists){
+            var data = snap.data();
+            if (data && Array.isArray(data.projects)){
+              state.projects = data.projects.map(normalizeProject);
+              state.bannerDismissed = !!data.bannerDismissed;
+              state.customTeams = Array.isArray(data.customTeams) ? data.customTeams : [];
+            }
+          } else if (!settled){
+            seedExamples();
+            doSave(); // create the shared document the first time anyone opens the app
+          }
+          applyingRemoteUpdate = false;
+          backendMode = "firestore";
+          if (!settled){ settled = true; resolve(); }
+          else { render(); setSaveStatus(snap.metadata.hasPendingWrites ? "Syncing…" : "Synced with team"); }
+        }, function(){
+          if (!settled){
+            settled = true;
+            backendMode = "local";
+            loadLocalState();
+            resolve();
+          } else {
+            setSaveStatus("Connection lost — editing locally");
+          }
+        });
+        // Safety net: if Firestore never responds (offline, blocked, bad config), fall back.
+        setTimeout(function(){
+          if (!settled){
+            settled = true;
+            backendMode = "local";
+            loadLocalState();
+            resolve();
+          }
+        }, 4000);
+      } catch(e){
+        backendMode = "local";
+        loadLocalState();
+        resolve();
+      }
+    });
+  }
+
+  // ---- rendering ----
+  var boardEl, statRowEl, legendEl, dateRangeLabelEl;
+  var visibleProjects = [];
+  var filterState = { status:null, team:null }; // status: notStarted|inProgress|complete|unassigned
+
+  function statusBucket(p){
+    var pct = Number(p.pct)||0;
+    return pct<=0 ? "notStarted" : (pct>=100 ? "complete" : "inProgress");
+  }
+
+  function matchesFilter(p){
+    if (filterState.team && p.team !== filterState.team) return false;
+    if (filterState.status){
+      if (filterState.status === "unassigned"){ if (p.team) return false; }
+      else if (statusBucket(p) !== filterState.status) return false;
+    }
+    return true;
+  }
+
+  function setStatusFilter(key){
+    filterState.status = (filterState.status === key) ? null : key;
+    render();
+  }
+  function setTeamFilter(team){
+    filterState.team = (filterState.team === team) ? null : team;
+    render();
+  }
+  function clearFilters(){
+    filterState.status = null; filterState.team = null;
+    render();
+  }
+
+  function fmtShort(dayIdx){
+    var start = DAYS[0], end = DAYS[DAYS.length-1];
+    return monthName(start.m)+" "+start.d+" – "+monthName(end.m)+" "+end.d+", "+end.y;
+  }
+
+  function renderLegend(){
+    legendEl.innerHTML = allTeamNames().map(function(t){
+      var active = filterState.team === t;
+      return '<button type="button" class="legend-item'+(active?" active":"")+'" data-team-filter="'+escAttr(t)+'">'+
+        '<span class="legend-dot" style="background:'+teamColorValue(t)+'"></span>'+escText(t)+'</button>';
+    }).join("") + '<button type="button" class="legend-item legend-add-team" id="legend-add-team-btn" title="Add a new installation team">+ Team</button>';
+  }
+
+  var AED_FMT = new Intl.NumberFormat("en-AE", { style:"currency", currency:"AED", maximumFractionDigits:0 });
+
+  function statPill(label, count, key, extraClass){
+    var active = filterState.status === key;
+    return '<span class="stat-pill clickable'+(active?" active":"")+(extraClass||"")+'" data-status-filter="'+key+'">'+count+' '+label+'</span>';
+  }
+
+  function renderStats(){
+    var total = state.projects.length;
+    var notStarted=0, inProgress=0, complete=0, unassigned=0, totalValue=0;
+    state.projects.forEach(function(p){
+      var b = statusBucket(p);
+      if (b==="notStarted") notStarted++; else if (b==="complete") complete++; else inProgress++;
+      if (!p.team) unassigned++;
+      totalValue += Number(p.value)||0;
+    });
+    var chips =
+      '<span class="stat-pill">'+total+' project'+(total===1?"":"s")+'</span>'+
+      statPill("in progress", inProgress, "inProgress")+
+      statPill("not started", notStarted, "notStarted")+
+      statPill("complete", complete, "complete")+
+      (unassigned ? statPill("unassigned", unassigned, "unassigned") : "")+
+      (totalValue? '<span class="stat-pill">'+AED_FMT.format(totalValue)+' total value</span>' : "");
+    if (filterState.status || filterState.team){
+      var parts = [];
+      if (filterState.team) parts.push(filterState.team);
+      if (filterState.status) parts.push({notStarted:"Not started",inProgress:"In progress",complete:"Complete",unassigned:"Unassigned"}[filterState.status]);
+      chips += '<button type="button" class="filter-clear" id="clear-filter-btn">Showing: '+parts.join(" + ")+' — clear ×</button>';
+    }
+    statRowEl.innerHTML = chips;
+  }
+
+  var META_COL_COUNT = 10;    // the 10 project-detail columns
+  var DIVIDER_COL = META_COL_COUNT + 1;   // the draggable divider between details and the day grid
+  var TOTAL_META_COLS = DIVIDER_COL;      // 11 — details + divider
+  var DAY_COL_START = TOTAL_META_COLS + 1;
+
+  function gridTemplateColumns(){
+    return "var(--w-idx) var(--w-name) var(--w-client) var(--w-scope) var(--w-start) var(--w-finish) var(--w-pct) var(--w-team) var(--w-value) var(--w-comments) var(--w-divider) repeat("+DAYS.length+", var(--day))";
+  }
+
+  function metaHeaderHTML(){
+    var labels = [
+      {cls:"c-idx", txt:"", key:null},
+      {cls:"c-name", txt:"Project name", key:"name"},
+      {cls:"c-client", txt:"Client", key:"client"},
+      {cls:"c-scope", txt:"Project scope", key:"scope"},
+      {cls:"c-start", txt:"Start date", key:"start"},
+      {cls:"c-finish", txt:"Finish date", key:"finish"},
+      {cls:"c-pct", txt:"% complete", key:"pct"},
+      {cls:"c-team", txt:"Assigned team", key:"team"},
+      {cls:"c-value", txt:"Project value", key:"value"},
+      {cls:"c-comments", txt:"Comments", key:"comments"}
+    ];
+    var html = labels.map(function(l, i){
+      var handle = l.key ? '<div class="col-handle" data-col="'+l.key+'" title="Drag to resize this column"></div>' : "";
+      return '<div class="cell meta-head '+l.cls+'" style="grid-column:'+(i+1)+' / span 1; grid-row:1 / span 2;">'+escText(l.txt)+handle+'</div>';
+    }).join("");
+    html += '<div class="cell c-divider" id="detail-divider" style="grid-column:'+DIVIDER_COL+' / span 1; grid-row:1 / -1;" title="Drag to resize the project-details panel"></div>';
+    return html;
+  }
+
+  function dayHeaderHTML(){
+    var html = "";
+    var col = DAY_COL_START;
+    MONTH_GROUPS.forEach(function(g){
+      html += '<div class="cell row-head month" style="grid-column:'+col+' / span '+g.count+'; grid-row:1;">'+g.label+'</div>';
+      col += g.count;
+    });
+    col = DAY_COL_START;
+    DAYS.forEach(function(day){
+      var isToday = day.iso === TODAY_ISO;
+      html += '<div class="cell row-head day'+(day.weekend?" weekend":"")+(isToday?" today":"")+'" style="grid-column:'+col+'; grid-row:2;">'+
+        '<span class="dow">'+["S","M","T","W","T","F","S"][day.dow]+'</span><span class="num">'+day.d+'</span></div>';
+      col++;
+    });
+    return html;
+  }
+
+  function projectRowHTML(p, rowIndex){
+    var row = 3 + rowIndex;
+    var html = "";
+    html += '<div class="cell c-idx" style="grid-column:1; grid-row:'+row+';">'+
+      '<button class="del-btn" type="button" data-action="delete" data-id="'+p.id+'" aria-label="Delete project" title="Delete project">✕</button></div>';
+
+    html += '<div class="cell c-name" style="grid-column:2; grid-row:'+row+';">'+
+      '<div class="row-name-wrap">' + (p.isExample ? '<span class="example-badge" data-owner="'+p.id+'">Example</span>' : '') +
+      '<input class="field" data-field="name" data-id="'+p.id+'" value="'+escAttr(p.name)+'" title="'+escAttr(p.name)+'" placeholder="Project name" aria-label="Project name"></div></div>';
+
+    html += '<div class="cell c-client" style="grid-column:3; grid-row:'+row+';">'+
+      '<input class="field" list="client-list" data-field="client" data-id="'+p.id+'" value="'+escAttr(p.client)+'" title="'+escAttr(p.client)+'" placeholder="Client" aria-label="Client"></div>';
+
+    html += '<div class="cell c-scope" style="grid-column:4; grid-row:'+row+';">'+
+      '<textarea class="field" data-field="scope" data-id="'+p.id+'" placeholder="Scope of work" aria-label="Project scope">'+escText(p.scope)+'</textarea></div>';
+
+    html += '<div class="cell c-start" style="grid-column:5; grid-row:'+row+';">'+
+      '<input class="field" type="date" data-field="start" data-id="'+p.id+'" value="'+p.start+'" aria-label="Start date"></div>';
+
+    html += '<div class="cell c-finish" style="grid-column:6; grid-row:'+row+';">'+
+      '<input class="field" type="date" data-field="finish" data-id="'+p.id+'" value="'+p.finish+'" aria-label="Finish date"></div>';
+
+    html += '<div class="cell c-pct" style="grid-column:7; grid-row:'+row+';">'+
+      '<input class="field pct-text" type="number" min="0" max="100" step="5" data-field="pct" data-id="'+p.id+'" value="'+p.pct+'" aria-label="Percent complete">'+
+      '<span class="pct-text" style="color:var(--text-faint)">%</span></div>';
+
+    var teamColorStyle = p.team ? ' style="color:'+teamColorValue(p.team)+';"' : "";
+    html += '<div class="cell c-team" style="grid-column:8; grid-row:'+row+';">'+
+      '<select class="field" data-field="team" data-id="'+p.id+'" data-team="'+escAttr(p.team)+'" aria-label="Assigned team"'+teamColorStyle+'>'+
+      '<option value=""'+(p.team===""?" selected":"")+'>—</option>'+
+      allTeamNames().map(function(t){ return '<option value="'+escAttr(t)+'"'+(p.team===t?" selected":"")+'>'+escText(t)+'</option>'; }).join("")+
+      '<option value="__add_new__">+ Add new team…</option>'+
+      '</select></div>';
+
+    html += '<div class="cell c-value" style="grid-column:9; grid-row:'+row+';">'+
+      '<span class="value-unit">AED</span>'+
+      '<input class="field value-input" type="number" min="0" step="500" data-field="value" data-id="'+p.id+'" value="'+(Number(p.value)||0)+'" aria-label="Project value"></div>';
+
+    html += '<div class="cell c-comments" style="grid-column:10; grid-row:'+row+';">'+
+      '<textarea class="field" data-field="comments" data-id="'+p.id+'" placeholder="Comments" aria-label="Comments">'+escText(p.comments)+'</textarea></div>';
+
+    html += dayCellsHTML(p, row);
+    return html;
+  }
+
+  function rangeDateList(p){
+    if (!p.start || !p.finish || p.finish < p.start) return [];
+    var list = [];
+    for (var i=0;i<DAYS.length;i++){
+      if (DAYS[i].iso >= p.start && DAYS[i].iso <= p.finish) list.push(i);
+    }
+    return list;
+  }
+
+  function overlapDays(aStart, aEnd, bStart, bEnd){
+    var lo = aStart > bStart ? aStart : bStart;
+    var hi = aEnd < bEnd ? aEnd : bEnd;
+    if (lo > hi) return [];
+    var list = [];
+    for (var i=0;i<DAYS.length;i++){
+      if (DAYS[i].iso >= lo && DAYS[i].iso <= hi) list.push(DAYS[i].iso);
+    }
+    return list;
+  }
+
+  function computeConflicts(){
+    conflictDaysByProject = {};
+    conflictList = [];
+    var byTeam = {};
+    state.projects.forEach(function(p){
+      if (!p.team || !p.start || !p.finish || p.finish < p.start) return;
+      (byTeam[p.team] = byTeam[p.team] || []).push(p);
+    });
+    Object.keys(byTeam).forEach(function(team){
+      var list = byTeam[team];
+      for (var i=0;i<list.length;i++){
+        for (var j=i+1;j<list.length;j++){
+          var a = list[i], b = list[j];
+          var overlap = overlapDays(a.start, a.finish, b.start, b.finish);
+          if (overlap.length){
+            (conflictDaysByProject[a.id] = conflictDaysByProject[a.id] || {});
+            (conflictDaysByProject[b.id] = conflictDaysByProject[b.id] || {});
+            overlap.forEach(function(iso){ conflictDaysByProject[a.id][iso]=true; conflictDaysByProject[b.id][iso]=true; });
+            var sorted = overlap.slice().sort();
+            conflictList.push({
+              team: team, aId:a.id, bId:b.id,
+              aName: a.name||"Untitled", bName: b.name||"Untitled",
+              start: sorted[0], end: sorted[sorted.length-1], count: overlap.length
+            });
+          }
+        }
+      }
+    });
+    return conflictList;
+  }
+
+  function fmtDate(isoStr){
+    if (!isoStr) return "";
+    var y=+isoStr.slice(0,4), m=+isoStr.slice(5,7), d=+isoStr.slice(8,10);
+    return monthName(m)+" "+d;
+  }
+
+  function renderConflictBanner(){
+    var el = document.getElementById("conflict-banner");
+    if (!conflictList.length){ el.hidden = true; el.innerHTML = ""; return; }
+    var title = conflictList.length===1 ? "1 scheduling conflict detected" : conflictList.length+" scheduling conflicts detected";
+    var rows = conflictList.slice(0,5).map(function(c){
+      var range = c.start===c.end ? fmtDate(c.start) : (fmtDate(c.start)+" – "+fmtDate(c.end));
+      return '<span class="conflict-row">&#9888; '+escText(c.team)+' is booked on both “'+escText(c.aName)+'” and “'+escText(c.bName)+
+        '” from '+range+' ('+c.count+' day'+(c.count===1?"":"s")+').</span>';
+    }).join("");
+    var more = conflictList.length>5 ? '<span class="conflict-row">+'+(conflictList.length-5)+' more…</span>' : "";
+    el.innerHTML = '<span class="conflict-title">'+title+'</span>' + rows + more;
+    el.hidden = false;
+
+    var newKeys = conflictList.map(function(c){ return c.team+"|"+[c.aId,c.bId].sort().join("|"); });
+    if (hasRenderedOnce){
+      var seen = {}; previousConflictKeys.forEach(function(k){ seen[k]=true; });
+      var fresh = conflictList.filter(function(c,i){ return !seen[newKeys[i]]; });
+      if (fresh.length){
+        var f = fresh[0];
+        var range = f.start===f.end ? fmtDate(f.start) : (fmtDate(f.start)+" – "+fmtDate(f.end));
+        showToast("Double-booking: "+f.team+" is on both \""+f.aName+"\" and \""+f.bName+"\" ("+range+").");
+      }
+    }
+    previousConflictKeys = newKeys;
+  }
+
+  function dayCellsHTML(p, row){
+    var html = "";
+    var rangeIdx = rangeDateList(p);
+    var pct = Math.max(0, Math.min(100, Number(p.pct)||0));
+    var progressCount = Math.round(rangeIdx.length * pct / 100);
+    var teamVar = teamColorValue(p.team);
+    var conflictDays = conflictDaysByProject[p.id] || null;
+    var rangeSet = {};
+    rangeIdx.forEach(function(idx, i){ rangeSet[idx] = i; });
+
+    var col = DAY_COL_START;
+    DAYS.forEach(function(day, i){
+      var isToday = day.iso === TODAY_ISO;
+      var classes = "cell day-cell"+(day.weekend?" weekend":"")+(isToday?" today":"");
+      var inner = "";
+      if (rangeSet.hasOwnProperty(i)){
+        var posInRange = rangeSet[i];
+        var isFirst = posInRange===0, isLast = posInRange===rangeIdx.length-1;
+        var filled = posInRange < progressCount;
+        var capL = isFirst?" cap-l":"", capR = isLast?" cap-r":"";
+        inner = '<div class="day-fill '+(filled?"progress":"planned")+capL+capR+'" style="background:'+teamVar+';"></div>';
+        if (conflictDays && conflictDays[day.iso]){
+          inner += '<div class="conflict-stripe'+capL+capR+'" title="Scheduling conflict"></div>';
+        }
+      }
+      html += '<div class="'+classes+'" data-row="'+row+'" style="grid-column:'+col+'; grid-row:'+row+';">'+inner+'</div>';
+      col++;
+    });
+    return html;
+  }
+
+  function render(){
+    rebuildCalendarRange();
+    dateRangeLabelEl.textContent = fmtShort();
+    renderLegend();
+    renderStats();
+
+    var hasExamplesOnly = state.projects.length>0 && state.projects.every(function(p){return p.isExample;});
+    var banner = document.getElementById("example-banner");
+    banner.hidden = state.bannerDismissed || !hasExamplesOnly;
+
+    computeConflicts();
+    renderConflictBanner();
+    hasRenderedOnce = true;
+
+    visibleProjects = state.projects.filter(matchesFilter);
+
+    var totalCols = TOTAL_META_COLS + DAYS.length;
+    boardEl.style.gridTemplateColumns = gridTemplateColumns();
+
+    var html = metaHeaderHTML() + dayHeaderHTML();
+    if (state.projects.length === 0){
+      boardEl.style.gridTemplateRows = "30px 42px 64px";
+      html += '<div class="cell empty-state" style="grid-column:1 / span '+totalCols+'; grid-row:3; justify-content:center;">'+
+        'No projects yet. Click “+ Add project” or use “Import Excel / CSV” to bring in your list.</div>';
+    } else if (visibleProjects.length === 0){
+      boardEl.style.gridTemplateRows = "30px 42px 64px";
+      html += '<div class="cell empty-state" style="grid-column:1 / span '+totalCols+'; grid-row:3; justify-content:center;">'+
+        'No projects match this filter. <button type="button" class="filter-clear" id="clear-filter-btn-2">Clear filter ×</button></div>';
+    } else {
+      boardEl.style.gridTemplateRows = "30px 42px " + "repeat("+visibleProjects.length+", 64px)";
+      visibleProjects.forEach(function(p, idx){ html += projectRowHTML(p, idx); });
+    }
+    boardEl.innerHTML = html;
+
+    if (currentView === "dashboard") renderDashboard();
+    if (currentView === "allocation") renderAllocation();
+  }
+
+  // ---- dashboard ----
+  function daysBetween(isoA, isoB){
+    var a = Date.UTC(+isoA.slice(0,4), +isoA.slice(5,7)-1, +isoA.slice(8,10));
+    var b = Date.UTC(+isoB.slice(0,4), +isoB.slice(5,7)-1, +isoB.slice(8,10));
+    return Math.round((b-a)/86400000);
+  }
+  function kpiCard(label, value, sub){
+    return '<div class="kpi-card"><span class="kpi-label">'+escText(label)+'</span><span class="kpi-value">'+value+'</span><span class="kpi-sub">'+escText(sub)+'</span></div>';
+  }
+  function barRow(label, displayValue, fraction, color){
+    var pct = Math.max(2, Math.round(fraction*100));
+    return '<div class="bar-row"><span class="bar-label" title="'+escAttr(label)+'">'+escText(label)+'</span>'+
+      '<span class="bar-track"><span class="bar-fill" style="width:'+pct+'%; background:'+color+';"></span></span>'+
+      '<span class="bar-value">'+displayValue+'</span></div>';
+  }
+  function segment(fraction, color){
+    var pct = Math.round(fraction*1000)/10;
+    return '<span style="display:block; width:'+pct+'%; height:100%; background:'+color+';"></span>';
+  }
+  function legendDot(color, label, count){
+    return '<span><span class="dot" style="background:'+color+';"></span>'+escText(label)+' ('+count+')</span>';
+  }
+
+  function renderDashboard(){
+    var dashEl = document.getElementById("dashboard-view");
+    var projects = state.projects;
+    if (!projects.length){
+      dashEl.innerHTML = '<div class="dash-empty">No projects yet — add or import some to see the dashboard.</div>';
+      return;
+    }
+    var totalValue=0, pctSum=0, unassigned=0, notStarted=0, inProgress=0, complete=0;
+    var byTeam = {}; allTeamNames().forEach(function(t){ byTeam[t]=0; });
+    var byClient = {};
+    projects.forEach(function(p){
+      totalValue += Number(p.value)||0;
+      pctSum += Number(p.pct)||0;
+      if (!p.team) unassigned++; else byTeam[p.team] = (byTeam[p.team]||0)+1;
+      var b = statusBucket(p);
+      if (b==="notStarted") notStarted++; else if (b==="complete") complete++; else inProgress++;
+      var c = (p.client||"").trim() || "No client";
+      byClient[c] = (byClient[c]||0) + (Number(p.value)||0);
+    });
+    var avgPct = Math.round(pctSum/projects.length);
+
+    var kpiHTML = '<div class="dash-grid">'+
+        kpiCard("Total projects", projects.length, projects.length+" tracked") +
+        kpiCard("Total value", AED_FMT.format(totalValue), "across all projects") +
+        kpiCard("Avg. completion", avgPct+"%", "mean of all % complete") +
+        kpiCard("Unassigned", unassigned, unassigned ? "need a team" : "fully staffed") +
+      '</div>';
+
+    var teamRows = allTeamNames().map(function(t){ return {label:t, value:byTeam[t]||0, color:teamColorValue(t)}; })
+      .sort(function(a,b){ return b.value-a.value; });
+    var maxTeam = Math.max.apply(null, [1].concat(teamRows.map(function(r){return r.value;})));
+    var teamHTML = teamRows.map(function(r){ return barRow(r.label, String(r.value), r.value/maxTeam, r.color); }).join("");
+
+    var clientEntries = Object.keys(byClient).map(function(c){ return {label:c, value:byClient[c]}; })
+      .sort(function(a,b){ return b.value-a.value; }).slice(0,8);
+    var maxClient = Math.max.apply(null, [1].concat(clientEntries.map(function(r){return r.value;})));
+    var clientHTML = clientEntries.length ? clientEntries.map(function(r){ return barRow(r.label, AED_FMT.format(r.value), r.value/maxClient, "var(--accent)"); }).join("")
+      : '<div class="dash-empty">No client values yet.</div>';
+
+    var statusTotal = (notStarted+inProgress+complete) || 1;
+    var statusHTML = '<div class="bar-track" style="display:flex; height:16px;">'+
+        segment(notStarted/statusTotal, "var(--text-faint)") +
+        segment(inProgress/statusTotal, "var(--accent)") +
+        segment(complete/statusTotal, "var(--team-alex)") +
+      '</div>'+
+      '<div class="status-legend" style="flex-direction:row; flex-wrap:wrap; gap:16px; margin-top:10px;">'+
+        legendDot("var(--text-faint)", "Not started", notStarted) +
+        legendDot("var(--accent)", "In progress", inProgress) +
+        legendDot("var(--team-alex)", "Complete", complete) +
+      '</div>';
+
+    var soonList = projects.filter(function(p){ return !!p.finish; })
+      .map(function(p){ return { p:p, days: daysBetween(TODAY_ISO, p.finish) }; })
+      .filter(function(x){ return x.days <= 14; })
+      .sort(function(a,b){ return a.days - b.days; })
+      .slice(0, 10);
+    var upcomingHTML = soonList.length ? (
+      '<table class="upcoming-table"><thead><tr><th>Project</th><th>Client</th><th>Team</th><th>Finish</th></tr></thead><tbody>'+
+      soonList.map(function(x){
+        var p = x.p;
+        var tag = x.days < 0 ? '<span class="tag-overdue">Overdue '+Math.abs(x.days)+'d</span>'
+          : (x.days===0 ? '<span class="tag-overdue">Due today</span>' : '<span class="tag-soon">Due in '+x.days+'d</span>');
+        return '<tr><td>'+escText(p.name||"Untitled")+'</td><td>'+escText(p.client||"—")+'</td><td>'+escText(p.team||"—")+'</td><td>'+p.finish+'<br>'+tag+'</td></tr>';
+      }).join("") +
+      '</tbody></table>'
+    ) : '<div class="dash-empty">Nothing overdue or due in the next 14 days.</div>';
+
+    dashEl.innerHTML = kpiHTML +
+      '<div class="dash-panels">'+
+        '<div class="panel"><h2>Projects by team</h2>'+teamHTML+'</div>'+
+        '<div class="panel"><h2>Value by client</h2>'+clientHTML+'</div>'+
+      '</div>'+
+      '<div class="dash-panels">'+
+        '<div class="panel"><h2>Status breakdown</h2>'+statusHTML+'</div>'+
+        '<div class="panel"><h2>Due soon / overdue</h2>'+upcomingHTML+'</div>'+
+      '</div>';
+  }
+
+  // ---- team allocation view: a full-page, 3-month Gantt-style summary —
+  // one row per team, with each project drawn as a colored bar so you can see
+  // at a glance who's booked when, and spot gaps or double-bookings. ----
+  var ALLOC_MONTHS = 3;
+  var allocStart = { y: BASE_START.y, m: BASE_START.m };
+  var ALLOC_DAYS = [];
+  var ALLOC_MONTH_GROUPS = [];
+  var ALLOC_DAY_START = 2; // column 1 is the team-name column
+
+  function rebuildAllocRange(){
+    ALLOC_DAYS = [];
+    var y = allocStart.y, m = allocStart.m;
+    for (var i=0;i<ALLOC_MONTHS;i++){
+      var dim = daysInMonth(y,m);
+      for (var d=1; d<=dim; d++){
+        var dow = weekdayOf(y,m,d);
+        ALLOC_DAYS.push({y:y,m:m,d:d,iso:iso(y,m,d),dow:dow,weekend:(dow===0||dow===6)});
+      }
+      m++; if (m>12){ m=1; y++; }
+    }
+    ALLOC_MONTH_GROUPS = [];
+    ALLOC_DAYS.forEach(function(day){
+      var last = ALLOC_MONTH_GROUPS[ALLOC_MONTH_GROUPS.length-1];
+      if (last && last.y===day.y && last.m===day.m) last.count++;
+      else ALLOC_MONTH_GROUPS.push({y:day.y, m:day.m, label: monthName(day.m)+" "+day.y, count:1});
+    });
+  }
+
+  function shiftAllocMonths(n){
+    var r = addMonths(allocStart.y, allocStart.m, n);
+    allocStart = { y:r.y, m:r.m };
+    renderAllocation();
+  }
+
+  // Greedily assigns each of a team's projects to the first free "lane" (row)
+  // so overlapping bookings stack instead of colliding.
+  function computeTeamLanes(teamName){
+    var projs = state.projects.filter(function(p){ return p.team===teamName && p.start && p.finish && p.finish>=p.start; });
+    projs.sort(function(a,b){ return a.start<b.start ? -1 : (a.start>b.start?1:0); });
+    var laneEnds = [];
+    var items = [];
+    projs.forEach(function(p){
+      var laneIdx = laneEnds.findIndex(function(end){ return end < p.start; });
+      if (laneIdx===-1){ laneIdx = laneEnds.length; laneEnds.push(p.finish); }
+      else laneEnds[laneIdx] = p.finish;
+      items.push({ project:p, lane:laneIdx });
+    });
+    return { laneCount: Math.max(1, laneEnds.length), items: items };
+  }
+
+  function allocRangeLabel(){
+    var first = ALLOC_DAYS[0], last = ALLOC_DAYS[ALLOC_DAYS.length-1];
+    return monthName(first.m)+" "+first.y+" – "+monthName(last.m)+" "+last.y;
+  }
+
+  function renderAllocation(){
+    rebuildAllocRange();
+    var rangeLabelEl = document.getElementById("alloc-range-label");
+    if (rangeLabelEl) rangeLabelEl.textContent = allocRangeLabel();
+
+    var allocBoardEl = document.getElementById("alloc-board");
+    if (!allocBoardEl) return;
+
+    var teams = allTeamNames();
+    var teamData = teams.map(function(t){ return { name:t, info:computeTeamLanes(t) }; });
+    var totalLanes = teamData.reduce(function(s,td){ return s+td.info.laneCount; }, 0);
+
+    var totalCols = 1 + ALLOC_DAYS.length;
+    allocBoardEl.style.gridTemplateColumns = "var(--w-alloc-team) repeat("+ALLOC_DAYS.length+", var(--aday))";
+
+    var headHTML = '<div class="cell alloc-meta-head" style="grid-column:1; grid-row:1 / span 2;">Team</div>';
+    var col = ALLOC_DAY_START;
+    ALLOC_MONTH_GROUPS.forEach(function(g){
+      headHTML += '<div class="cell row-head month" style="grid-column:'+col+' / span '+g.count+'; grid-row:1;">'+g.label+'</div>';
+      col += g.count;
+    });
+    col = ALLOC_DAY_START;
+    ALLOC_DAYS.forEach(function(day){
+      var isToday = day.iso === TODAY_ISO;
+      headHTML += '<div class="cell row-head day'+(day.weekend?" weekend":"")+(isToday?" today":"")+'" style="grid-column:'+col+'; grid-row:2;">'+
+        '<span class="dow">'+["S","M","T","W","T","F","S"][day.dow]+'</span><span class="num">'+day.d+'</span></div>';
+      col++;
+    });
+
+    var bodyHTML = "";
+    var gridRow = 3;
+    if (!totalLanes){
+      allocBoardEl.style.gridTemplateRows = "30px 42px 64px";
+      bodyHTML += '<div class="cell empty-state" style="grid-column:1 / span '+totalCols+'; grid-row:3; justify-content:center;">No team has an assigned project yet — assign a team on the Schedule tab to see allocation here.</div>';
+    } else {
+      var rowSizes = ["30px","42px"];
+      teamData.forEach(function(td){
+        var laneCount = td.info.laneCount;
+        for (var L=0; L<laneCount; L++) rowSizes.push("34px");
+
+        bodyHTML += '<div class="cell alloc-team-label" style="grid-column:1; grid-row:'+gridRow+' / span '+laneCount+';">'+
+          '<span class="legend-dot" style="background:'+teamColorValue(td.name)+'"></span>'+escText(td.name)+'</div>';
+
+        for (var L2=0; L2<laneCount; L2++){
+          var rr = gridRow + L2;
+          var c = ALLOC_DAY_START;
+          ALLOC_DAYS.forEach(function(day){
+            var isToday = day.iso === TODAY_ISO;
+            bodyHTML += '<div class="cell alloc-day-cell'+(day.weekend?" weekend":"")+(isToday?" today":"")+'" style="grid-column:'+c+'; grid-row:'+rr+';"></div>';
+            c++;
+          });
+        }
+
+        td.info.items.forEach(function(item){
+          var p = item.project;
+          var idxs = [];
+          for (var i=0;i<ALLOC_DAYS.length;i++){
+            if (ALLOC_DAYS[i].iso>=p.start && ALLOC_DAYS[i].iso<=p.finish) idxs.push(i);
+          }
+          if (!idxs.length) return; // outside the visible 3-month window
+          var startCol = ALLOC_DAY_START + idxs[0];
+          var span = idxs[idxs.length-1]-idxs[0]+1;
+          var pct = Math.max(0, Math.min(100, Number(p.pct)||0));
+          var rr2 = gridRow + item.lane;
+          var capL = p.start >= ALLOC_DAYS[0].iso;
+          var capR = p.finish <= ALLOC_DAYS[ALLOC_DAYS.length-1].iso;
+          var conflictDays = conflictDaysByProject[p.id];
+          var hasConflict = false;
+          if (conflictDays) idxs.forEach(function(i){ if (conflictDays[ALLOC_DAYS[i].iso]) hasConflict = true; });
+          var label = (hasConflict ? "⚠ " : "") + (p.name || "Untitled");
+
+          bodyHTML += '<div class="alloc-bar-wrap" style="grid-column:'+startCol+' / span '+span+'; grid-row:'+rr2+';">'+
+            '<div class="alloc-bar'+(capL?" cap-l":"")+(capR?" cap-r":"")+(hasConflict?" has-conflict":"")+'" style="background:'+teamColorValue(p.team)+';" title="'+escAttr(p.name)+"  ·  "+p.start+' to '+p.finish+"  ·  "+pct+'% complete'+(hasConflict?"  ·  DOUBLE-BOOKED":"")+'">'+
+              '<span class="alloc-bar-progress" style="width:'+pct+'%;"></span>'+
+              '<span class="alloc-bar-label">'+escText(label)+'</span>'+
+            '</div></div>';
+        });
+
+        gridRow += laneCount;
+      });
+      allocBoardEl.style.gridTemplateRows = rowSizes.join(" ");
+    }
+
+    allocBoardEl.innerHTML = headHTML + bodyHTML;
+  }
+
+  function escAttr(s){ return String(s==null?"":s).replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;"); }
+  function escText(s){ return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;"); }
+
+  // ---- event handling ----
+  function findProject(id){ return state.projects.find(function(p){ return p.id===id; }); }
+
+  document.addEventListener("input", function(e){
+    var t = e.target;
+    if (!t.matches("[data-field]")) return;
+    var p = findProject(t.dataset.id);
+    if (!p) return;
+    var field = t.dataset.field;
+    var needsGridUpdate = (field==="start"||field==="finish"||field==="pct"||field==="team");
+    if (field==="team" && t.value === "__add_new__"){
+      var newTeam = promptAddTeam();
+      if (newTeam){
+        p.team = newTeam;
+      } else {
+        t.value = p.team || ""; // cancelled — revert the dropdown, leave the project untouched
+        return;
+      }
+    } else if (field==="pct"){
+      p.pct = Math.max(0, Math.min(100, Math.round(Number(t.value)||0)));
+    } else if (field==="value"){
+      p.value = Math.max(0, Number(t.value)||0);
+    } else {
+      p[field] = t.value;
+      if (field==="name" || field==="client") t.title = t.value;
+    }
+    if (p.isExample){
+      p.isExample = false;
+      var badge = boardEl.querySelector('.example-badge[data-owner="'+p.id+'"]');
+      if (badge) badge.remove();
+      var banner = document.getElementById("example-banner");
+      if (!state.bannerDismissed) banner.hidden = true;
+    }
+    if (needsGridUpdate){
+      if (field==="team") t.setAttribute("data-team", t.value);
+      // Re-render fully: the grid range, conflict detection, and highlighting
+      // all need to be recomputed whenever dates/team/progress change. We
+      // restore focus + cursor position afterward so re-rendering doesn't
+      // interrupt typing.
+      var focusId = t.dataset.id, focusField = t.dataset.field;
+      var selStart = null, selEnd = null;
+      if (typeof t.selectionStart === "number"){ selStart = t.selectionStart; selEnd = t.selectionEnd; }
+      render();
+      requestAnimationFrame(function(){
+        var again = document.querySelector('[data-field="'+focusField+'"][data-id="'+focusId+'"]');
+        if (again){
+          again.focus();
+          if (selStart !== null && again.setSelectionRange){
+            try { again.setSelectionRange(selStart, selEnd); } catch(e){}
+          }
+        }
+      });
+    } else {
+      if (field==="value") renderStats();
+    }
+    scheduleSave();
+  });
+
+  document.addEventListener("click", function(e){
+    var del = e.target.closest('[data-action="delete"]');
+    if (del){
+      var id = del.dataset.id;
+      var idx = state.projects.findIndex(function(p){return p.id===id;});
+      if (idx>-1){
+        lastSnapshotForUndo = cloneState();
+        state.projects.splice(idx,1);
+        render();
+        scheduleSave();
+        showToast("Project deleted.", "Undo", undoLast);
+      }
+      return;
+    }
+    if (e.target.id === "banner-close"){
+      state.bannerDismissed = true;
+      document.getElementById("example-banner").hidden = true;
+      scheduleSave();
+      return;
+    }
+
+    var statPillEl = e.target.closest('[data-status-filter]');
+    if (statPillEl){ setStatusFilter(statPillEl.dataset.statusFilter); return; }
+
+    var teamEl = e.target.closest('[data-team-filter]');
+    if (teamEl){ setTeamFilter(teamEl.dataset.teamFilter); return; }
+
+    if (e.target.id === "clear-filter-btn" || e.target.id === "clear-filter-btn-2"){ clearFilters(); return; }
+
+    if (e.target.id === "legend-add-team-btn"){
+      var added = promptAddTeam();
+      if (added){ renderLegend(); scheduleSave(); showToast('Added team "'+added+'". Assign it from any project\'s team dropdown.', null, null); }
+      return;
+    }
+  });
+
+  document.getElementById("zoom-btn").addEventListener("click", function(){
+    var compact = boardEl.classList.toggle("compact");
+    this.textContent = compact ? "Full view" : "Compact view";
+  });
+
+  document.getElementById("reset-cols-btn").addEventListener("click", function(){
+    resetColumnLayout();
+    showToast("Column widths reset to defaults.", null, null);
+  });
+
+  // ---- column resize + details-panel divider drag (pointer events cover mouse & touch) ----
+  (function setupResizeHandles(){
+    document.addEventListener("pointerdown", function(e){
+      var handle = e.target.closest(".col-handle");
+      if (handle){
+        e.preventDefault();
+        var col = handle.dataset.col;
+        var startX = e.clientX;
+        var startWidth = colWidths[col];
+        var min = COL_MIN_W[col] || 50, max = COL_MAX_W[col] || 500;
+        handle.classList.add("dragging");
+        function onMove(ev){
+          var dx = ev.clientX - startX;
+          colWidths[col] = Math.max(min, Math.min(max, Math.round(startWidth + dx)));
+          applyColumnVars();
+        }
+        function onUp(){
+          document.removeEventListener("pointermove", onMove);
+          document.removeEventListener("pointerup", onUp);
+          handle.classList.remove("dragging");
+          saveUIPrefs();
+        }
+        document.addEventListener("pointermove", onMove);
+        document.addEventListener("pointerup", onUp);
+        return;
+      }
+      var divider = e.target.closest("#detail-divider");
+      if (divider){
+        e.preventDefault();
+        var startX2 = e.clientX;
+        var startScale = detailScale;
+        divider.classList.add("dragging");
+        function onMove2(ev){
+          var dx = ev.clientX - startX2;
+          detailScale = Math.max(0.12, Math.min(1.6, startScale + dx/220));
+          applyColumnVars();
+        }
+        function onUp2(){
+          document.removeEventListener("pointermove", onMove2);
+          document.removeEventListener("pointerup", onUp2);
+          divider.classList.remove("dragging");
+          saveUIPrefs();
+        }
+        document.addEventListener("pointermove", onMove2);
+        document.addEventListener("pointerup", onUp2);
+      }
+    });
+  })();
+
+  // ---- team allocation view controls ----
+  document.getElementById("alloc-prev").addEventListener("click", function(){ shiftAllocMonths(-1); });
+  document.getElementById("alloc-next").addEventListener("click", function(){ shiftAllocMonths(1); });
+  document.getElementById("alloc-today").addEventListener("click", function(){
+    var t = new Date();
+    allocStart = { y:t.getFullYear(), m:t.getMonth()+1 };
+    renderAllocation();
+  });
+
+  // ---- view switching (Schedule / Dashboard) ----
+  var currentView = "schedule";
+  function switchView(view){
+    currentView = view;
+    document.getElementById("schedule-view").hidden = (view !== "schedule");
+    document.getElementById("allocation-view").hidden = (view !== "allocation");
+    document.getElementById("dashboard-view").hidden = (view !== "dashboard");
+    document.getElementById("tab-schedule").classList.toggle("active", view==="schedule");
+    document.getElementById("tab-schedule").setAttribute("aria-selected", view==="schedule");
+    document.getElementById("tab-allocation").classList.toggle("active", view==="allocation");
+    document.getElementById("tab-allocation").setAttribute("aria-selected", view==="allocation");
+    document.getElementById("tab-dashboard").classList.toggle("active", view==="dashboard");
+    document.getElementById("tab-dashboard").setAttribute("aria-selected", view==="dashboard");
+    if (view === "dashboard") renderDashboard();
+    if (view === "allocation") renderAllocation();
+  }
+  document.getElementById("tab-schedule").addEventListener("click", function(){ switchView("schedule"); });
+  document.getElementById("tab-allocation").addEventListener("click", function(){ switchView("allocation"); });
+  document.getElementById("tab-dashboard").addEventListener("click", function(){ switchView("dashboard"); });
+
+  document.getElementById("add-btn").addEventListener("click", function(){
+    var p = newProject();
+    state.projects.push(p);
+    render();
+    scheduleSave();
+    var input = boardEl.querySelector('input[data-field="name"][data-id="'+p.id+'"]');
+    if (input){ input.focus(); document.getElementById("board-scroll").scrollTop = document.getElementById("board-scroll").scrollHeight; }
+  });
+
+  // ---- toast ----
+  var toastTimer = null;
+  function showToast(msg, actionLabel, actionFn){
+    var el = document.getElementById("toast");
+    el.innerHTML = msg + (actionLabel ? ' <a id="toast-action">'+actionLabel+'</a>' : "");
+    el.classList.add("show");
+    if (actionLabel){
+      document.getElementById("toast-action").addEventListener("click", function(){
+        actionFn(); el.classList.remove("show");
+      });
+    }
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function(){ el.classList.remove("show"); }, 6000);
+  }
+  function undoLast(){
+    if (lastSnapshotForUndo){
+      state = lastSnapshotForUndo;
+      lastSnapshotForUndo = null;
+      render();
+      scheduleSave();
+    }
+  }
+
+  // ---- import ----
+  document.getElementById("import-btn").addEventListener("click", function(){
+    document.getElementById("import-input").click();
+  });
+
+  document.getElementById("import-input").addEventListener("change", function(e){
+    var file = e.target.files[0];
+    if (!file) return;
+    var reader = new FileReader();
+    reader.onload = function(evt){
+      try{
+        var data = new Uint8Array(evt.target.result);
+        var wb = XLSX.read(data, {type:"array", cellDates:true});
+        var sheet = wb.Sheets[wb.SheetNames[0]];
+        var rows = XLSX.utils.sheet_to_json(sheet, {header:1, defval:""});
+        var imported = mapRows(rows);
+        if (imported.length===0){
+          showToast("No rows found to import.", null, null);
+          return;
+        }
+        lastSnapshotForUndo = cloneState();
+        var onlyExamples = state.projects.length>0 && state.projects.every(function(p){return p.isExample;});
+        if (onlyExamples) state.projects = imported;
+        else state.projects = state.projects.concat(imported);
+        state.bannerDismissed = true;
+        render();
+        scheduleSave();
+        showToast("Imported "+imported.length+" project"+(imported.length===1?"":"s")+" from "+file.name+".", "Undo", undoLast);
+      } catch(err){
+        showToast("Couldn't read that file. Try exporting as .xlsx or .csv.", null, null);
+      }
+      e.target.value = "";
+    };
+    reader.readAsArrayBuffer(file);
+  });
+
+  function normHeader(s){ return String(s||"").toLowerCase().replace(/[^a-z0-9]/g,""); }
+
+  var HEADER_MAP = {
+    name: ["projectname","name","project"],
+    client: ["client","customer","clientname","account"],
+    scope: ["projectscope","scope","description","desc"],
+    start: ["startdate","start"],
+    finish: ["finishdate","finish","enddate","end","completiondate"],
+    pct: ["completed","percentcompleted","pctcompleted","progress","percentcomplete","complete"],
+    team: ["assignedteam","team","installationteam","installer","assignedto"],
+    value: ["projectvalue","value","contractvalue","amount","price","projectcost","cost"],
+    comments: ["comments","comment","notes","note"]
+  };
+
+  function parseDateFlexible(v){
+    if (!v && v!==0) return "";
+    if (v instanceof Date && !isNaN(v)) return iso(v.getFullYear(), v.getMonth()+1, v.getDate());
+    var s = String(v).trim();
+    if (!s) return "";
+    var iso8601 = /^(\d{4})-(\d{1,2})-(\d{1,2})/.exec(s);
+    if (iso8601) return iso(+iso8601[1], +iso8601[2], +iso8601[3]);
+    var slashy = /^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})/.exec(s);
+    if (slashy){
+      var a=+slashy[1], b=+slashy[2], y=+slashy[3];
+      if (y<100) y += 2000;
+      var day, mon;
+      if (a>12){ day=a; mon=b; } else if (b>12){ day=b; mon=a; } else { day=a; mon=b; } // assume day-first (UAE convention)
+      return iso(y, mon, day);
+    }
+    var d = new Date(s);
+    if (!isNaN(d)) return iso(d.getFullYear(), d.getMonth()+1, d.getDate());
+    return "";
+  }
+
+  function mapRows(rows){
+    if (!rows.length) return [];
+    var headerRow = rows[0].map(normHeader);
+    var colIndex = {};
+    Object.keys(HEADER_MAP).forEach(function(key){
+      var idx = -1;
+      HEADER_MAP[key].some(function(alias){
+        var i = headerRow.indexOf(alias);
+        if (i>-1){ idx=i; return true; }
+        return false;
+      });
+      colIndex[key] = idx;
+    });
+    var out = [];
+    for (var r=1;r<rows.length;r++){
+      var row = rows[r];
+      if (!row || row.every(function(c){return c==="" || c==null;})) continue;
+      var get = function(key){ return colIndex[key]>-1 ? row[colIndex[key]] : ""; };
+      var rawTeam = String(get("team")||"").trim();
+      var matchedTeam = allTeamNames().find(function(t){ return t.toLowerCase()===rawTeam.toLowerCase(); }) || "";
+      var comments = String(get("comments")||"").trim();
+      if (rawTeam && !matchedTeam){
+        comments = (comments ? comments+" " : "") + "(Team: "+rawTeam+")";
+      }
+      var pctRaw = get("pct");
+      var pct = Math.max(0, Math.min(100, Math.round(Number(String(pctRaw).replace(/[^0-9.\-]/g,""))||0)));
+      var valueRaw = get("value");
+      var value = Math.max(0, Number(String(valueRaw).replace(/[^0-9.\-]/g,""))||0);
+      var name = String(get("name")||"").trim();
+      if (!name) continue;
+      out.push({
+        id:"p"+Date.now().toString(36)+Math.random().toString(36).slice(2,7)+r,
+        isExample:false,
+        name:name,
+        client:String(get("client")||"").trim(),
+        scope:String(get("scope")||"").trim(),
+        start:parseDateFlexible(get("start")),
+        finish:parseDateFlexible(get("finish")),
+        pct:pct,
+        team:matchedTeam,
+        value:value,
+        comments:comments
+      });
+    }
+    return out;
+  }
+
+  // ---- PDF export ----
+  function filterLabel(){
+    var parts = [];
+    if (filterState.team) parts.push("Team: "+filterState.team);
+    if (filterState.status) parts.push({notStarted:"Not started",inProgress:"In progress",complete:"Complete",unassigned:"Unassigned"}[filterState.status]);
+    return parts.join("  ·  ");
+  }
+
+  function exportPDF(){
+    if (!window.jspdf || !window.jspdf.jsPDF){
+      showToast("PDF export isn't available right now — check your connection and try again.", null, null);
+      return;
+    }
+    try{
+    var rows = visibleProjects.length ? visibleProjects : state.projects;
+    var doc = new window.jspdf.jsPDF({ orientation:"landscape", unit:"pt", format:"a4" });
+
+    doc.setFont("helvetica","bold"); doc.setFontSize(15);
+    doc.setTextColor(46,92,138);
+    doc.text("Eurolux Doors and Windows, Installation Planner", 40, 42);
+    doc.setTextColor(40,40,40);
+    doc.setFont("helvetica","normal"); doc.setFontSize(9.5);
+    doc.text("Summary report  ·  "+fmtShort()+"  ·  Generated "+new Date().toLocaleString(), 40, 58);
+    var fLabel = filterLabel();
+    if (fLabel) doc.text("Filtered by: "+fLabel, 40, 72);
+
+    var body = rows.map(function(p){
+      return [
+        p.name || "Untitled", p.client || "—", p.start || "—", p.finish || "—",
+        (Number(p.pct)||0)+"%", p.team || "—", AED_FMT.format(Number(p.value)||0),
+        (p.scope||"").slice(0,60), (p.comments||"").slice(0,60)
+      ];
+    });
+    doc.autoTable({
+      startY: fLabel ? 84 : 72,
+      head: [["Project","Client","Start","Finish","%","Team","Value","Scope","Comments"]],
+      body: body,
+      styles:{ fontSize:8, cellPadding:4, overflow:"linebreak" },
+      headStyles:{ fillColor:[46,92,138], textColor:255 },
+      columnStyles:{ 4:{halign:"right"}, 6:{halign:"right"} }
+    });
+
+    var totalValue = rows.reduce(function(s,p){ return s + (Number(p.value)||0); }, 0);
+    var finalY = (doc.lastAutoTable && doc.lastAutoTable.finalY) ? doc.lastAutoTable.finalY : 90;
+    doc.setFont("helvetica","bold"); doc.setFontSize(10);
+    doc.text("Total value: "+AED_FMT.format(totalValue)+"   ·   "+rows.length+" project"+(rows.length===1?"":"s"), 40, finalY+22);
+
+    doc.save("Eurolux-Installation-Schedule-"+TODAY_ISO+".pdf");
+    } catch(err){
+      showToast("Couldn't generate the PDF. Try again, or check your connection.", null, null);
+    }
+  }
+
+  document.getElementById("export-pdf-btn").addEventListener("click", exportPDF);
+
+  // ---- init ----
+  async function init(){
+    boardEl = document.getElementById("board");
+    statRowEl = document.getElementById("stat-row");
+    legendEl = document.getElementById("legend");
+    dateRangeLabelEl = document.getElementById("date-range-label");
+
+    loadUIPrefs();
+    applyColumnVars();
+
+    setSaveStatus("Connecting…");
+    await initBackend();
+    render();
+  }
+
+  init();
+})();
+</script>
+
+<script>
+  if ("serviceWorker" in navigator){
+    window.addEventListener("load", function(){
+      navigator.serviceWorker.register("./sw.js").catch(function(){ /* offline caching is a bonus, not required */ });
+    });
+  }
+</script>
+</body>
+</html>
