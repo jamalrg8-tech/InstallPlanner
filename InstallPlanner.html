@@ -121,6 +121,13 @@
   .btn:disabled{ opacity:.5; cursor:not-allowed; }
   #save-status{ font-size:12px; color:var(--text-faint); font-family:"IBM Plex Mono",monospace; min-width:88px; }
 
+  .search-box{ position:relative; display:flex; align-items:center; }
+  .search-field{ width:230px; max-width:100%; padding:8px 30px 8px 12px; border-radius:8px; border:1px solid var(--border-strong); background:var(--surface); color:var(--text); font-family:inherit; font-size:13px; box-shadow:var(--shadow); }
+  .search-field:focus{ outline:none; border-color:var(--accent); }
+  .search-field::-webkit-search-cancel-button{ display:none; }
+  .search-clear{ position:absolute; right:6px; background:none; border:none; color:var(--text-faint); font-size:16px; line-height:1; cursor:pointer; padding:4px 6px; border-radius:4px; }
+  .search-clear:hover{ background:var(--surface-2); color:var(--text); }
+
   /* ---- Legend ---- */
   .legend{ display:flex; flex-wrap:wrap; gap:8px 16px; padding:10px 14px; background:var(--surface); border:1px solid var(--border); border-radius:10px; box-shadow:var(--shadow); }
   .legend-item{ display:flex; align-items:center; gap:6px; font-size:12px; color:var(--text-muted); background:none; border:1px solid transparent; border-radius:6px; padding:3px 6px; font-family:inherit; cursor:pointer; }
@@ -295,6 +302,10 @@
       <div class="range" id="date-range-label"></div>
     </div>
     <div class="toolbar-actions">
+      <div class="search-box">
+        <input type="search" class="search-field" id="search-input" placeholder="Search project name…" aria-label="Search projects by name">
+        <button type="button" class="search-clear" id="search-clear-btn" hidden aria-label="Clear search">×</button>
+      </div>
       <span id="save-status"></span>
       <div class="view-tabs" id="view-tabs" role="tablist" aria-label="View">
         <button class="tab-btn active" id="tab-schedule" type="button" role="tab" aria-selected="true">Schedule</button>
@@ -655,7 +666,7 @@
   // ---- rendering ----
   var boardEl, statRowEl, legendEl, dateRangeLabelEl;
   var visibleProjects = [];
-  var filterState = { status:null, team:null }; // status: notStarted|inProgress|complete|unassigned
+  var filterState = { status:null, team:null, search:"" }; // status: notStarted|inProgress|complete|unassigned
 
   function statusBucket(p){
     var pct = Number(p.pct)||0;
@@ -668,6 +679,7 @@
       if (filterState.status === "unassigned"){ if (p.team) return false; }
       else if (statusBucket(p) !== filterState.status) return false;
     }
+    if (filterState.search && (p.name||"").toLowerCase().indexOf(filterState.search) === -1) return false;
     return true;
   }
 
@@ -679,8 +691,14 @@
     filterState.team = (filterState.team === team) ? null : team;
     render();
   }
+  function setSearchFilter(text){
+    filterState.search = String(text||"").trim().toLowerCase();
+    render();
+  }
   function clearFilters(){
-    filterState.status = null; filterState.team = null;
+    filterState.status = null; filterState.team = null; filterState.search = "";
+    var searchInput = document.getElementById("search-input");
+    if (searchInput) searchInput.value = "";
     render();
   }
 
@@ -720,12 +738,15 @@
       statPill("complete", complete, "complete")+
       (unassigned ? statPill("unassigned", unassigned, "unassigned") : "")+
       (totalValue? '<span class="stat-pill">'+AED_FMT.format(totalValue)+' total value</span>' : "");
-    if (filterState.status || filterState.team){
+    if (filterState.status || filterState.team || filterState.search){
       var parts = [];
       if (filterState.team) parts.push(filterState.team);
       if (filterState.status) parts.push({notStarted:"Not started",inProgress:"In progress",complete:"Complete",unassigned:"Unassigned"}[filterState.status]);
-      chips += '<button type="button" class="filter-clear" id="clear-filter-btn">Showing: '+parts.join(" + ")+' — clear ×</button>';
+      if (filterState.search) parts.push('name contains "'+filterState.search+'"');
+      chips += '<button type="button" class="filter-clear" id="clear-filter-btn">Showing: '+escText(parts.join(" + "))+' — clear ×</button>';
     }
+    var searchClearBtn = document.getElementById("search-clear-btn");
+    if (searchClearBtn) searchClearBtn.hidden = !filterState.search;
     statRowEl.innerHTML = chips;
   }
 
@@ -784,7 +805,7 @@
 
     html += '<div class="cell c-name" style="grid-column:2; grid-row:'+row+';">'+
       '<div class="row-name-wrap">' + (p.isExample ? '<span class="example-badge" data-owner="'+p.id+'">Example</span>' : '') +
-      '<input class="field" data-field="name" data-id="'+p.id+'" value="'+escAttr(p.name)+'" title="'+escAttr(p.name)+'" placeholder="Project name" aria-label="Project name"></div></div>';
+      '<textarea class="field name-field" data-field="name" data-id="'+p.id+'" title="'+escAttr(p.name)+'" placeholder="Project name" aria-label="Project name">'+escText(p.name)+'</textarea></div></div>';
 
     html += '<div class="cell c-client" style="grid-column:3; grid-row:'+row+';">'+
       '<input class="field" list="client-list" data-field="client" data-id="'+p.id+'" value="'+escAttr(p.client)+'" title="'+escAttr(p.client)+'" placeholder="Client" aria-label="Client"></div>';
@@ -1322,6 +1343,17 @@
     showToast("Column widths reset to defaults.", null, null);
   });
 
+  // ---- search by project name ----
+  document.getElementById("search-input").addEventListener("input", function(e){
+    setSearchFilter(e.target.value);
+  });
+  document.getElementById("search-clear-btn").addEventListener("click", function(){
+    var searchInput = document.getElementById("search-input");
+    searchInput.value = "";
+    searchInput.focus();
+    setSearchFilter("");
+  });
+
   // ---- column resize + details-panel divider drag (pointer events cover mouse & touch) ----
   (function setupResizeHandles(){
     document.addEventListener("pointerdown", function(e){
@@ -1405,7 +1437,7 @@
     state.projects.push(p);
     render();
     scheduleSave();
-    var input = boardEl.querySelector('input[data-field="name"][data-id="'+p.id+'"]');
+    var input = boardEl.querySelector('[data-field="name"][data-id="'+p.id+'"]');
     if (input){ input.focus(); document.getElementById("board-scroll").scrollTop = document.getElementById("board-scroll").scrollHeight; }
   });
 
