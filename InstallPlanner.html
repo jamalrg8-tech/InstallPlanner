@@ -236,7 +236,7 @@
   .date-btn.active, .date-btn:focus-visible{ background:var(--surface); box-shadow:inset 0 0 0 1px var(--accent); outline:none; }
   .date-btn.placeholder{ color:var(--text-faint); }
 
-  .date-popup{ position:fixed; z-index:150; width:236px; background:var(--surface); border:1px solid var(--border-strong); border-radius:10px; box-shadow:var(--shadow); padding:10px; font-size:12.5px; }
+  .date-popup{ position:fixed; z-index:155; width:236px; background:var(--surface); border:1px solid var(--border-strong); border-radius:10px; box-shadow:var(--shadow); padding:10px; font-size:12.5px; }
   .date-popup[hidden]{ display:none; }
   .date-popup-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; }
   .date-popup-nav{ background:none; border:none; color:var(--text-muted); font-size:15px; line-height:1; cursor:pointer; padding:4px 8px; border-radius:6px; }
@@ -252,6 +252,21 @@
   .date-popup-foot{ display:flex; justify-content:space-between; margin-top:8px; padding-top:8px; border-top:1px solid var(--border); }
   .date-popup-link{ background:none; border:none; color:var(--accent); font-family:inherit; font-size:11.5px; font-weight:600; cursor:pointer; padding:2px 4px; }
   .date-popup-link:hover{ text-decoration:underline; }
+
+  /* ---- Date filter popup: search for projects by start/finish month ---- */
+  .datefilter-popup{ position:fixed; z-index:150; width:310px; background:var(--surface); border:1px solid var(--border-strong); border-radius:10px; box-shadow:var(--shadow); padding:14px; font-size:12.5px; }
+  .datefilter-popup[hidden]{ display:none; }
+  .datefilter-section{ margin-bottom:12px; }
+  .datefilter-section label{ display:block; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.03em; color:var(--text-muted); margin-bottom:5px; }
+  .datefilter-range{ display:flex; align-items:center; gap:6px; }
+  .filter-date-btn{ flex:1; min-width:0; border:1px solid var(--border-strong); background:var(--surface); color:var(--text); font-family:"IBM Plex Mono",monospace; font-size:12px; padding:7px 8px; border-radius:7px; text-align:left; cursor:pointer; }
+  .filter-date-btn:hover{ background:var(--surface-2); }
+  .filter-date-btn.active, .filter-date-btn:focus-visible{ outline:none; box-shadow:inset 0 0 0 1px var(--accent); }
+  .filter-date-btn.placeholder{ color:var(--text-faint); }
+  .datefilter-sep{ color:var(--text-faint); font-size:12px; flex:none; }
+  .datefilter-actions{ display:flex; justify-content:space-between; align-items:center; margin-top:4px; }
+  .datefilter-link{ background:none; border:none; color:var(--accent); font-family:inherit; font-size:11.5px; font-weight:600; cursor:pointer; padding:2px 4px; }
+  .datefilter-link:hover{ text-decoration:underline; }
 
   select.field[data-team="Mark"]{ color:var(--team-mark); }
   select.field[data-team="Alex"]{ color:var(--team-alex); }
@@ -389,6 +404,7 @@
         <input type="search" class="search-field" id="search-input" placeholder="Search project name…" aria-label="Search projects by name">
         <button type="button" class="search-clear" id="search-clear-btn" hidden aria-label="Clear search">×</button>
       </div>
+      <button class="btn" id="date-filter-btn" type="button" title="Find projects starting or finishing in a given month">Date filter</button>
       <div class="sync-status" id="sync-status" title="Whether your changes are shared with everyone or saved on just this device">
         <span class="sync-dot"></span><span id="sync-label"></span>
       </div>
@@ -451,6 +467,29 @@
 <div class="toast" id="toast"></div>
 
 <div class="date-popup" id="date-popup" hidden></div>
+
+<div class="datefilter-popup" id="datefilter-popup" hidden>
+  <div class="datefilter-section">
+    <label>Starting between</label>
+    <div class="datefilter-range">
+      <button type="button" class="filter-date-btn placeholder" data-filter-date="startFrom" aria-label="Start date from">Any date</button>
+      <span class="datefilter-sep">–</span>
+      <button type="button" class="filter-date-btn placeholder" data-filter-date="startTo" aria-label="Start date to">Any date</button>
+    </div>
+  </div>
+  <div class="datefilter-section">
+    <label>Finishing between</label>
+    <div class="datefilter-range">
+      <button type="button" class="filter-date-btn placeholder" data-filter-date="finishFrom" aria-label="Finish date from">Any date</button>
+      <span class="datefilter-sep">–</span>
+      <button type="button" class="filter-date-btn placeholder" data-filter-date="finishTo" aria-label="Finish date to">Any date</button>
+    </div>
+  </div>
+  <div class="datefilter-actions">
+    <button type="button" class="datefilter-link" id="datefilter-reset">Reset</button>
+    <button type="button" class="btn primary" id="datefilter-apply">Show results</button>
+  </div>
+</div>
 
 <div class="report-modal-backdrop" id="report-modal-backdrop" hidden>
   <div class="report-modal-card" role="dialog" aria-modal="true" aria-labelledby="report-modal-title">
@@ -1193,21 +1232,48 @@
     return '<span'+attr+'><span class="dot" style="background:'+color+';"></span>'+escText(label)+' ('+count+')</span>';
   }
 
-  // ---- read-only report modal: opened from dashboard clicks, or "View all projects" ----
-  function reportRowHTML(p){
+  // ---- read-only report modal: opened from dashboard clicks, "View all projects",
+  // or the date filter. The column set is configurable per-report — dashboard/"view
+  // all" reports show all nine fields, while the date filter shows a smaller,
+  // more focused set (see REPORT_COLUMNS_DATE_FILTER below). ----
+  var REPORT_COLUMNS_FULL = [
+    {key:"name", label:"Project Name"},
+    {key:"client", label:"Client"},
+    {key:"scope", label:"Project Scope"},
+    {key:"start", label:"Start Date"},
+    {key:"finish", label:"Finish Date"},
+    {key:"pct", label:"% Complete"},
+    {key:"team", label:"Assigned Team"},
+    {key:"value", label:"Project Value"},
+    {key:"comments", label:"Comments"}
+  ];
+  var REPORT_COLUMNS_DATE_FILTER = [
+    {key:"name", label:"Project Name"},
+    {key:"team", label:"Assigned Team"},
+    {key:"start", label:"Start Date"},
+    {key:"finish", label:"Finish Date"},
+    {key:"value", label:"Project Value"},
+    {key:"comments", label:"Comments"}
+  ];
+  function reportCellHTML(p, key){
+    if (key==="name") return escText(p.name||"Untitled");
+    if (key==="client") return escText(p.client||"—");
+    if (key==="scope") return escText(p.scope||"—");
+    if (key==="start") return fmtDateDisplay(p.start)||"—";
+    if (key==="finish") return fmtDateDisplay(p.finish)||"—";
+    if (key==="pct") return (Number(p.pct)||0)+"%";
+    if (key==="team") return escText(p.team||"—");
+    if (key==="value") return AED_FMT.format(Number(p.value)||0);
+    if (key==="comments") return escText(p.comments||"—");
+    return "";
+  }
+  function reportRowHTML(p, columns){
     return '<tr class="clickable-row" data-report-project="'+p.id+'">'+
-      '<td>'+escText(p.name||"Untitled")+'</td>'+
-      '<td>'+escText(p.client||"—")+'</td>'+
-      '<td>'+escText(p.scope||"—")+'</td>'+
-      '<td>'+(fmtDateDisplay(p.start)||"—")+'</td>'+
-      '<td>'+(fmtDateDisplay(p.finish)||"—")+'</td>'+
-      '<td>'+(Number(p.pct)||0)+'%</td>'+
-      '<td>'+escText(p.team||"—")+'</td>'+
-      '<td>'+AED_FMT.format(Number(p.value)||0)+'</td>'+
-      '<td>'+escText(p.comments||"—")+'</td>'+
+      columns.map(function(c){ return '<td>'+reportCellHTML(p, c.key)+'</td>'; }).join("")+
     '</tr>';
   }
-  function openReport(title, sub, projects){
+  function openReport(title, sub, projects, columns){
+    columns = columns || REPORT_COLUMNS_FULL;
     document.getElementById("report-modal-title").textContent = title;
     document.getElementById("report-modal-sub").textContent = sub || "";
     var bodyEl = document.getElementById("report-modal-body");
@@ -1215,9 +1281,8 @@
       bodyEl.innerHTML = '<div class="report-empty">No projects match.</div>';
     } else {
       bodyEl.innerHTML = '<table class="report-table"><thead><tr>'+
-        '<th>Project Name</th><th>Client</th><th>Project Scope</th><th>Start Date</th><th>Finish Date</th>'+
-        '<th>% Complete</th><th>Assigned Team</th><th>Project Value</th><th>Comments</th>'+
-        '</tr></thead><tbody>'+projects.map(reportRowHTML).join("")+'</tbody></table>';
+        columns.map(function(c){ return '<th>'+c.label+'</th>'; }).join("")+
+        '</tr></thead><tbody>'+projects.map(function(p){ return reportRowHTML(p, columns); }).join("")+'</tbody></table>';
     }
     document.getElementById("report-modal-backdrop").hidden = false;
   }
@@ -1607,30 +1672,48 @@
   // under the user. This dropdown is drawn entirely by us, so both the
   // format and the open/closed state are fully under our control.
   var datePopupEl = document.getElementById("date-popup");
-  var datePopupState = null; // { id, field, y, m, anchor } while open, else null
+  var datePopupState = null; // { currentIso, y, m, anchor, onPick } while open, else null
+
+  // Generic opener: any button can become a date-picker anchor by passing its
+  // current ISO value (or "" for none) and a callback that receives the ISO
+  // value the user picks (or "" if they hit Clear). Used both for editing a
+  // project's Start/Finish date and for the date filter's four range fields.
+  function openDatePopupGeneric(anchorBtn, currentIso, onPick){
+    if (datePopupState && datePopupState.anchor === anchorBtn){
+      closeDatePopup();
+      return;
+    }
+    closeDatePopup();
+    var base;
+    if (currentIso){
+      base = { y:+currentIso.slice(0,4), m:+currentIso.slice(5,7) };
+    } else {
+      var t = new Date();
+      base = { y:t.getFullYear(), m:t.getMonth()+1 };
+    }
+    datePopupState = { currentIso: currentIso||"", y:base.y, m:base.m, anchor:anchorBtn, onPick:onPick };
+    anchorBtn.classList.add("active");
+    renderDatePopup();
+    datePopupEl.hidden = false;
+    positionDatePopup(anchorBtn);
+  }
 
   function openDatePopup(btn){
     var id = btn.dataset.id, field = btn.dataset.dateBtn;
     var p = findProject(id);
     if (!p) return;
-    if (datePopupState && datePopupState.id===id && datePopupState.field===field){
-      closeDatePopup();
-      return;
-    }
-    closeDatePopup();
-    var current = p[field];
-    var base;
-    if (current){
-      base = { y:+current.slice(0,4), m:+current.slice(5,7) };
-    } else {
-      var t = new Date();
-      base = { y:t.getFullYear(), m:t.getMonth()+1 };
-    }
-    datePopupState = { id:id, field:field, y:base.y, m:base.m, anchor:btn };
-    btn.classList.add("active");
-    renderDatePopup();
-    datePopupEl.hidden = false;
-    positionDatePopup(btn);
+    openDatePopupGeneric(btn, p[field], function(isoVal){
+      p[field] = isoVal;
+      if (p.isExample){
+        p.isExample = false;
+        var badge = boardEl.querySelector('.example-badge[data-owner="'+p.id+'"]');
+        if (badge) badge.remove();
+        var banner = document.getElementById("example-banner");
+        if (!state.bannerDismissed) banner.hidden = true;
+      }
+      render();
+      scheduleSave();
+    });
   }
 
   function closeDatePopup(){
@@ -1653,11 +1736,83 @@
     datePopupEl.style.top = top + "px";
   }
 
+  // ---- date filter: search for projects by any custom start/finish date range ----
+  var dateFilterPopupEl = document.getElementById("datefilter-popup");
+  // Each key holds "" (no bound) or an ISO date. From/To bounds are inclusive,
+  // and either side of a range can be left open — e.g. only startFrom set
+  // means "starting on or after that date", with no upper limit.
+  var dateFilterValues = { startFrom:"", startTo:"", finishFrom:"", finishTo:"" };
+
+  function refreshDateFilterButtons(){
+    ["startFrom","startTo","finishFrom","finishTo"].forEach(function(key){
+      var btn = dateFilterPopupEl.querySelector('[data-filter-date="'+key+'"]');
+      if (!btn) return;
+      var val = dateFilterValues[key];
+      btn.textContent = fmtDateDisplay(val) || "Any date";
+      btn.classList.toggle("placeholder", !val);
+    });
+  }
+
+  function openDateFilterPopup(btn){
+    refreshDateFilterButtons();
+    dateFilterPopupEl.hidden = false;
+    positionDateFilterPopup(btn);
+  }
+  function closeDateFilterPopup(){
+    dateFilterPopupEl.hidden = true;
+  }
+  function positionDateFilterPopup(btn){
+    var rect = btn.getBoundingClientRect();
+    var popW = dateFilterPopupEl.offsetWidth || 300;
+    var popH = dateFilterPopupEl.offsetHeight || 220;
+    var left = Math.min(rect.left, window.innerWidth - popW - 8);
+    left = Math.max(8, left);
+    var top = rect.bottom + 4;
+    if (top + popH > window.innerHeight - 8) top = rect.top - popH - 4;
+    if (top < 8) top = 8;
+    dateFilterPopupEl.style.left = left + "px";
+    dateFilterPopupEl.style.top = top + "px";
+  }
+  function runDateFilter(){
+    var v = dateFilterValues;
+    if (!v.startFrom && !v.startTo && !v.finishFrom && !v.finishTo){
+      showToast("Pick at least one start or finish date to filter by.", null, null);
+      return;
+    }
+    if ((v.startFrom && v.startTo && v.startFrom > v.startTo) ||
+        (v.finishFrom && v.finishTo && v.finishFrom > v.finishTo)){
+      showToast("The \"from\" date needs to be on or before the \"to\" date.", null, null);
+      return;
+    }
+    var matches = state.projects.filter(function(p){
+      if (v.startFrom || v.startTo){
+        if (!p.start) return false;
+        if (v.startFrom && p.start < v.startFrom) return false;
+        if (v.startTo && p.start > v.startTo) return false;
+      }
+      if (v.finishFrom || v.finishTo){
+        if (!p.finish) return false;
+        if (v.finishFrom && p.finish < v.finishFrom) return false;
+        if (v.finishTo && p.finish > v.finishTo) return false;
+      }
+      return true;
+    });
+    var subParts = [];
+    if (v.startFrom || v.startTo){
+      subParts.push("Starting "+(v.startFrom?fmtDateDisplay(v.startFrom):"any date")+" – "+(v.startTo?fmtDateDisplay(v.startTo):"any date"));
+    }
+    if (v.finishFrom || v.finishTo){
+      subParts.push("Finishing "+(v.finishFrom?fmtDateDisplay(v.finishFrom):"any date")+" – "+(v.finishTo?fmtDateDisplay(v.finishTo):"any date"));
+    }
+    subParts.push(matches.length+" project"+(matches.length===1?"":"s"));
+    closeDateFilterPopup();
+    openReport("Date filter results", subParts.join("  ·  "), matches, REPORT_COLUMNS_DATE_FILTER);
+  }
+
   function renderDatePopup(){
     var st = datePopupState;
     if (!st) return;
-    var p = findProject(st.id);
-    var current = p ? p[st.field] : "";
+    var current = st.currentIso;
     var today = new Date();
     var todayIso = iso(today.getFullYear(), today.getMonth()+1, today.getDate());
     var firstDow = weekdayOf(st.y, st.m, 1); // 0=Sun
@@ -1706,19 +1861,9 @@
   function applyDatePick(isoVal){
     var st = datePopupState;
     if (!st) return;
-    var p = findProject(st.id);
-    if (!p){ closeDatePopup(); return; }
-    p[st.field] = isoVal;
-    if (p.isExample){
-      p.isExample = false;
-      var badge = boardEl.querySelector('.example-badge[data-owner="'+p.id+'"]');
-      if (badge) badge.remove();
-      var banner = document.getElementById("example-banner");
-      if (!state.bannerDismissed) banner.hidden = true;
-    }
+    var onPick = st.onPick;
     closeDatePopup();
-    render();
-    scheduleSave();
+    if (onPick) onPick(isoVal);
   }
 
   datePopupEl.addEventListener("click", function(e){
@@ -1765,6 +1910,37 @@
       // captured at dispatch time and still lists #date-popup correctly.
       var path = typeof e.composedPath === "function" ? e.composedPath() : [];
       if (path.indexOf(datePopupEl) === -1) closeDatePopup();
+    }
+
+    var dateFilterBtn = e.target.closest("#date-filter-btn");
+    if (dateFilterBtn){
+      if (dateFilterPopupEl.hidden) openDateFilterPopup(dateFilterBtn);
+      else closeDateFilterPopup();
+      return;
+    }
+    var filterDateBtn = e.target.closest("[data-filter-date]");
+    if (filterDateBtn){
+      var fKey = filterDateBtn.dataset.filterDate;
+      openDatePopupGeneric(filterDateBtn, dateFilterValues[fKey], function(isoVal){
+        dateFilterValues[fKey] = isoVal;
+        refreshDateFilterButtons();
+      });
+      return;
+    }
+    if (e.target.id === "datefilter-apply"){ runDateFilter(); return; }
+    if (e.target.id === "datefilter-reset"){
+      dateFilterValues = { startFrom:"", startTo:"", finishFrom:"", finishTo:"" };
+      refreshDateFilterButtons();
+      return;
+    }
+    if (!dateFilterPopupEl.hidden){
+      // A click inside the shared calendar (#date-popup) counts as "inside"
+      // here too — the calendar is a separate top-level element from the
+      // filter panel, so composedPath alone would see it as outside and
+      // close the filter panel out from under someone still picking a date.
+      var pathDF = typeof e.composedPath === "function" ? e.composedPath() : [];
+      var insideFilterUI = pathDF.indexOf(dateFilterPopupEl) !== -1 || pathDF.indexOf(datePopupEl) !== -1;
+      if (!insideFilterUI) closeDateFilterPopup();
     }
 
     var del = e.target.closest('[data-action="delete"]');
@@ -1855,6 +2031,7 @@
   document.addEventListener("keydown", function(e){
     if (e.key === "Escape"){
       if (datePopupState){ closeDatePopup(); return; }
+      if (!dateFilterPopupEl.hidden){ closeDateFilterPopup(); return; }
       var confirmBackdrop = document.getElementById("confirm-modal-backdrop");
       if (confirmBackdrop && !confirmBackdrop.hidden){ closeConfirmModal(); return; }
       var backdrop = document.getElementById("report-modal-backdrop");
@@ -1870,8 +2047,8 @@
   // Close the popup on scroll/resize rather than trying to keep it glued to
   // its anchor — the anchor can scroll under a sticky column or off-screen
   // entirely, and closing is simpler and more predictable than chasing it.
-  window.addEventListener("scroll", function(){ if (datePopupState) closeDatePopup(); }, true);
-  window.addEventListener("resize", function(){ if (datePopupState) closeDatePopup(); });
+  window.addEventListener("scroll", function(){ if (datePopupState) closeDatePopup(); if (!dateFilterPopupEl.hidden) closeDateFilterPopup(); }, true);
+  window.addEventListener("resize", function(){ if (datePopupState) closeDatePopup(); if (!dateFilterPopupEl.hidden) closeDateFilterPopup(); });
 
   document.getElementById("zoom-btn").addEventListener("click", function(){
     var compact = boardEl.classList.toggle("compact");
