@@ -35,6 +35,7 @@ No build step. Static files, deployable as-is to GitHub + Vercel.
 - **Project value now shows thousand separators** — the Project Value field displays amounts like `23,000.12` and `300,000.00` instead of a plain run of digits. Click into the field to edit and it shows the plain number for easy typing; click away and it re-formats with commas.
 - **Projects are now numbered** — the leftmost column shows each project's position (1, 2, 3, …) in the current view, so the last number tells you at a glance how many projects are listed (or how many match, if a filter or search is active). Hover that number (or tab to it) to reveal the delete "✕" button in its place, exactly where it always was.
 - **Delete now asks for confirmation first** — clicking "✕" no longer deletes immediately; it opens a small dialog naming the project and asking you to confirm, with Cancel and Delete buttons (Esc also cancels). The "Undo" toast after a confirmed delete is still there as a second safety net.
+- **"Clear all" button, for starting over with a fresh import** — in the toolbar, next to "Import Excel / CSV". It asks you to confirm (it names how many projects will be removed and reminds you this affects everyone sharing the planner, since the schedule is synced live), then empties the whole list in one go, with an Undo toast right after in case it was a mistake. See "Clearing everything and importing fresh" below for the full steps.
 - **A visible sync status + "Sync now" button** — the toolbar now shows a clear badge ("Synced with team" with a green dot, or "Saved on this device only" with a grey dot) instead of small, easy-to-miss text, so it's obvious whether your data is shared. Syncing to the shared database is still fully automatic on every edit — the new **Sync now** button is there for reassurance and for retrying the connection (e.g. right after finishing the Firebase setup below) without reloading the page.
 - **Fixed: connecting Firestore for the first time no longer discards existing data** — if you'd already been using the app in local-only mode and then set up the shared backend, turning it on used to wipe your device's projects and reseed the three examples into the shared database. It now seeds the shared database from whatever's already on your device instead.
 - Footer credit: "Developed with love by Uncle Ed, Version 4.20".
@@ -108,3 +109,12 @@ If `InstallPlanner.html` changes, bump `CACHE_NAME` in `sw.js` (e.g. `install-pl
 ## Importing your Excel sheet
 
 Use the **Import Excel / CSV** button inside the app itself — it recognizes common header names (Project Name, Client, Scope, Start Date, Finish Date, % Complete, Assigned Team, Project Value, Comments) in any order. If your sheet uses different headers, the closest columns in `HEADER_MAP` (near the top of the script) can be extended to match.
+
+Note that **Import adds to whatever's already there** — it doesn't replace it. Importing the same sheet twice, or two different sheets, gives you both sets of rows together. To bring in a fresh list without adding it to what's already on screen, clear first (see below).
+
+### Clearing everything and importing fresh
+
+1. Click **Clear all** in the toolbar (next to Import Excel / CSV).
+2. Confirm in the dialog that appears — it tells you how many projects will be removed. This affects everyone sharing the planner, on every device, since the schedule syncs live, so it's worth a moment's pause if others are using it too.
+3. The schedule now shows "No projects yet." Click **Import Excel / CSV** and choose your file — since the list is empty, it becomes a clean, exact copy of the sheet rather than being added to anything.
+4. If you clicked Clear all by mistake, the **Undo** link in the toast that appears right after brings everything back — but only until you leave or refresh the page, so use it right away.

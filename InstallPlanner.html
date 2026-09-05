@@ -400,6 +400,7 @@
       </div>
       <button class="btn" id="zoom-btn" type="button">Compact view</button>
       <button class="btn" id="reset-cols-btn" type="button" title="Reset column widths and the details panel back to defaults">Reset columns</button>
+      <button class="btn" id="clear-all-btn" type="button" title="Delete every project — for everyone sharing this planner — so you can start fresh">Clear all</button>
       <button class="btn" id="import-btn" type="button">Import Excel / CSV</button>
       <input class="import-input" id="import-input" type="file" accept=".xlsx,.xls,.csv">
       <button class="btn" id="export-pdf-btn" type="button">Export PDF</button>
@@ -586,7 +587,6 @@
   var state = { projects: null, bannerDismissed:false, customTeams: [] };
   var saveTimer = null;
   var lastSnapshotForUndo = null;
-  var pendingDeleteId = null;
   var conflictDaysByProject = {};
   var conflictList = [];
   var previousConflictKeys = [];
@@ -1228,30 +1228,63 @@
     openReport(p.name || "Untitled project", "Project report", [p]);
   }
 
-  // ---- delete confirmation ----
+  // ---- confirmation modal: shared by "delete one project" and "clear all" ----
+  var pendingConfirm = null; // { type:"delete", id } | { type:"clear-all" } | null
+
+  function openConfirmModal(title, body, actionLabel){
+    document.getElementById("confirm-modal-title").textContent = title;
+    document.getElementById("confirm-modal-body").textContent = body;
+    document.getElementById("confirm-modal-delete").textContent = actionLabel;
+    document.getElementById("confirm-modal-backdrop").hidden = false;
+  }
+  function closeConfirmModal(){
+    pendingConfirm = null;
+    document.getElementById("confirm-modal-backdrop").hidden = true;
+  }
   function openDeleteConfirm(id){
     var p = findProject(id);
     if (!p) return;
-    pendingDeleteId = id;
-    document.getElementById("confirm-modal-body").textContent =
-      'Delete "'+(p.name || "Untitled project")+'"? This can be undone right after with the Undo button, but not once you leave or refresh the page.';
-    document.getElementById("confirm-modal-backdrop").hidden = false;
+    pendingConfirm = { type:"delete", id:id };
+    openConfirmModal(
+      "Delete this project?",
+      'Delete "'+(p.name || "Untitled project")+'"? This can be undone right after with the Undo button, but not once you leave or refresh the page.',
+      "Delete"
+    );
   }
-  function closeDeleteConfirm(){
-    pendingDeleteId = null;
-    document.getElementById("confirm-modal-backdrop").hidden = true;
+  function openClearAllConfirm(){
+    if (!state.projects.length){
+      showToast("There are no projects to clear.", null, null);
+      return;
+    }
+    pendingConfirm = { type:"clear-all" };
+    var n = state.projects.length;
+    openConfirmModal(
+      "Clear all projects?",
+      "This deletes all "+n+" project"+(n===1?"":"s")+" — for everyone sharing this planner, on every device, since the schedule is synced live. Do this right before importing a fresh list. It can be undone right after with the Undo button, but not once you leave or refresh the page.",
+      "Clear all"
+    );
   }
-  function performPendingDelete(){
-    var id = pendingDeleteId;
-    if (!id) return;
-    var idx = state.projects.findIndex(function(p){return p.id===id;});
-    closeDeleteConfirm();
-    if (idx>-1){
+  function performPendingConfirm(){
+    var action = pendingConfirm;
+    closeConfirmModal();
+    if (!action) return;
+    if (action.type === "delete"){
+      var idx = state.projects.findIndex(function(p){return p.id===action.id;});
+      if (idx>-1){
+        lastSnapshotForUndo = cloneState();
+        state.projects.splice(idx,1);
+        render();
+        scheduleSave();
+        showToast("Project deleted.", "Undo", undoLast);
+      }
+    } else if (action.type === "clear-all"){
       lastSnapshotForUndo = cloneState();
-      state.projects.splice(idx,1);
+      var n = state.projects.length;
+      state.projects = [];
+      state.bannerDismissed = true;
       render();
       scheduleSave();
-      showToast("Project deleted.", "Undo", undoLast);
+      showToast("Cleared all "+n+" project"+(n===1?"":"s")+".", "Undo", undoLast);
     }
   }
 
@@ -1740,11 +1773,11 @@
       return;
     }
     if (e.target.id === "confirm-modal-cancel" || e.target.id === "confirm-modal-backdrop"){
-      closeDeleteConfirm();
+      closeConfirmModal();
       return;
     }
     if (e.target.id === "confirm-modal-delete"){
-      performPendingDelete();
+      performPendingConfirm();
       return;
     }
     if (e.target.id === "banner-close"){
@@ -1823,7 +1856,7 @@
     if (e.key === "Escape"){
       if (datePopupState){ closeDatePopup(); return; }
       var confirmBackdrop = document.getElementById("confirm-modal-backdrop");
-      if (confirmBackdrop && !confirmBackdrop.hidden){ closeDeleteConfirm(); return; }
+      if (confirmBackdrop && !confirmBackdrop.hidden){ closeConfirmModal(); return; }
       var backdrop = document.getElementById("report-modal-backdrop");
       if (backdrop && !backdrop.hidden) closeReport();
       return;
@@ -1851,6 +1884,8 @@
   });
 
   document.getElementById("sync-now-btn").addEventListener("click", syncNowClicked);
+
+  document.getElementById("clear-all-btn").addEventListener("click", openClearAllConfirm);
 
   // ---- search by project name ----
   document.getElementById("search-input").addEventListener("input", function(e){
