@@ -186,20 +186,6 @@
   .c-divider::after{ content:""; position:absolute; top:50%; left:50%; width:2px; height:28px; background:var(--border-strong); border-radius:1px; transform:translate(-50%,-50%); }
   .c-divider:hover::after, .c-divider.dragging::after{ background:var(--accent); }
 
-  /* Chromium (and other browsers) can silently close a native <input type="date">
-     calendar popup the instant its containing element sits inside a
-     position:sticky ancestor — any month-navigation click inside the popup is
-     enough to trigger it, even though it never touches our own JS. While a
-     date field is focused we snap the horizontal scroll back to 0 and switch
-     the meta columns to a plain static position (visually identical at
-     scrollLeft 0), which keeps the popup's anchor stable so it stays open. */
-  #board.date-editing-lock .c-idx, #board.date-editing-lock .c-name,
-  #board.date-editing-lock .c-client, #board.date-editing-lock .c-scope,
-  #board.date-editing-lock .c-start, #board.date-editing-lock .c-finish,
-  #board.date-editing-lock .c-comments, #board.date-editing-lock .c-pct,
-  #board.date-editing-lock .c-team, #board.date-editing-lock .c-value,
-  #board.date-editing-lock .c-divider{ position:static; }
-
   /* .meta-head already establishes position:sticky below, which also serves as the
      containing block for these absolutely-positioned resize handles. */
   .col-handle{ position:absolute; top:0; right:-3px; width:6px; height:100%; cursor:col-resize; z-index:10; background:transparent; }
@@ -237,19 +223,35 @@
   textarea.field{ resize:none; font-family:inherit; line-height:1.3; height:44px; }
   input[type="number"].field{ font-family:"IBM Plex Mono",monospace; }
   select.field{ font-size:12px; font-weight:600; padding:5px 4px; cursor:pointer; }
-  input[type="date"].field{ font-family:"IBM Plex Mono",monospace; font-size:11.5px; }
 
-  /* Start/Finish date cells: the real <input type="date"> is kept (for its
-     calendar picker and keyboard support) but made fully invisible, sized to
-     cover the whole cell so every click/tap still reaches it. A formatted
-     dd/mm/yyyy label sits on top, driven entirely by our own JS, so the date
-     reads the same way in every browser regardless of locale. */
-  .date-field-wrap{ position:relative; width:100%; height:100%; display:flex; align-items:center; min-width:0; }
-  .date-field-wrap input[type="date"]{ position:absolute; inset:0; opacity:0; width:100%; height:100%; cursor:pointer; margin:0; }
-  .date-field-wrap:hover{ background:var(--surface-2); border-radius:6px; }
-  .date-field-wrap:focus-within{ background:var(--surface); box-shadow:inset 0 0 0 1px var(--accent); border-radius:6px; }
-  .date-display{ pointer-events:none; font-family:"IBM Plex Mono",monospace; font-size:11.5px; color:var(--text); padding:6px 4px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-  .date-display.placeholder{ color:var(--text-faint); }
+  /* Start/Finish date cells: a plain button showing our own d/mm/yyyy format
+     (native <input type="date"> displays in whatever format/behavior the
+     browser and OS decide — Chrome, Safari and Firefox all differ — and its
+     native popup turned out to be unreliable inside this layout's sticky
+     columns). Clicking the button opens our own calendar dropdown, built
+     entirely in-page (see .date-popup), so both the format and the picker
+     behavior are identical and reliable in every browser. */
+  .date-btn{ width:100%; height:100%; border:1px solid transparent; background:transparent; color:var(--text); font-family:"IBM Plex Mono",monospace; font-size:11.5px; padding:6px 4px; border-radius:6px; text-align:left; cursor:pointer; }
+  .date-btn:hover{ background:var(--surface-2); }
+  .date-btn.active, .date-btn:focus-visible{ background:var(--surface); box-shadow:inset 0 0 0 1px var(--accent); outline:none; }
+  .date-btn.placeholder{ color:var(--text-faint); }
+
+  .date-popup{ position:fixed; z-index:150; width:236px; background:var(--surface); border:1px solid var(--border-strong); border-radius:10px; box-shadow:var(--shadow); padding:10px; font-size:12.5px; }
+  .date-popup[hidden]{ display:none; }
+  .date-popup-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; }
+  .date-popup-nav{ background:none; border:none; color:var(--text-muted); font-size:15px; line-height:1; cursor:pointer; padding:4px 8px; border-radius:6px; }
+  .date-popup-nav:hover{ background:var(--surface-2); color:var(--text); }
+  .date-popup-label{ font-weight:700; font-size:12.5px; }
+  .date-popup-dow{ display:grid; grid-template-columns:repeat(7,1fr); text-align:center; font-size:10px; color:var(--text-faint); text-transform:uppercase; letter-spacing:.03em; margin-bottom:2px; }
+  .date-popup-days{ display:grid; grid-template-columns:repeat(7,1fr); gap:2px; }
+  .date-popup-day{ background:none; border:none; color:var(--text); font-family:inherit; font-size:12px; padding:6px 0; border-radius:6px; cursor:pointer; }
+  .date-popup-day:hover{ background:var(--surface-2); }
+  .date-popup-day.muted{ color:var(--text-faint); }
+  .date-popup-day.today{ box-shadow:inset 0 0 0 1px var(--accent); }
+  .date-popup-day.selected{ background:var(--accent); color:#fff; font-weight:700; }
+  .date-popup-foot{ display:flex; justify-content:space-between; margin-top:8px; padding-top:8px; border-top:1px solid var(--border); }
+  .date-popup-link{ background:none; border:none; color:var(--accent); font-family:inherit; font-size:11.5px; font-weight:600; cursor:pointer; padding:2px 4px; }
+  .date-popup-link:hover{ text-decoration:underline; }
 
   select.field[data-team="Mark"]{ color:var(--team-mark); }
   select.field[data-team="Alex"]{ color:var(--team-alex); }
@@ -429,6 +431,8 @@
 </div>
 
 <div class="toast" id="toast"></div>
+
+<div class="date-popup" id="date-popup" hidden></div>
 
 <div class="report-modal-backdrop" id="report-modal-backdrop" hidden>
   <div class="report-modal-card" role="dialog" aria-modal="true" aria-labelledby="report-modal-title">
@@ -836,6 +840,15 @@
 
   var AED_FMT = new Intl.NumberFormat("en-AE", { style:"currency", currency:"AED", maximumFractionDigits:0 });
 
+  // Thousand-separated display for the editable Project value field, e.g.
+  // 23000.12 -> "23,000.12" and 300000 -> "300,000.00". The field itself is
+  // a plain text input (native <input type="number"> can't display comma
+  // grouping in any browser), so we show this formatted text while the
+  // field isn't focused and swap to a plain, comma-free number the moment
+  // the user clicks in to edit it (see the focus/blur handlers below).
+  var VALUE_FMT = new Intl.NumberFormat("en-US", { minimumFractionDigits:2, maximumFractionDigits:2 });
+  function fmtValueDisplay(n){ return VALUE_FMT.format(Number(n)||0); }
+
   function statPill(label, count, key, extraClass){
     var active = filterState.status === key;
     return '<span class="stat-pill clickable'+(active?" active":"")+(extraClass||"")+'" data-status-filter="'+key+'">'+count+' '+label+'</span>';
@@ -933,16 +946,10 @@
       '<textarea class="field" data-field="scope" data-id="'+p.id+'" placeholder="Scope of work" aria-label="Project scope">'+escText(p.scope)+'</textarea></div>';
 
     html += '<div class="cell c-start" style="grid-column:5; grid-row:'+row+';">'+
-      '<div class="date-field-wrap">'+
-        '<input class="field" type="date" data-field="start" data-id="'+p.id+'" value="'+p.start+'" aria-label="Start date">'+
-        '<span class="date-display'+(p.start?"":" placeholder")+'" aria-hidden="true">'+(fmtDMY(p.start)||"dd/mm/yyyy")+'</span>'+
-      '</div></div>';
+      '<button type="button" class="date-btn'+(p.start?"":" placeholder")+'" data-date-btn="start" data-id="'+p.id+'" aria-label="Start date">'+(fmtDateDisplay(p.start)||"d/mm/yyyy")+'</button></div>';
 
     html += '<div class="cell c-finish" style="grid-column:6; grid-row:'+row+';">'+
-      '<div class="date-field-wrap">'+
-        '<input class="field" type="date" data-field="finish" data-id="'+p.id+'" value="'+p.finish+'" aria-label="Finish date">'+
-        '<span class="date-display'+(p.finish?"":" placeholder")+'" aria-hidden="true">'+(fmtDMY(p.finish)||"dd/mm/yyyy")+'</span>'+
-      '</div></div>';
+      '<button type="button" class="date-btn'+(p.finish?"":" placeholder")+'" data-date-btn="finish" data-id="'+p.id+'" aria-label="Finish date">'+(fmtDateDisplay(p.finish)||"d/mm/yyyy")+'</button></div>';
 
     html += '<div class="cell c-comments" style="grid-column:7; grid-row:'+row+';">'+
       '<textarea class="field" data-field="comments" data-id="'+p.id+'" placeholder="Comments" aria-label="Comments">'+escText(p.comments)+'</textarea></div>';
@@ -961,7 +968,7 @@
 
     html += '<div class="cell c-value" style="grid-column:10; grid-row:'+row+';">'+
       '<span class="value-unit">AED</span>'+
-      '<input class="field value-input" type="number" min="0" step="500" data-field="value" data-id="'+p.id+'" value="'+(Number(p.value)||0)+'" aria-label="Project value"></div>';
+      '<input class="field value-input" type="text" inputmode="decimal" data-field="value" data-id="'+p.id+'" value="'+fmtValueDisplay(p.value)+'" aria-label="Project value"></div>';
 
     html += dayCellsHTML(p, row);
     return html;
@@ -1024,15 +1031,14 @@
     return monthName(m)+" "+d;
   }
 
-  // Native <input type="date"> displays its value in whatever format the
-  // browser/OS locale dictates (Safari and Chrome don't even agree with each
-  // other) — there is no attribute or CSS to control that. To guarantee
-  // dd/mm/yyyy everywhere, the real date input is kept for its calendar
-  // picker and keyboard support but made invisible, and this formats the
-  // value shown in an overlay label on top of it instead (see .date-field-wrap).
-  function fmtDMY(isoStr){
+  // Display format for Start/Finish: day (no leading zero) / month (2 digits)
+  // / year — e.g. 5 July 2026 shows as "5/07/2026". Rendered by our own
+  // calendar dropdown (see openDatePopup below), never a native date input,
+  // so it's identical in every browser.
+  function fmtDateDisplay(isoStr){
     if (!isoStr) return "";
-    return isoStr.slice(8,10)+"/"+isoStr.slice(5,7)+"/"+isoStr.slice(0,4);
+    var d = +isoStr.slice(8,10);
+    return d+"/"+isoStr.slice(5,7)+"/"+isoStr.slice(0,4);
   }
 
   function renderConflictBanner(){
@@ -1163,8 +1169,8 @@
       '<td>'+escText(p.name||"Untitled")+'</td>'+
       '<td>'+escText(p.client||"—")+'</td>'+
       '<td>'+escText(p.scope||"—")+'</td>'+
-      '<td>'+(p.start||"—")+'</td>'+
-      '<td>'+(p.finish||"—")+'</td>'+
+      '<td>'+(fmtDateDisplay(p.start)||"—")+'</td>'+
+      '<td>'+(fmtDateDisplay(p.finish)||"—")+'</td>'+
       '<td>'+(Number(p.pct)||0)+'%</td>'+
       '<td>'+escText(p.team||"—")+'</td>'+
       '<td>'+AED_FMT.format(Number(p.value)||0)+'</td>'+
@@ -1256,7 +1262,7 @@
         var p = x.p;
         var tag = x.days < 0 ? '<span class="tag-overdue">Overdue '+Math.abs(x.days)+'d</span>'
           : (x.days===0 ? '<span class="tag-overdue">Due today</span>' : '<span class="tag-soon">Due in '+x.days+'d</span>');
-        return '<tr class="clickable-row" data-report-project="'+p.id+'"><td>'+escText(p.name||"Untitled")+'</td><td>'+escText(p.client||"—")+'</td><td>'+escText(p.team||"—")+'</td><td>'+p.finish+'<br>'+tag+'</td></tr>';
+        return '<tr class="clickable-row" data-report-project="'+p.id+'"><td>'+escText(p.name||"Untitled")+'</td><td>'+escText(p.client||"—")+'</td><td>'+escText(p.team||"—")+'</td><td>'+fmtDateDisplay(p.finish)+'<br>'+tag+'</td></tr>';
       }).join("") +
       '</tbody></table>'
     ) : '<div class="dash-empty">Nothing overdue or due in the next 14 days.</div>';
@@ -1399,7 +1405,7 @@
           var label = (hasConflict ? "⚠ " : "") + (p.name || "Untitled");
 
           bodyHTML += '<div class="alloc-bar-wrap" style="grid-column:'+startCol+' / span '+span+'; grid-row:'+rr2+';">'+
-            '<div class="alloc-bar'+(capL?" cap-l":"")+(capR?" cap-r":"")+(hasConflict?" has-conflict":"")+'" style="background:'+teamColorValue(p.team)+';" title="'+escAttr(p.name)+"  ·  "+p.start+' to '+p.finish+"  ·  "+pct+'% complete'+(hasConflict?"  ·  DOUBLE-BOOKED":"")+'">'+
+            '<div class="alloc-bar'+(capL?" cap-l":"")+(capR?" cap-r":"")+(hasConflict?" has-conflict":"")+'" style="background:'+teamColorValue(p.team)+';" title="'+escAttr(p.name)+"  ·  "+fmtDateDisplay(p.start)+' to '+fmtDateDisplay(p.finish)+"  ·  "+pct+'% complete'+(hasConflict?"  ·  DOUBLE-BOOKED":"")+'">'+
               '<span class="alloc-bar-progress" style="width:'+pct+'%;"></span>'+
               '<span class="alloc-bar-label">'+escText(label)+'</span>'+
             '</div></div>';
@@ -1422,17 +1428,8 @@
   // Re-rendering rebuilds the whole board's innerHTML, which destroys and
   // recreates every input element — including whichever one is currently
   // focused. For most fields we just refocus it afterward and typing carries
-  // on unaffected. But a native date input's calendar popup (and its
-  // up/down month-scrolling arrows) is tied to that specific DOM node: once
-  // it's replaced, the browser closes the popup, and simply refocusing the
-  // new node does NOT reopen it. So for start/finish we debounce the
-  // re-render instead of doing it on every single click inside the picker,
-  // and flush it immediately on blur (when the user is done with that field)
-  // so the grid still updates promptly once they move on.
-  var gridUpdateTimer = null;
+  // on unaffected.
   function doGridUpdate(t){
-    clearTimeout(gridUpdateTimer);
-    gridUpdateTimer = null;
     // Re-render fully: the grid range, conflict detection, and highlighting
     // all need to be recomputed whenever dates/team/progress change. We
     // restore focus + cursor position afterward so re-rendering doesn't
@@ -1451,10 +1448,6 @@
       }
     });
   }
-  function scheduleGridUpdate(t){
-    clearTimeout(gridUpdateTimer);
-    gridUpdateTimer = setTimeout(function(){ doGridUpdate(t); }, 450);
-  }
 
   document.addEventListener("input", function(e){
     var t = e.target;
@@ -1462,7 +1455,7 @@
     var p = findProject(t.dataset.id);
     if (!p) return;
     var field = t.dataset.field;
-    var needsGridUpdate = (field==="start"||field==="finish"||field==="pct"||field==="team");
+    var needsGridUpdate = (field==="pct"||field==="team");
     if (field==="team" && t.value === "__add_new__"){
       var newTeam = promptAddTeam();
       if (newTeam){
@@ -1474,20 +1467,10 @@
     } else if (field==="pct"){
       p.pct = Math.max(0, Math.min(100, Math.round(Number(t.value)||0)));
     } else if (field==="value"){
-      p.value = Math.max(0, Number(t.value)||0);
+      p.value = Math.max(0, Number(String(t.value).replace(/,/g,""))||0);
     } else {
       p[field] = t.value;
       if (field==="name" || field==="client") t.title = t.value;
-    }
-    if (field==="start" || field==="finish"){
-      // Keep the dd/mm/yyyy overlay label in sync immediately — don't wait
-      // for the debounced grid re-render (see scheduleGridUpdate below).
-      var dispEl = t.parentElement && t.parentElement.querySelector(".date-display");
-      if (dispEl){
-        var formatted = fmtDMY(t.value);
-        dispEl.textContent = formatted || "dd/mm/yyyy";
-        dispEl.classList.toggle("placeholder", !formatted);
-      }
     }
     if (p.isExample){
       p.isExample = false;
@@ -1498,53 +1481,202 @@
     }
     if (needsGridUpdate){
       if (field==="team") t.setAttribute("data-team", t.value);
-      if (field==="start" || field==="finish"){
-        scheduleGridUpdate(t); // debounced — keeps the date picker open while the user clicks around in it
-      } else {
-        doGridUpdate(t);
-      }
+      doGridUpdate(t);
     } else {
       if (field==="value") renderStats();
     }
     scheduleSave();
   });
 
-  // Flush any pending grid update the moment a date field is left, so the
-  // calendar/day-grid doesn't lag behind once the user's done picking.
-  document.addEventListener("blur", function(e){
-    var t = e.target;
-    if (!t.matches || !t.matches('[data-field="start"], [data-field="finish"]')) return;
-    if (gridUpdateTimer) doGridUpdate(t);
-  }, true);
-
-  // ---- keep the native date-picker popup open (see the CSS comment above
-  // #board.date-editing-lock): the moment a date field gets focus — before
-  // its calendar popup has actually opened — snap the board back to
-  // scrollLeft 0 and drop the meta columns out of position:sticky, so
-  // nothing about the row's horizontal position can shift while the popup
-  // is up. Restore both the instant focus leaves every date field. ----
-  var dateEditScrollLeft = null;
+  // Project value: show comma-grouped "23,000.12" while not focused, but
+  // swap to a plain, comma-free number the instant the field is focused so
+  // typing/editing digits isn't fighting against live comma insertion —
+  // then reformat with commas again on blur.
   document.addEventListener("focusin", function(e){
     var t = e.target;
-    if (!t.matches || !t.matches('[data-field="start"], [data-field="finish"]')) return;
-    var scrollEl = document.getElementById("board-scroll");
-    if (dateEditScrollLeft === null) dateEditScrollLeft = scrollEl.scrollLeft;
-    scrollEl.scrollLeft = 0;
-    boardEl.classList.add("date-editing-lock");
+    if (!t.matches || !t.matches('[data-field="value"]')) return;
+    var p = findProject(t.dataset.id);
+    if (!p) return;
+    t.value = String(Number(p.value)||0);
+    t.select();
   });
   document.addEventListener("focusout", function(e){
     var t = e.target;
-    if (!t.matches || !t.matches('[data-field="start"], [data-field="finish"]')) return;
-    requestAnimationFrame(function(){
-      var active = document.activeElement;
-      if (active && active.matches && active.matches('[data-field="start"], [data-field="finish"]')) return; // moved to another date field — stay locked
-      boardEl.classList.remove("date-editing-lock");
-      var scrollEl = document.getElementById("board-scroll");
-      if (dateEditScrollLeft !== null){ scrollEl.scrollLeft = dateEditScrollLeft; dateEditScrollLeft = null; }
-    });
+    if (!t.matches || !t.matches('[data-field="value"]')) return;
+    var p = findProject(t.dataset.id);
+    if (!p) return;
+    t.value = fmtValueDisplay(p.value);
+  });
+
+  // ---- custom Start/Finish date picker ----
+  // Native <input type="date"> was dropped entirely: its displayed format is
+  // controlled by the browser/OS (so Safari and Chrome could disagree no
+  // matter what we did), and its calendar popup is tied to that specific DOM
+  // node, so any re-render while it's open — or even just sitting inside a
+  // sticky-positioned column — could make the browser close it out from
+  // under the user. This dropdown is drawn entirely by us, so both the
+  // format and the open/closed state are fully under our control.
+  var datePopupEl = document.getElementById("date-popup");
+  var datePopupState = null; // { id, field, y, m, anchor } while open, else null
+
+  function openDatePopup(btn){
+    var id = btn.dataset.id, field = btn.dataset.dateBtn;
+    var p = findProject(id);
+    if (!p) return;
+    if (datePopupState && datePopupState.id===id && datePopupState.field===field){
+      closeDatePopup();
+      return;
+    }
+    closeDatePopup();
+    var current = p[field];
+    var base;
+    if (current){
+      base = { y:+current.slice(0,4), m:+current.slice(5,7) };
+    } else {
+      var t = new Date();
+      base = { y:t.getFullYear(), m:t.getMonth()+1 };
+    }
+    datePopupState = { id:id, field:field, y:base.y, m:base.m, anchor:btn };
+    btn.classList.add("active");
+    renderDatePopup();
+    datePopupEl.hidden = false;
+    positionDatePopup(btn);
+  }
+
+  function closeDatePopup(){
+    if (!datePopupState) return;
+    if (datePopupState.anchor) datePopupState.anchor.classList.remove("active");
+    datePopupState = null;
+    datePopupEl.hidden = true;
+  }
+
+  function positionDatePopup(btn){
+    var rect = btn.getBoundingClientRect();
+    var popW = datePopupEl.offsetWidth || 236;
+    var popH = datePopupEl.offsetHeight || 260;
+    var left = Math.min(rect.left, window.innerWidth - popW - 8);
+    left = Math.max(8, left);
+    var top = rect.bottom + 4;
+    if (top + popH > window.innerHeight - 8) top = rect.top - popH - 4;
+    if (top < 8) top = 8;
+    datePopupEl.style.left = left + "px";
+    datePopupEl.style.top = top + "px";
+  }
+
+  function renderDatePopup(){
+    var st = datePopupState;
+    if (!st) return;
+    var p = findProject(st.id);
+    var current = p ? p[st.field] : "";
+    var today = new Date();
+    var todayIso = iso(today.getFullYear(), today.getMonth()+1, today.getDate());
+    var firstDow = weekdayOf(st.y, st.m, 1); // 0=Sun
+    var totalDays = daysInMonth(st.y, st.m);
+    var prevM = addMonths(st.y, st.m, -1);
+    var daysInPrev = daysInMonth(prevM.y, prevM.m);
+
+    var html = '<div class="date-popup-head">'+
+      '<button type="button" class="date-popup-nav" data-nav="-1" aria-label="Previous month">&#8249;</button>'+
+      '<span class="date-popup-label">'+monthName(st.m)+' '+st.y+'</span>'+
+      '<button type="button" class="date-popup-nav" data-nav="1" aria-label="Next month">&#8250;</button>'+
+      '</div>'+
+      '<div class="date-popup-dow">'+["S","M","T","W","T","F","S"].map(function(d){ return "<span>"+d+"</span>"; }).join("")+'</div>'+
+      '<div class="date-popup-days">';
+
+    // leading days from previous month
+    for (var i=0; i<firstDow; i++){
+      var dnum = daysInPrev - firstDow + 1 + i;
+      html += '<button type="button" class="date-popup-day muted" data-day="'+iso(prevM.y, prevM.m, dnum)+'">'+dnum+'</button>';
+    }
+    // days in current month
+    for (var d=1; d<=totalDays; d++){
+      var dIso = iso(st.y, st.m, d);
+      var cls = "date-popup-day";
+      if (dIso === todayIso) cls += " today";
+      if (current && dIso === current) cls += " selected";
+      html += '<button type="button" class="'+cls+'" data-day="'+dIso+'">'+d+'</button>';
+    }
+    // trailing days from next month, fill to a multiple of 7
+    var used = firstDow + totalDays;
+    var trailing = (7 - (used % 7)) % 7;
+    var nextM = addMonths(st.y, st.m, 1);
+    for (var j=1; j<=trailing; j++){
+      html += '<button type="button" class="date-popup-day muted" data-day="'+iso(nextM.y, nextM.m, j)+'">'+j+'</button>';
+    }
+
+    html += '</div>'+
+      '<div class="date-popup-foot">'+
+      '<button type="button" class="date-popup-link" data-clear="1">Clear</button>'+
+      '<button type="button" class="date-popup-link" data-today="1">Today</button>'+
+      '</div>';
+
+    datePopupEl.innerHTML = html;
+  }
+
+  function applyDatePick(isoVal){
+    var st = datePopupState;
+    if (!st) return;
+    var p = findProject(st.id);
+    if (!p){ closeDatePopup(); return; }
+    p[st.field] = isoVal;
+    if (p.isExample){
+      p.isExample = false;
+      var badge = boardEl.querySelector('.example-badge[data-owner="'+p.id+'"]');
+      if (badge) badge.remove();
+      var banner = document.getElementById("example-banner");
+      if (!state.bannerDismissed) banner.hidden = true;
+    }
+    closeDatePopup();
+    render();
+    scheduleSave();
+  }
+
+  datePopupEl.addEventListener("click", function(e){
+    var navBtn = e.target.closest("[data-nav]");
+    if (navBtn){
+      var st = datePopupState;
+      if (!st) return;
+      var next = addMonths(st.y, st.m, +navBtn.dataset.nav);
+      st.y = next.y; st.m = next.m;
+      renderDatePopup();
+      if (st.anchor) positionDatePopup(st.anchor);
+      return;
+    }
+    var dayBtn = e.target.closest("[data-day]");
+    if (dayBtn){
+      applyDatePick(dayBtn.dataset.day);
+      return;
+    }
+    if (e.target.closest("[data-clear]")){
+      applyDatePick("");
+      return;
+    }
+    if (e.target.closest("[data-today]")){
+      var st2 = datePopupState;
+      if (!st2) return;
+      var t2 = new Date();
+      st2.y = t2.getFullYear(); st2.m = t2.getMonth()+1;
+      renderDatePopup();
+      if (st2.anchor) positionDatePopup(st2.anchor);
+      return;
+    }
   });
 
   document.addEventListener("click", function(e){
+    var dateBtn = e.target.closest("[data-date-btn]");
+    if (dateBtn){ openDatePopup(dateBtn); return; }
+    if (datePopupState){
+      // Use composedPath() rather than e.target.closest(): a click inside the
+      // popup (month nav, a day) re-renders the popup's innerHTML in the
+      // bubble-phase listener on #date-popup, which runs before this
+      // document-level listener and detaches the original e.target from the
+      // DOM. closest() on a detached node always fails, which used to close
+      // the popup on every single click inside it. composedPath() is
+      // captured at dispatch time and still lists #date-popup correctly.
+      var path = typeof e.composedPath === "function" ? e.composedPath() : [];
+      if (path.indexOf(datePopupEl) === -1) closeDatePopup();
+    }
+
     var del = e.target.closest('[data-action="delete"]');
     if (del){
       var id = del.dataset.id;
@@ -1632,6 +1764,7 @@
 
   document.addEventListener("keydown", function(e){
     if (e.key === "Escape"){
+      if (datePopupState){ closeDatePopup(); return; }
       var backdrop = document.getElementById("report-modal-backdrop");
       if (backdrop && !backdrop.hidden) closeReport();
       return;
@@ -1641,6 +1774,12 @@
       if (reportTrigger){ e.preventDefault(); reportTrigger.click(); }
     }
   });
+
+  // Close the popup on scroll/resize rather than trying to keep it glued to
+  // its anchor — the anchor can scroll under a sticky column or off-screen
+  // entirely, and closing is simpler and more predictable than chasing it.
+  window.addEventListener("scroll", function(){ if (datePopupState) closeDatePopup(); }, true);
+  window.addEventListener("resize", function(){ if (datePopupState) closeDatePopup(); });
 
   document.getElementById("zoom-btn").addEventListener("click", function(){
     var compact = boardEl.classList.toggle("compact");
@@ -1920,7 +2059,7 @@
 
     var body = rows.map(function(p){
       return [
-        p.name || "Untitled", p.client || "—", p.start || "—", p.finish || "—",
+        p.name || "Untitled", p.client || "—", fmtDateDisplay(p.start) || "—", fmtDateDisplay(p.finish) || "—",
         (Number(p.pct)||0)+"%", p.team || "—", AED_FMT.format(Number(p.value)||0),
         (p.scope||"").slice(0,60), (p.comments||"").slice(0,60)
       ];
