@@ -167,11 +167,11 @@
   .c-scope{ position:sticky; left:calc(var(--w-idx) + var(--w-name) + var(--w-client)); z-index:3; width:var(--w-scope); }
   .c-start{ position:sticky; left:calc(var(--w-idx) + var(--w-name) + var(--w-client) + var(--w-scope)); z-index:3; width:var(--w-start); }
   .c-finish{ position:sticky; left:calc(var(--w-idx) + var(--w-name) + var(--w-client) + var(--w-scope) + var(--w-start)); z-index:3; width:var(--w-finish); }
-  .c-pct{ position:sticky; left:calc(var(--w-idx) + var(--w-name) + var(--w-client) + var(--w-scope) + var(--w-start) + var(--w-finish)); z-index:3; width:var(--w-pct); }
-  .c-team{ position:sticky; left:calc(var(--w-idx) + var(--w-name) + var(--w-client) + var(--w-scope) + var(--w-start) + var(--w-finish) + var(--w-pct)); z-index:3; width:var(--w-team); }
-  .c-value{ position:sticky; left:calc(var(--w-idx) + var(--w-name) + var(--w-client) + var(--w-scope) + var(--w-start) + var(--w-finish) + var(--w-pct) + var(--w-team)); z-index:3; width:var(--w-value); }
-  .c-comments{ position:sticky; left:calc(var(--w-idx) + var(--w-name) + var(--w-client) + var(--w-scope) + var(--w-start) + var(--w-finish) + var(--w-pct) + var(--w-team) + var(--w-value)); z-index:3; width:var(--w-comments); }
-  .c-divider{ position:sticky; left:calc(var(--w-idx) + var(--w-name) + var(--w-client) + var(--w-scope) + var(--w-start) + var(--w-finish) + var(--w-pct) + var(--w-team) + var(--w-value) + var(--w-comments)); z-index:5; width:var(--w-divider); min-width:var(--w-divider); padding:0; border-right:1px solid var(--border-strong); box-shadow:2px 0 4px rgba(0,0,0,.08); background:var(--surface-2); cursor:col-resize; display:block; }
+  .c-comments{ position:sticky; left:calc(var(--w-idx) + var(--w-name) + var(--w-client) + var(--w-scope) + var(--w-start) + var(--w-finish)); z-index:3; width:var(--w-comments); }
+  .c-pct{ position:sticky; left:calc(var(--w-idx) + var(--w-name) + var(--w-client) + var(--w-scope) + var(--w-start) + var(--w-finish) + var(--w-comments)); z-index:3; width:var(--w-pct); }
+  .c-team{ position:sticky; left:calc(var(--w-idx) + var(--w-name) + var(--w-client) + var(--w-scope) + var(--w-start) + var(--w-finish) + var(--w-comments) + var(--w-pct)); z-index:3; width:var(--w-team); }
+  .c-value{ position:sticky; left:calc(var(--w-idx) + var(--w-name) + var(--w-client) + var(--w-scope) + var(--w-start) + var(--w-finish) + var(--w-comments) + var(--w-pct) + var(--w-team)); z-index:3; width:var(--w-value); }
+  .c-divider{ position:sticky; left:calc(var(--w-idx) + var(--w-name) + var(--w-client) + var(--w-scope) + var(--w-start) + var(--w-finish) + var(--w-comments) + var(--w-pct) + var(--w-team) + var(--w-value)); z-index:5; width:var(--w-divider); min-width:var(--w-divider); padding:0; border-right:1px solid var(--border-strong); box-shadow:2px 0 4px rgba(0,0,0,.08); background:var(--surface-2); cursor:col-resize; display:block; }
   .c-divider:hover, .c-divider.dragging{ background:var(--accent-soft); }
   .c-divider::after{ content:""; position:absolute; top:50%; left:50%; width:2px; height:28px; background:var(--border-strong); border-radius:1px; transform:translate(-50%,-50%); }
   .c-divider:hover::after, .c-divider.dragging::after{ background:var(--accent); }
@@ -285,6 +285,34 @@
   .legend-add-team{ font-weight:700; color:var(--accent); border-color:var(--border); }
   .legend-add-team:hover{ border-color:var(--accent); background:var(--accent-soft); }
 
+  /* ---- Dashboard click-to-report ---- */
+  .dash-toolbar{ display:flex; justify-content:flex-end; }
+  .kpi-card.clickable{ cursor:pointer; }
+  .kpi-card.clickable:hover{ border-color:var(--accent); box-shadow:0 0 0 1px var(--accent) inset, var(--shadow); }
+  .bar-row.clickable{ cursor:pointer; border-radius:6px; }
+  .bar-row.clickable:hover .bar-label{ color:var(--text); text-decoration:underline; }
+  .status-legend span.clickable{ cursor:pointer; }
+  .status-legend span.clickable:hover{ text-decoration:underline; }
+  .upcoming-table tr.clickable-row{ cursor:pointer; }
+  .upcoming-table tr.clickable-row:hover td{ background:var(--surface-2); }
+
+  /* ---- Report modal (read-only project report) ---- */
+  .report-modal-backdrop{ position:fixed; inset:0; background:rgba(20,24,29,.5); display:flex; align-items:center; justify-content:center; z-index:200; padding:24px; }
+  .report-modal-backdrop[hidden]{ display:none; }
+  .report-modal-card{ background:var(--surface); border-radius:12px; box-shadow:var(--shadow); width:min(1150px, 100%); max-height:min(84vh,900px); display:flex; flex-direction:column; overflow:hidden; }
+  .report-modal-header{ display:flex; align-items:center; justify-content:space-between; gap:12px; padding:16px 20px; border-bottom:1px solid var(--border); flex:none; }
+  .report-modal-header h2{ font-size:16px; font-weight:800; }
+  .report-modal-close{ background:none; border:none; color:var(--text-muted); font-size:20px; cursor:pointer; line-height:1; padding:4px 8px; border-radius:6px; }
+  .report-modal-close:hover{ background:var(--surface-2); color:var(--text); }
+  .report-modal-sub{ padding:10px 20px 0; font-size:12px; color:var(--text-muted); flex:none; }
+  .report-modal-body{ padding:12px 20px 20px; overflow:auto; }
+  .report-table{ width:100%; border-collapse:collapse; font-size:12px; }
+  .report-table th{ text-align:left; font-size:10.5px; text-transform:uppercase; letter-spacing:.03em; color:var(--text-muted); border-bottom:1px solid var(--border-strong); padding:0 10px 8px 0; position:sticky; top:0; background:var(--surface); }
+  .report-table td{ padding:8px 10px 8px 0; border-bottom:1px solid var(--border); vertical-align:top; }
+  .report-table tr:last-child td{ border-bottom:none; }
+  .report-table tr:hover td{ background:var(--surface-2); }
+  .report-empty{ color:var(--text-muted); font-size:13px; padding:24px; text-align:center; }
+
   @media (max-width: 1100px){
     .dash-grid{ grid-template-columns:repeat(2,1fr); }
     .dash-panels{ grid-template-columns:1fr; }
@@ -362,6 +390,17 @@
 </div>
 
 <div class="toast" id="toast"></div>
+
+<div class="report-modal-backdrop" id="report-modal-backdrop" hidden>
+  <div class="report-modal-card" role="dialog" aria-modal="true" aria-labelledby="report-modal-title">
+    <div class="report-modal-header">
+      <h2 id="report-modal-title"></h2>
+      <button type="button" class="report-modal-close" id="report-modal-close" aria-label="Close report">×</button>
+    </div>
+    <div class="report-modal-sub" id="report-modal-sub"></div>
+    <div class="report-modal-body" id="report-modal-body"></div>
+  </div>
+</div>
 
 <!-- Shared backend (Firestore). Safe to load even when not configured — the app
      falls back to this-device-only storage automatically. See README "Shared backend setup". -->
@@ -756,7 +795,7 @@
   var DAY_COL_START = TOTAL_META_COLS + 1;
 
   function gridTemplateColumns(){
-    return "var(--w-idx) var(--w-name) var(--w-client) var(--w-scope) var(--w-start) var(--w-finish) var(--w-pct) var(--w-team) var(--w-value) var(--w-comments) var(--w-divider) repeat("+DAYS.length+", var(--day))";
+    return "var(--w-idx) var(--w-name) var(--w-client) var(--w-scope) var(--w-start) var(--w-finish) var(--w-comments) var(--w-pct) var(--w-team) var(--w-value) var(--w-divider) repeat("+DAYS.length+", var(--day))";
   }
 
   function metaHeaderHTML(){
@@ -767,10 +806,10 @@
       {cls:"c-scope", txt:"Project scope", key:"scope"},
       {cls:"c-start", txt:"Start date", key:"start"},
       {cls:"c-finish", txt:"Finish date", key:"finish"},
+      {cls:"c-comments", txt:"Comments", key:"comments"},
       {cls:"c-pct", txt:"% complete", key:"pct"},
       {cls:"c-team", txt:"Assigned team", key:"team"},
-      {cls:"c-value", txt:"Project value", key:"value"},
-      {cls:"c-comments", txt:"Comments", key:"comments"}
+      {cls:"c-value", txt:"Project value", key:"value"}
     ];
     var html = labels.map(function(l, i){
       var handle = l.key ? '<div class="col-handle" data-col="'+l.key+'" title="Drag to resize this column"></div>' : "";
@@ -819,24 +858,24 @@
     html += '<div class="cell c-finish" style="grid-column:6; grid-row:'+row+';">'+
       '<input class="field" type="date" data-field="finish" data-id="'+p.id+'" value="'+p.finish+'" aria-label="Finish date"></div>';
 
-    html += '<div class="cell c-pct" style="grid-column:7; grid-row:'+row+';">'+
+    html += '<div class="cell c-comments" style="grid-column:7; grid-row:'+row+';">'+
+      '<textarea class="field" data-field="comments" data-id="'+p.id+'" placeholder="Comments" aria-label="Comments">'+escText(p.comments)+'</textarea></div>';
+
+    html += '<div class="cell c-pct" style="grid-column:8; grid-row:'+row+';">'+
       '<input class="field pct-text" type="number" min="0" max="100" step="5" data-field="pct" data-id="'+p.id+'" value="'+p.pct+'" aria-label="Percent complete">'+
       '<span class="pct-text" style="color:var(--text-faint)">%</span></div>';
 
     var teamColorStyle = p.team ? ' style="color:'+teamColorValue(p.team)+';"' : "";
-    html += '<div class="cell c-team" style="grid-column:8; grid-row:'+row+';">'+
+    html += '<div class="cell c-team" style="grid-column:9; grid-row:'+row+';">'+
       '<select class="field" data-field="team" data-id="'+p.id+'" data-team="'+escAttr(p.team)+'" aria-label="Assigned team"'+teamColorStyle+'>'+
       '<option value=""'+(p.team===""?" selected":"")+'>—</option>'+
       allTeamNames().map(function(t){ return '<option value="'+escAttr(t)+'"'+(p.team===t?" selected":"")+'>'+escText(t)+'</option>'; }).join("")+
       '<option value="__add_new__">+ Add new team…</option>'+
       '</select></div>';
 
-    html += '<div class="cell c-value" style="grid-column:9; grid-row:'+row+';">'+
+    html += '<div class="cell c-value" style="grid-column:10; grid-row:'+row+';">'+
       '<span class="value-unit">AED</span>'+
       '<input class="field value-input" type="number" min="0" step="500" data-field="value" data-id="'+p.id+'" value="'+(Number(p.value)||0)+'" aria-label="Project value"></div>';
-
-    html += '<div class="cell c-comments" style="grid-column:10; grid-row:'+row+';">'+
-      '<textarea class="field" data-field="comments" data-id="'+p.id+'" placeholder="Comments" aria-label="Comments">'+escText(p.comments)+'</textarea></div>';
 
     html += dayCellsHTML(p, row);
     return html;
@@ -1000,12 +1039,15 @@
     var b = Date.UTC(+isoB.slice(0,4), +isoB.slice(5,7)-1, +isoB.slice(8,10));
     return Math.round((b-a)/86400000);
   }
-  function kpiCard(label, value, sub){
-    return '<div class="kpi-card"><span class="kpi-label">'+escText(label)+'</span><span class="kpi-value">'+value+'</span><span class="kpi-sub">'+escText(sub)+'</span></div>';
+  function kpiCard(label, value, sub, reportKey){
+    var attrs = reportKey ? ' class="kpi-card clickable" data-report-kpi="'+reportKey+'" tabindex="0" role="button"' : ' class="kpi-card"';
+    return '<div'+attrs+'><span class="kpi-label">'+escText(label)+'</span><span class="kpi-value">'+value+'</span><span class="kpi-sub">'+escText(sub)+'</span></div>';
   }
-  function barRow(label, displayValue, fraction, color){
+  function barRow(label, displayValue, fraction, color, dataAttr){
     var pct = Math.max(2, Math.round(fraction*100));
-    return '<div class="bar-row"><span class="bar-label" title="'+escAttr(label)+'">'+escText(label)+'</span>'+
+    var attr = dataAttr ? ' '+dataAttr+' tabindex="0" role="button"' : '';
+    var cls = dataAttr ? "bar-row clickable" : "bar-row";
+    return '<div class="'+cls+'"'+attr+'><span class="bar-label" title="'+escAttr(label)+'">'+escText(label)+'</span>'+
       '<span class="bar-track"><span class="bar-fill" style="width:'+pct+'%; background:'+color+';"></span></span>'+
       '<span class="bar-value">'+displayValue+'</span></div>';
   }
@@ -1013,8 +1055,44 @@
     var pct = Math.round(fraction*1000)/10;
     return '<span style="display:block; width:'+pct+'%; height:100%; background:'+color+';"></span>';
   }
-  function legendDot(color, label, count){
-    return '<span><span class="dot" style="background:'+color+';"></span>'+escText(label)+' ('+count+')</span>';
+  function legendDot(color, label, count, statusKey){
+    var attr = statusKey ? ' class="clickable" data-report-status="'+statusKey+'" tabindex="0" role="button"' : '';
+    return '<span'+attr+'><span class="dot" style="background:'+color+';"></span>'+escText(label)+' ('+count+')</span>';
+  }
+
+  // ---- read-only report modal: opened from dashboard clicks, or "View all projects" ----
+  function reportRowHTML(p){
+    return '<tr class="clickable-row" data-report-project="'+p.id+'">'+
+      '<td>'+escText(p.name||"Untitled")+'</td>'+
+      '<td>'+escText(p.client||"—")+'</td>'+
+      '<td>'+escText(p.scope||"—")+'</td>'+
+      '<td>'+(p.start||"—")+'</td>'+
+      '<td>'+(p.finish||"—")+'</td>'+
+      '<td>'+(Number(p.pct)||0)+'%</td>'+
+      '<td>'+escText(p.team||"—")+'</td>'+
+      '<td>'+AED_FMT.format(Number(p.value)||0)+'</td>'+
+      '<td>'+escText(p.comments||"—")+'</td>'+
+    '</tr>';
+  }
+  function openReport(title, sub, projects){
+    document.getElementById("report-modal-title").textContent = title;
+    document.getElementById("report-modal-sub").textContent = sub || "";
+    var bodyEl = document.getElementById("report-modal-body");
+    if (!projects.length){
+      bodyEl.innerHTML = '<div class="report-empty">No projects match.</div>';
+    } else {
+      bodyEl.innerHTML = '<table class="report-table"><thead><tr>'+
+        '<th>Project Name</th><th>Client</th><th>Project Scope</th><th>Start Date</th><th>Finish Date</th>'+
+        '<th>% Complete</th><th>Assigned Team</th><th>Project Value</th><th>Comments</th>'+
+        '</tr></thead><tbody>'+projects.map(reportRowHTML).join("")+'</tbody></table>';
+    }
+    document.getElementById("report-modal-backdrop").hidden = false;
+  }
+  function closeReport(){
+    document.getElementById("report-modal-backdrop").hidden = true;
+  }
+  function openSingleProjectReport(p){
+    openReport(p.name || "Untitled project", "Project report", [p]);
   }
 
   function renderDashboard(){
@@ -1038,22 +1116,24 @@
     });
     var avgPct = Math.round(pctSum/projects.length);
 
+    var toolbarHTML = '<div class="dash-toolbar"><button type="button" class="btn" id="view-all-report-btn">View all projects (report)</button></div>';
+
     var kpiHTML = '<div class="dash-grid">'+
-        kpiCard("Total projects", projects.length, projects.length+" tracked") +
-        kpiCard("Total value", AED_FMT.format(totalValue), "across all projects") +
-        kpiCard("Avg. completion", avgPct+"%", "mean of all % complete") +
-        kpiCard("Unassigned", unassigned, unassigned ? "need a team" : "fully staffed") +
+        kpiCard("Total projects", projects.length, projects.length+" tracked", "all") +
+        kpiCard("Total value", AED_FMT.format(totalValue), "across all projects", "all") +
+        kpiCard("Avg. completion", avgPct+"%", "mean of all % complete", "all") +
+        kpiCard("Unassigned", unassigned, unassigned ? "need a team" : "fully staffed", "unassigned") +
       '</div>';
 
     var teamRows = allTeamNames().map(function(t){ return {label:t, value:byTeam[t]||0, color:teamColorValue(t)}; })
       .sort(function(a,b){ return b.value-a.value; });
     var maxTeam = Math.max.apply(null, [1].concat(teamRows.map(function(r){return r.value;})));
-    var teamHTML = teamRows.map(function(r){ return barRow(r.label, String(r.value), r.value/maxTeam, r.color); }).join("");
+    var teamHTML = teamRows.map(function(r){ return barRow(r.label, String(r.value), r.value/maxTeam, r.color, 'data-report-team="'+escAttr(r.label)+'"'); }).join("");
 
     var clientEntries = Object.keys(byClient).map(function(c){ return {label:c, value:byClient[c]}; })
       .sort(function(a,b){ return b.value-a.value; }).slice(0,8);
     var maxClient = Math.max.apply(null, [1].concat(clientEntries.map(function(r){return r.value;})));
-    var clientHTML = clientEntries.length ? clientEntries.map(function(r){ return barRow(r.label, AED_FMT.format(r.value), r.value/maxClient, "var(--accent)"); }).join("")
+    var clientHTML = clientEntries.length ? clientEntries.map(function(r){ return barRow(r.label, AED_FMT.format(r.value), r.value/maxClient, "var(--accent)", 'data-report-client="'+escAttr(r.label)+'"'); }).join("")
       : '<div class="dash-empty">No client values yet.</div>';
 
     var statusTotal = (notStarted+inProgress+complete) || 1;
@@ -1063,9 +1143,9 @@
         segment(complete/statusTotal, "var(--team-alex)") +
       '</div>'+
       '<div class="status-legend" style="flex-direction:row; flex-wrap:wrap; gap:16px; margin-top:10px;">'+
-        legendDot("var(--text-faint)", "Not started", notStarted) +
-        legendDot("var(--accent)", "In progress", inProgress) +
-        legendDot("var(--team-alex)", "Complete", complete) +
+        legendDot("var(--text-faint)", "Not started", notStarted, "notStarted") +
+        legendDot("var(--accent)", "In progress", inProgress, "inProgress") +
+        legendDot("var(--team-alex)", "Complete", complete, "complete") +
       '</div>';
 
     var soonList = projects.filter(function(p){ return !!p.finish; })
@@ -1079,12 +1159,12 @@
         var p = x.p;
         var tag = x.days < 0 ? '<span class="tag-overdue">Overdue '+Math.abs(x.days)+'d</span>'
           : (x.days===0 ? '<span class="tag-overdue">Due today</span>' : '<span class="tag-soon">Due in '+x.days+'d</span>');
-        return '<tr><td>'+escText(p.name||"Untitled")+'</td><td>'+escText(p.client||"—")+'</td><td>'+escText(p.team||"—")+'</td><td>'+p.finish+'<br>'+tag+'</td></tr>';
+        return '<tr class="clickable-row" data-report-project="'+p.id+'"><td>'+escText(p.name||"Untitled")+'</td><td>'+escText(p.client||"—")+'</td><td>'+escText(p.team||"—")+'</td><td>'+p.finish+'<br>'+tag+'</td></tr>';
       }).join("") +
       '</tbody></table>'
     ) : '<div class="dash-empty">Nothing overdue or due in the next 14 days.</div>';
 
-    dashEl.innerHTML = kpiHTML +
+    dashEl.innerHTML = toolbarHTML + kpiHTML +
       '<div class="dash-panels">'+
         '<div class="panel"><h2>Projects by team</h2>'+teamHTML+'</div>'+
         '<div class="panel"><h2>Value by client</h2>'+clientHTML+'</div>'+
@@ -1330,6 +1410,68 @@
       var added = promptAddTeam();
       if (added){ renderLegend(); scheduleSave(); showToast('Added team "'+added+'". Assign it from any project\'s team dropdown.', null, null); }
       return;
+    }
+
+    // ---- dashboard: click any of these to view the matching projects as a read-only report ----
+    if (e.target.id === "view-all-report-btn"){
+      openReport("All projects", state.projects.length+" project"+(state.projects.length===1?"":"s"), state.projects);
+      return;
+    }
+    var kpiEl = e.target.closest('[data-report-kpi]');
+    if (kpiEl){
+      var kpiKey = kpiEl.dataset.reportKpi;
+      if (kpiKey === "unassigned"){
+        var unassignedList = state.projects.filter(function(p){ return !p.team; });
+        openReport("Unassigned projects", unassignedList.length+" project"+(unassignedList.length===1?"":"s")+" without a team", unassignedList);
+      } else {
+        openReport("All projects", state.projects.length+" project"+(state.projects.length===1?"":"s"), state.projects);
+      }
+      return;
+    }
+    var teamBarEl = e.target.closest('[data-report-team]');
+    if (teamBarEl){
+      var teamName = teamBarEl.dataset.reportTeam;
+      var teamList = state.projects.filter(function(p){ return p.team === teamName; });
+      openReport(teamName+" — projects", teamList.length+" project"+(teamList.length===1?"":"s"), teamList);
+      return;
+    }
+    var clientBarEl = e.target.closest('[data-report-client]');
+    if (clientBarEl){
+      var clientName = clientBarEl.dataset.reportClient;
+      var clientList = state.projects.filter(function(p){ return ((p.client||"").trim()||"No client") === clientName; });
+      openReport(clientName+" — projects", clientList.length+" project"+(clientList.length===1?"":"s"), clientList);
+      return;
+    }
+    var statusEl = e.target.closest('[data-report-status]');
+    if (statusEl){
+      var statusKey = statusEl.dataset.reportStatus;
+      var statusList = state.projects.filter(function(p){ return statusBucket(p) === statusKey; });
+      var statusLabel = {notStarted:"Not started", inProgress:"In progress", complete:"Complete"}[statusKey] || statusKey;
+      openReport(statusLabel+" projects", statusList.length+" project"+(statusList.length===1?"":"s"), statusList);
+      return;
+    }
+    var projRowEl = e.target.closest('[data-report-project]');
+    if (projRowEl){
+      var reportProj = findProject(projRowEl.dataset.reportProject);
+      if (reportProj) openSingleProjectReport(reportProj);
+      return;
+    }
+
+    if (e.target.id === "report-modal-close" || e.target.id === "report-modal-backdrop"){
+      closeReport();
+      return;
+    }
+  });
+
+  document.addEventListener("keydown", function(e){
+    if (e.key === "Escape"){
+      var backdrop = document.getElementById("report-modal-backdrop");
+      if (backdrop && !backdrop.hidden) closeReport();
+      return;
+    }
+    if (e.key === "Enter" || e.key === " "){
+      var reportTrigger = e.target.closest('[data-report-kpi],[data-report-team],[data-report-client],[data-report-status]');
+      if (reportTrigger){ e.preventDefault(); reportTrigger.click(); }
     }
   });
 
