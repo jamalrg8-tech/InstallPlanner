@@ -1,6 +1,6 @@
 // Eurolux Doors and Windows, Installation Planner — minimal offline support.
 // Bump CACHE_NAME whenever the app shell files change, so old caches get cleared.
-const CACHE_NAME = "install-planner-v9";
+const CACHE_NAME = "install-planner-v10";
 const APP_SHELL = [
   "./InstallPlanner.html",
   "./manifest.json",
