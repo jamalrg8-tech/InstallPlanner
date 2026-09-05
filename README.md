@@ -31,6 +31,7 @@ No build step. Static files, deployable as-is to GitHub + Vercel.
 - **Comments column moved** — it now sits right after Finish Date instead of at the far right, closer to the dates it usually refers to.
 - **Click-to-report on the dashboard** — nearly everything on the Dashboard tab is now clickable and opens a read-only report listing the matching projects: a KPI card ("Total projects", "Unassigned"), a row in "Projects by team" or "Value by client", a dot in the status breakdown, or a row in "Due soon / overdue" (which opens that one project). Close the report with the × button, by clicking outside it, or with Esc.
 - **"View all projects" report** — a button at the top of the Dashboard tab opens a read-only report listing every project with all nine fields (Project Name, Client, Scope, Start Date, Finish Date, % Complete, Assigned Team, Project Value, Comments) — handy for a quick print-friendly-looking overview or for scanning everything at once without touching the editable schedule.
+- **Fixed: date picker closing on its own arrows** — clicking the up/down or month-navigation arrows inside a Start/Finish date field's calendar popup used to immediately close the calendar (because every keystroke triggered a full page refresh). The refresh is now delayed until you're done with that field (or fires right away when you click elsewhere), so the calendar stays open while you use its controls.
 - Footer credit: "Developed with love by Uncle Ed, Version 4.20".
 
 ## Shared backend setup (everyone sees the same data)

@@ -1322,6 +1322,43 @@
   // ---- event handling ----
   function findProject(id){ return state.projects.find(function(p){ return p.id===id; }); }
 
+  // Re-rendering rebuilds the whole board's innerHTML, which destroys and
+  // recreates every input element — including whichever one is currently
+  // focused. For most fields we just refocus it afterward and typing carries
+  // on unaffected. But a native date input's calendar popup (and its
+  // up/down month-scrolling arrows) is tied to that specific DOM node: once
+  // it's replaced, the browser closes the popup, and simply refocusing the
+  // new node does NOT reopen it. So for start/finish we debounce the
+  // re-render instead of doing it on every single click inside the picker,
+  // and flush it immediately on blur (when the user is done with that field)
+  // so the grid still updates promptly once they move on.
+  var gridUpdateTimer = null;
+  function doGridUpdate(t){
+    clearTimeout(gridUpdateTimer);
+    gridUpdateTimer = null;
+    // Re-render fully: the grid range, conflict detection, and highlighting
+    // all need to be recomputed whenever dates/team/progress change. We
+    // restore focus + cursor position afterward so re-rendering doesn't
+    // interrupt typing.
+    var focusId = t.dataset.id, focusField = t.dataset.field;
+    var selStart = null, selEnd = null;
+    if (typeof t.selectionStart === "number"){ selStart = t.selectionStart; selEnd = t.selectionEnd; }
+    render();
+    requestAnimationFrame(function(){
+      var again = document.querySelector('[data-field="'+focusField+'"][data-id="'+focusId+'"]');
+      if (again){
+        again.focus();
+        if (selStart !== null && again.setSelectionRange){
+          try { again.setSelectionRange(selStart, selEnd); } catch(e){}
+        }
+      }
+    });
+  }
+  function scheduleGridUpdate(t){
+    clearTimeout(gridUpdateTimer);
+    gridUpdateTimer = setTimeout(function(){ doGridUpdate(t); }, 450);
+  }
+
   document.addEventListener("input", function(e){
     var t = e.target;
     if (!t.matches("[data-field]")) return;
@@ -1354,28 +1391,24 @@
     }
     if (needsGridUpdate){
       if (field==="team") t.setAttribute("data-team", t.value);
-      // Re-render fully: the grid range, conflict detection, and highlighting
-      // all need to be recomputed whenever dates/team/progress change. We
-      // restore focus + cursor position afterward so re-rendering doesn't
-      // interrupt typing.
-      var focusId = t.dataset.id, focusField = t.dataset.field;
-      var selStart = null, selEnd = null;
-      if (typeof t.selectionStart === "number"){ selStart = t.selectionStart; selEnd = t.selectionEnd; }
-      render();
-      requestAnimationFrame(function(){
-        var again = document.querySelector('[data-field="'+focusField+'"][data-id="'+focusId+'"]');
-        if (again){
-          again.focus();
-          if (selStart !== null && again.setSelectionRange){
-            try { again.setSelectionRange(selStart, selEnd); } catch(e){}
-          }
-        }
-      });
+      if (field==="start" || field==="finish"){
+        scheduleGridUpdate(t); // debounced — keeps the date picker open while the user clicks around in it
+      } else {
+        doGridUpdate(t);
+      }
     } else {
       if (field==="value") renderStats();
     }
     scheduleSave();
   });
+
+  // Flush any pending grid update the moment a date field is left, so the
+  // calendar/day-grid doesn't lag behind once the user's done picking.
+  document.addEventListener("blur", function(e){
+    var t = e.target;
+    if (!t.matches || !t.matches('[data-field="start"], [data-field="finish"]')) return;
+    if (gridUpdateTimer) doGridUpdate(t);
+  }, true);
 
   document.addEventListener("click", function(e){
     var del = e.target.closest('[data-action="delete"]');
