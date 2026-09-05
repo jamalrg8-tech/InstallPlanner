@@ -176,6 +176,20 @@
   .c-divider::after{ content:""; position:absolute; top:50%; left:50%; width:2px; height:28px; background:var(--border-strong); border-radius:1px; transform:translate(-50%,-50%); }
   .c-divider:hover::after, .c-divider.dragging::after{ background:var(--accent); }
 
+  /* Chromium (and other browsers) can silently close a native <input type="date">
+     calendar popup the instant its containing element sits inside a
+     position:sticky ancestor — any month-navigation click inside the popup is
+     enough to trigger it, even though it never touches our own JS. While a
+     date field is focused we snap the horizontal scroll back to 0 and switch
+     the meta columns to a plain static position (visually identical at
+     scrollLeft 0), which keeps the popup's anchor stable so it stays open. */
+  #board.date-editing-lock .c-idx, #board.date-editing-lock .c-name,
+  #board.date-editing-lock .c-client, #board.date-editing-lock .c-scope,
+  #board.date-editing-lock .c-start, #board.date-editing-lock .c-finish,
+  #board.date-editing-lock .c-comments, #board.date-editing-lock .c-pct,
+  #board.date-editing-lock .c-team, #board.date-editing-lock .c-value,
+  #board.date-editing-lock .c-divider{ position:static; }
+
   /* .meta-head already establishes position:sticky below, which also serves as the
      containing block for these absolutely-positioned resize handles. */
   .col-handle{ position:absolute; top:0; right:-3px; width:6px; height:100%; cursor:col-resize; z-index:10; background:transparent; }
@@ -1409,6 +1423,33 @@
     if (!t.matches || !t.matches('[data-field="start"], [data-field="finish"]')) return;
     if (gridUpdateTimer) doGridUpdate(t);
   }, true);
+
+  // ---- keep the native date-picker popup open (see the CSS comment above
+  // #board.date-editing-lock): the moment a date field gets focus — before
+  // its calendar popup has actually opened — snap the board back to
+  // scrollLeft 0 and drop the meta columns out of position:sticky, so
+  // nothing about the row's horizontal position can shift while the popup
+  // is up. Restore both the instant focus leaves every date field. ----
+  var dateEditScrollLeft = null;
+  document.addEventListener("focusin", function(e){
+    var t = e.target;
+    if (!t.matches || !t.matches('[data-field="start"], [data-field="finish"]')) return;
+    var scrollEl = document.getElementById("board-scroll");
+    if (dateEditScrollLeft === null) dateEditScrollLeft = scrollEl.scrollLeft;
+    scrollEl.scrollLeft = 0;
+    boardEl.classList.add("date-editing-lock");
+  });
+  document.addEventListener("focusout", function(e){
+    var t = e.target;
+    if (!t.matches || !t.matches('[data-field="start"], [data-field="finish"]')) return;
+    requestAnimationFrame(function(){
+      var active = document.activeElement;
+      if (active && active.matches && active.matches('[data-field="start"], [data-field="finish"]')) return; // moved to another date field — stay locked
+      boardEl.classList.remove("date-editing-lock");
+      var scrollEl = document.getElementById("board-scroll");
+      if (dateEditScrollLeft !== null){ scrollEl.scrollLeft = dateEditScrollLeft; dateEditScrollLeft = null; }
+    });
+  });
 
   document.addEventListener("click", function(e){
     var del = e.target.closest('[data-action="delete"]');

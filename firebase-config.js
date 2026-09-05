@@ -7,10 +7,10 @@
 // Get these values from: Firebase console → Project settings → General →
 // "Your apps" → Web app → SDK setup and configuration → Config.
 window.FIREBASE_CONFIG = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT.firebaseapp.com",
-  projectId: "YOUR_PROJECT",
-  storageBucket: "YOUR_PROJECT.appspot.com",
-  messagingSenderId: "YOUR_SENDER_ID",
-  appId: "YOUR_APP_ID"
+  apiKey: "AIzaSyDovvWQERf2MAWVtu2zzT2ZcKqSRqnf87o",
+  authDomain: "installplanner.firebaseapp.com",
+  projectId: "installplanner",
+  storageBucket: "installplanner.firebasestorage.app",
+  messagingSenderId: "646300632432",
+  appId: "1:646300632432:web:b21af4715601d668f6fbb5"
 };
