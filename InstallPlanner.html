@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <title>Eurolux Doors and Windows, Installation Planner</title>
-<meta name="description" content="Installation planner with client, scope, dates, progress, team and value tracking.">
+<meta name="description" content="Installation planner with client, scope, dates, progress and team tracking.">
 <meta name="theme-color" content="#2E5C8A">
 <link rel="manifest" href="./manifest.json">
 <link rel="icon" href="./icon-192.png" type="image/png">
@@ -41,14 +41,13 @@
 
     --w-idx:40px; --w-name:195px; --w-team:122px; --w-divider:10px;
     --base-w-client:108px; --base-w-scope:160px; --base-w-start:124px;
-    --base-w-finish:124px; --base-w-pct:78px; --base-w-value:112px; --base-w-comments:175px;
+    --base-w-finish:124px; --base-w-pct:78px; --base-w-comments:175px;
     --detail-scale:1;
     --w-client: calc(var(--base-w-client) * var(--detail-scale));
     --w-scope: calc(var(--base-w-scope) * var(--detail-scale));
     --w-start: calc(var(--base-w-start) * var(--detail-scale));
     --w-finish: calc(var(--base-w-finish) * var(--detail-scale));
     --w-pct: calc(var(--base-w-pct) * var(--detail-scale));
-    --w-value: calc(var(--base-w-value) * var(--detail-scale));
     --w-comments: calc(var(--base-w-comments) * var(--detail-scale));
     --day:30px;
     --w-alloc-team:150px; --aday:26px;
@@ -180,8 +179,7 @@
   .c-comments{ position:sticky; left:calc(var(--w-idx) + var(--w-name) + var(--w-client) + var(--w-scope) + var(--w-start) + var(--w-finish)); z-index:3; width:var(--w-comments); }
   .c-pct{ position:sticky; left:calc(var(--w-idx) + var(--w-name) + var(--w-client) + var(--w-scope) + var(--w-start) + var(--w-finish) + var(--w-comments)); z-index:3; width:var(--w-pct); }
   .c-team{ position:sticky; left:calc(var(--w-idx) + var(--w-name) + var(--w-client) + var(--w-scope) + var(--w-start) + var(--w-finish) + var(--w-comments) + var(--w-pct)); z-index:3; width:var(--w-team); }
-  .c-value{ position:sticky; left:calc(var(--w-idx) + var(--w-name) + var(--w-client) + var(--w-scope) + var(--w-start) + var(--w-finish) + var(--w-comments) + var(--w-pct) + var(--w-team)); z-index:3; width:var(--w-value); }
-  .c-divider{ position:sticky; left:calc(var(--w-idx) + var(--w-name) + var(--w-client) + var(--w-scope) + var(--w-start) + var(--w-finish) + var(--w-comments) + var(--w-pct) + var(--w-team) + var(--w-value)); z-index:5; width:var(--w-divider); min-width:var(--w-divider); padding:0; border-right:1px solid var(--border-strong); box-shadow:2px 0 4px rgba(0,0,0,.08); background:var(--surface-2); cursor:col-resize; display:block; }
+  .c-divider{ position:sticky; left:calc(var(--w-idx) + var(--w-name) + var(--w-client) + var(--w-scope) + var(--w-start) + var(--w-finish) + var(--w-comments) + var(--w-pct) + var(--w-team)); z-index:5; width:var(--w-divider); min-width:var(--w-divider); padding:0; border-right:1px solid var(--border-strong); box-shadow:2px 0 4px rgba(0,0,0,.08); background:var(--surface-2); cursor:col-resize; display:block; }
   .c-divider:hover, .c-divider.dragging{ background:var(--accent-soft); }
   .c-divider::after{ content:""; position:absolute; top:50%; left:50%; width:2px; height:28px; background:var(--border-strong); border-radius:1px; transform:translate(-50%,-50%); }
   .c-divider:hover::after, .c-divider.dragging::after{ background:var(--accent); }
@@ -221,6 +219,9 @@
   .field:hover{ background:var(--surface-2); }
   .field:focus{ background:var(--surface); border-color:var(--accent); outline:none; }
   textarea.field{ resize:none; font-family:inherit; line-height:1.3; height:44px; }
+  /* Scope & Comments in the main list auto-grow to fit their full text (see
+     autosizeTextarea()) instead of clipping/scrolling inside a fixed box. */
+  textarea.field.autosize-field{ height:auto; min-height:44px; overflow:hidden; }
   input[type="number"].field{ font-family:"IBM Plex Mono",monospace; }
   select.field{ font-size:12px; font-weight:600; padding:5px 4px; cursor:pointer; }
 
@@ -289,8 +290,6 @@
   .c-idx:hover .del-btn, .c-idx .del-btn:focus-visible{ opacity:1; pointer-events:auto; }
 
   .pct-text{ font-family:"IBM Plex Mono",monospace; }
-  .value-input{ text-align:right; }
-  .value-unit{ font-family:"IBM Plex Mono",monospace; font-size:11px; color:var(--text-faint); }
 
   .empty-state{ padding:40px 20px; text-align:center; color:var(--text-muted); font-size:13px; }
 
@@ -383,6 +382,24 @@
   .btn.danger{ background:var(--danger); border-color:var(--danger); color:#fff; }
   .btn.danger:hover{ background:var(--danger); border-color:var(--danger); filter:brightness(1.1); }
 
+  /* ---- Schedule grid modal: the day-by-day Gantt view, moved off the main
+     page and opened on demand from the Dashboard ("View schedule grid"). ---- */
+  .grid-modal-backdrop{ position:fixed; inset:0; background:rgba(20,24,29,.5); display:flex; align-items:center; justify-content:center; z-index:205; padding:16px; }
+  .grid-modal-backdrop[hidden]{ display:none; }
+  .grid-modal-card{ background:var(--surface); border-radius:12px; box-shadow:var(--shadow); width:min(1600px, 100%); height:min(92vh, 1000px); display:flex; flex-direction:column; overflow:hidden; }
+  .grid-modal-header{ display:flex; align-items:center; justify-content:space-between; gap:12px; padding:14px 18px; border-bottom:1px solid var(--border); flex:none; }
+  .grid-modal-header h2{ font-size:15px; font-weight:800; }
+  .grid-modal-actions{ display:flex; align-items:center; gap:8px; }
+  .grid-modal-close{ background:none; border:none; color:var(--text-muted); font-size:20px; cursor:pointer; line-height:1; padding:4px 8px; border-radius:6px; }
+  .grid-modal-close:hover{ background:var(--surface-2); color:var(--text); }
+  .grid-modal-body{ flex:1; min-height:0; overflow:hidden; padding:12px; }
+  .grid-modal-body .board-wrap{ height:100%; }
+  .grid-modal-body .board-scroll{ max-height:none; height:100%; }
+
+  /* ---- Main list (Schedule tab): meta columns only, no day grid — see
+     mainRowHTML()/renderMainList(). Rows auto-grow to fit Scope/Comments. ---- */
+  .board-list .row-head{ display:none; }
+
   @media (max-width: 1100px){
     .dash-grid{ grid-template-columns:repeat(2,1fr); }
     .dash-panels{ grid-template-columns:1fr; }
@@ -414,9 +431,7 @@
         <button class="tab-btn" id="tab-allocation" type="button" role="tab" aria-selected="false">Team Allocation</button>
         <button class="tab-btn" id="tab-dashboard" type="button" role="tab" aria-selected="false">Dashboard</button>
       </div>
-      <button class="btn" id="zoom-btn" type="button">Compact view</button>
       <button class="btn" id="reset-cols-btn" type="button" title="Reset column widths and the details panel back to defaults">Reset columns</button>
-      <button class="btn" id="clear-all-btn" type="button" title="Delete every project — for everyone sharing this planner — so you can start fresh">Clear all</button>
       <button class="btn" id="import-btn" type="button">Import Excel / CSV</button>
       <input class="import-input" id="import-input" type="file" accept=".xlsx,.xls,.csv">
       <button class="btn" id="export-pdf-btn" type="button">Export PDF</button>
@@ -509,6 +524,28 @@
     <div class="confirm-modal-actions">
       <button type="button" class="btn" id="confirm-modal-cancel">Cancel</button>
       <button type="button" class="btn danger" id="confirm-modal-delete">Delete</button>
+    </div>
+  </div>
+</div>
+
+<!-- Schedule grid (day-by-day Gantt view) — opened from the Dashboard's
+     "View schedule grid" button, since the main Schedule tab now shows the
+     project list only. See renderGridModal()/openGridModal(). -->
+<div class="grid-modal-backdrop" id="grid-modal-backdrop" hidden>
+  <div class="grid-modal-card" role="dialog" aria-modal="true" aria-labelledby="grid-modal-title">
+    <div class="grid-modal-header">
+      <h2 id="grid-modal-title">Schedule grid</h2>
+      <div class="grid-modal-actions">
+        <button class="btn" id="grid-zoom-btn" type="button">Compact view</button>
+        <button type="button" class="grid-modal-close" id="grid-modal-close" aria-label="Close schedule grid">×</button>
+      </div>
+    </div>
+    <div class="grid-modal-body">
+      <div class="board-wrap">
+        <div class="board-scroll" id="grid-modal-scroll">
+          <div class="board" id="grid-modal-board"></div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -618,9 +655,9 @@
 
   // ---- state ----
   var EXAMPLE_PROJECTS = [
-    { id:"ex1", isExample:true, name:"Marina Heights Tower — Unit 2104", client:"GTS", scope:"Supply & install ducted AC system, 3BR apartment", start:"2026-08-25", finish:"2026-09-10", pct:60, team:"Mark", value:48000, comments:"Awaiting client access confirmation for Friday visit." },
-    { id:"ex2", isExample:true, name:"Al Barari Villa 12 — Lighting Retrofit", client:"GreenBull", scope:"Retrofit lighting control panel and fixtures", start:"2026-09-08", finish:"2026-09-25", pct:15, team:"Angelo", value:76500, comments:"Materials on order, ETA Sep 8." },
-    { id:"ex3", isExample:true, name:"Downtown Office L14 — Containment", client:"MACS", scope:"First-fix electrical containment and cable tray", start:"2026-10-01", finish:"2026-10-20", pct:0, team:"Sammy", value:132000, comments:"Start pending permit approval." }
+    { id:"ex1", isExample:true, name:"Marina Heights Tower — Unit 2104", client:"GTS", scope:"Supply & install ducted AC system, 3BR apartment", start:"2026-08-25", finish:"2026-09-10", pct:60, team:"Mark", comments:"Awaiting client access confirmation for Friday visit." },
+    { id:"ex2", isExample:true, name:"Al Barari Villa 12 — Lighting Retrofit", client:"GreenBull", scope:"Retrofit lighting control panel and fixtures", start:"2026-09-08", finish:"2026-09-25", pct:15, team:"Angelo", comments:"Materials on order, ETA Sep 8." },
+    { id:"ex3", isExample:true, name:"Downtown Office L14 — Containment", client:"MACS", scope:"First-fix electrical containment and cable tray", start:"2026-10-01", finish:"2026-10-20", pct:0, team:"Sammy", comments:"Start pending permit approval." }
   ];
 
   var state = { projects: null, bannerDismissed:false, customTeams: [] };
@@ -636,10 +673,10 @@
   // ---- column widths / details-panel width: a per-device display preference,
   // stored separately from project data (not synced to the shared backend). ----
   var UI_PREFS_KEY = "installPlanner.uiPrefs.v1";
-  var DEFAULT_COL_W = { name:195, client:108, scope:160, start:124, finish:124, pct:78, team:122, value:112, comments:175 };
-  var COL_MIN_W = { name:110, client:60, scope:60, start:90, finish:90, pct:50, team:80, value:70, comments:60 };
-  var COL_MAX_W = { name:420, client:260, scope:420, start:170, finish:170, pct:110, team:220, value:220, comments:420 };
-  var SCALED_COLS = ["client","scope","start","finish","pct","value","comments"];
+  var DEFAULT_COL_W = { name:195, client:108, scope:160, start:124, finish:124, pct:78, team:122, comments:175 };
+  var COL_MIN_W = { name:110, client:60, scope:60, start:90, finish:90, pct:50, team:80, comments:60 };
+  var COL_MAX_W = { name:420, client:260, scope:420, start:170, finish:170, pct:110, team:220, comments:420 };
+  var SCALED_COLS = ["client","scope","start","finish","pct","comments"];
   var colWidths = Object.assign({}, DEFAULT_COL_W);
   var detailScale = 1;
 
@@ -665,7 +702,6 @@
     root.setProperty("--base-w-start", colWidths.start+"px");
     root.setProperty("--base-w-finish", colWidths.finish+"px");
     root.setProperty("--base-w-pct", colWidths.pct+"px");
-    root.setProperty("--base-w-value", colWidths.value+"px");
     root.setProperty("--base-w-comments", colWidths.comments+"px");
     root.setProperty("--detail-scale", String(detailScale));
   }
@@ -678,12 +714,11 @@
 
   function newProject(){
     return { id:"p"+Date.now().toString(36)+Math.random().toString(36).slice(2,7), isExample:false,
-      name:"", client:"", scope:"", start:"", finish:"", pct:0, team:"", value:0, comments:"" };
+      name:"", client:"", scope:"", start:"", finish:"", pct:0, team:"", comments:"" };
   }
 
   function normalizeProject(p){
     if (p.client==null) p.client = "";
-    if (p.value==null || isNaN(Number(p.value))) p.value = 0;
     return p;
   }
 
@@ -906,17 +941,6 @@
     }).join("") + '<button type="button" class="legend-item legend-add-team" id="legend-add-team-btn" title="Add a new installation team">+ Team</button>';
   }
 
-  var AED_FMT = new Intl.NumberFormat("en-AE", { style:"currency", currency:"AED", maximumFractionDigits:0 });
-
-  // Thousand-separated display for the editable Project value field, e.g.
-  // 23000.12 -> "23,000.12" and 300000 -> "300,000.00". The field itself is
-  // a plain text input (native <input type="number"> can't display comma
-  // grouping in any browser), so we show this formatted text while the
-  // field isn't focused and swap to a plain, comma-free number the moment
-  // the user clicks in to edit it (see the focus/blur handlers below).
-  var VALUE_FMT = new Intl.NumberFormat("en-US", { minimumFractionDigits:2, maximumFractionDigits:2 });
-  function fmtValueDisplay(n){ return VALUE_FMT.format(Number(n)||0); }
-
   function statPill(label, count, key, extraClass){
     var active = filterState.status === key;
     return '<span class="stat-pill clickable'+(active?" active":"")+(extraClass||"")+'" data-status-filter="'+key+'">'+count+' '+label+'</span>';
@@ -924,20 +948,18 @@
 
   function renderStats(){
     var total = state.projects.length;
-    var notStarted=0, inProgress=0, complete=0, unassigned=0, totalValue=0;
+    var notStarted=0, inProgress=0, complete=0, unassigned=0;
     state.projects.forEach(function(p){
       var b = statusBucket(p);
       if (b==="notStarted") notStarted++; else if (b==="complete") complete++; else inProgress++;
       if (!p.team) unassigned++;
-      totalValue += Number(p.value)||0;
     });
     var chips =
       '<span class="stat-pill">'+total+' project'+(total===1?"":"s")+'</span>'+
       statPill("in progress", inProgress, "inProgress")+
       statPill("not started", notStarted, "notStarted")+
       statPill("complete", complete, "complete")+
-      (unassigned ? statPill("unassigned", unassigned, "unassigned") : "")+
-      (totalValue? '<span class="stat-pill">'+AED_FMT.format(totalValue)+' total value</span>' : "");
+      (unassigned ? statPill("unassigned", unassigned, "unassigned") : "");
     if (filterState.status || filterState.team || filterState.search){
       var parts = [];
       if (filterState.team) parts.push(filterState.team);
@@ -950,34 +972,50 @@
     statRowEl.innerHTML = chips;
   }
 
-  var META_COL_COUNT = 10;    // the 10 project-detail columns
+  var META_COL_COUNT = 9;    // the 9 project-detail columns (Project Value removed)
   var DIVIDER_COL = META_COL_COUNT + 1;   // the draggable divider between details and the day grid
-  var TOTAL_META_COLS = DIVIDER_COL;      // 11 — details + divider
+  var TOTAL_META_COLS = DIVIDER_COL;      // 10 — details + divider
   var DAY_COL_START = TOTAL_META_COLS + 1;
 
+  // Full grid (meta + day columns): used only by the Schedule grid modal now
+  // (see renderGridModal()) — the main Schedule tab shows the meta columns
+  // only, via mainGridTemplateColumns()/renderMainList().
   function gridTemplateColumns(){
-    return "var(--w-idx) var(--w-name) var(--w-client) var(--w-scope) var(--w-start) var(--w-finish) var(--w-comments) var(--w-pct) var(--w-team) var(--w-value) var(--w-divider) repeat("+DAYS.length+", var(--day))";
+    return "var(--w-idx) var(--w-name) var(--w-client) var(--w-scope) var(--w-start) var(--w-finish) var(--w-comments) var(--w-pct) var(--w-team) var(--w-divider) repeat("+DAYS.length+", var(--day))";
   }
 
+  function mainGridTemplateColumns(){
+    return "var(--w-idx) var(--w-name) var(--w-client) var(--w-scope) var(--w-start) var(--w-finish) var(--w-comments) var(--w-pct) var(--w-team)";
+  }
+
+  var META_LABELS = [
+    {cls:"c-idx", txt:"", key:null},
+    {cls:"c-name", txt:"Project name", key:"name"},
+    {cls:"c-client", txt:"Client", key:"client"},
+    {cls:"c-scope", txt:"Project scope", key:"scope"},
+    {cls:"c-start", txt:"Start date", key:"start"},
+    {cls:"c-finish", txt:"Finish date", key:"finish"},
+    {cls:"c-comments", txt:"Comments", key:"comments"},
+    {cls:"c-pct", txt:"% complete", key:"pct"},
+    {cls:"c-team", txt:"Assigned team", key:"team"}
+  ];
+
+  // Full grid header (meta + day columns) — used by the Schedule grid modal.
   function metaHeaderHTML(){
-    var labels = [
-      {cls:"c-idx", txt:"", key:null},
-      {cls:"c-name", txt:"Project name", key:"name"},
-      {cls:"c-client", txt:"Client", key:"client"},
-      {cls:"c-scope", txt:"Project scope", key:"scope"},
-      {cls:"c-start", txt:"Start date", key:"start"},
-      {cls:"c-finish", txt:"Finish date", key:"finish"},
-      {cls:"c-comments", txt:"Comments", key:"comments"},
-      {cls:"c-pct", txt:"% complete", key:"pct"},
-      {cls:"c-team", txt:"Assigned team", key:"team"},
-      {cls:"c-value", txt:"Project value", key:"value"}
-    ];
-    var html = labels.map(function(l, i){
+    var html = META_LABELS.map(function(l, i){
       var handle = l.key ? '<div class="col-handle" data-col="'+l.key+'" title="Drag to resize this column"></div>' : "";
       return '<div class="cell meta-head '+l.cls+'" style="grid-column:'+(i+1)+' / span 1; grid-row:1 / span 2;">'+escText(l.txt)+handle+'</div>';
     }).join("");
     html += '<div class="cell c-divider" id="detail-divider" style="grid-column:'+DIVIDER_COL+' / span 1; grid-row:1 / -1;" title="Drag to resize the project-details panel"></div>';
     return html;
+  }
+
+  // Main-list header (meta columns only, single header row, no day grid).
+  function mainMetaHeaderHTML(){
+    return META_LABELS.map(function(l, i){
+      var handle = l.key ? '<div class="col-handle" data-col="'+l.key+'" title="Drag to resize this column"></div>' : "";
+      return '<div class="cell meta-head '+l.cls+'" style="grid-column:'+(i+1)+' / span 1; grid-row:1;">'+escText(l.txt)+handle+'</div>';
+    }).join("");
   }
 
   function dayHeaderHTML(){
@@ -1035,12 +1073,63 @@
       '<option value="__add_new__">+ Add new team…</option>'+
       '</select></div>';
 
-    html += '<div class="cell c-value" style="grid-column:10; grid-row:'+row+';">'+
-      '<span class="value-unit">AED</span>'+
-      '<input class="field value-input" type="text" inputmode="decimal" data-field="value" data-id="'+p.id+'" value="'+fmtValueDisplay(p.value)+'" aria-label="Project value"></div>';
-
     html += dayCellsHTML(p, row);
     return html;
+  }
+
+  // Main-list row (Schedule tab): the same meta fields, but no day cells, and
+  // Scope/Comments use the auto-growing "autosize-field" textarea so their
+  // full text is always visible without an internal scrollbar (see
+  // autosizeTextarea()). Row height is "auto" (see renderMainList()), so
+  // there's no fixed 64px cap to fight against.
+  function mainRowHTML(p, rowIndex){
+    var row = 2 + rowIndex; // main list has a single header row
+    var html = "";
+    html += '<div class="cell c-idx" style="grid-column:1; grid-row:'+row+';">'+
+      '<span class="row-num">'+(rowIndex+1)+'</span>'+
+      '<button class="del-btn" type="button" data-action="delete" data-id="'+p.id+'" aria-label="Delete project" title="Delete project">✕</button></div>';
+
+    html += '<div class="cell c-name" style="grid-column:2; grid-row:'+row+';">'+
+      '<div class="row-name-wrap">' + (p.isExample ? '<span class="example-badge" data-owner="'+p.id+'">Example</span>' : '') +
+      '<textarea class="field name-field" data-field="name" data-id="'+p.id+'" title="'+escAttr(p.name)+'" placeholder="Project name" aria-label="Project name">'+escText(p.name)+'</textarea></div></div>';
+
+    html += '<div class="cell c-client" style="grid-column:3; grid-row:'+row+';">'+
+      '<input class="field" list="client-list" data-field="client" data-id="'+p.id+'" value="'+escAttr(p.client)+'" title="'+escAttr(p.client)+'" placeholder="Client" aria-label="Client"></div>';
+
+    html += '<div class="cell c-scope" style="grid-column:4; grid-row:'+row+';">'+
+      '<textarea class="field autosize-field" data-field="scope" data-id="'+p.id+'" placeholder="Scope of work" aria-label="Project scope">'+escText(p.scope)+'</textarea></div>';
+
+    html += '<div class="cell c-start" style="grid-column:5; grid-row:'+row+';">'+
+      '<button type="button" class="date-btn'+(p.start?"":" placeholder")+'" data-date-btn="start" data-id="'+p.id+'" aria-label="Start date">'+(fmtDateDisplay(p.start)||"d/mm/yyyy")+'</button></div>';
+
+    html += '<div class="cell c-finish" style="grid-column:6; grid-row:'+row+';">'+
+      '<button type="button" class="date-btn'+(p.finish?"":" placeholder")+'" data-date-btn="finish" data-id="'+p.id+'" aria-label="Finish date">'+(fmtDateDisplay(p.finish)||"d/mm/yyyy")+'</button></div>';
+
+    html += '<div class="cell c-comments" style="grid-column:7; grid-row:'+row+';">'+
+      '<textarea class="field autosize-field" data-field="comments" data-id="'+p.id+'" placeholder="Comments" aria-label="Comments">'+escText(p.comments)+'</textarea></div>';
+
+    html += '<div class="cell c-pct" style="grid-column:8; grid-row:'+row+';">'+
+      '<input class="field pct-text" type="number" min="0" max="100" step="5" data-field="pct" data-id="'+p.id+'" value="'+p.pct+'" aria-label="Percent complete">'+
+      '<span class="pct-text" style="color:var(--text-faint)">%</span></div>';
+
+    var teamColorStyle = p.team ? ' style="color:'+teamColorValue(p.team)+';"' : "";
+    html += '<div class="cell c-team" style="grid-column:9; grid-row:'+row+';">'+
+      '<select class="field" data-field="team" data-id="'+p.id+'" data-team="'+escAttr(p.team)+'" aria-label="Assigned team"'+teamColorStyle+'>'+
+      '<option value=""'+(p.team===""?" selected":"")+'>—</option>'+
+      allTeamNames().map(function(t){ return '<option value="'+escAttr(t)+'"'+(p.team===t?" selected":"")+'>'+escText(t)+'</option>'; }).join("")+
+      '<option value="__add_new__">+ Add new team…</option>'+
+      '</select></div>';
+
+    return html;
+  }
+
+  function autosizeTextarea(el){
+    el.style.height = "auto";
+    el.style.height = el.scrollHeight + "px";
+  }
+  function autosizeAllTextareas(container){
+    var els = container.querySelectorAll("textarea.autosize-field");
+    for (var i=0;i<els.length;i++) autosizeTextarea(els[i]);
   }
 
   function rangeDateList(p){
@@ -1183,26 +1272,67 @@
 
     visibleProjects = state.projects.filter(matchesFilter);
 
-    var totalCols = TOTAL_META_COLS + DAYS.length;
-    boardEl.style.gridTemplateColumns = gridTemplateColumns();
-
-    var html = metaHeaderHTML() + dayHeaderHTML();
-    if (state.projects.length === 0){
-      boardEl.style.gridTemplateRows = "30px 42px 64px";
-      html += '<div class="cell empty-state" style="grid-column:1 / span '+totalCols+'; grid-row:3; justify-content:center;">'+
-        'No projects yet. Click “+ Add project” or use “Import Excel / CSV” to bring in your list.</div>';
-    } else if (visibleProjects.length === 0){
-      boardEl.style.gridTemplateRows = "30px 42px 64px";
-      html += '<div class="cell empty-state" style="grid-column:1 / span '+totalCols+'; grid-row:3; justify-content:center;">'+
-        'No projects match this filter. <button type="button" class="filter-clear" id="clear-filter-btn-2">Clear filter ×</button></div>';
-    } else {
-      boardEl.style.gridTemplateRows = "30px 42px " + "repeat("+visibleProjects.length+", 64px)";
-      visibleProjects.forEach(function(p, idx){ html += projectRowHTML(p, idx); });
-    }
-    boardEl.innerHTML = html;
+    renderMainList();
 
     if (currentView === "dashboard") renderDashboard();
     if (currentView === "allocation") renderAllocation();
+    var gridBackdrop = document.getElementById("grid-modal-backdrop");
+    if (gridBackdrop && !gridBackdrop.hidden) renderGridModal();
+  }
+
+  // Main Schedule tab: meta columns only (no day grid — see item 5, moved to
+  // the Schedule grid modal), with rows that auto-grow to fit Scope/Comments.
+  function renderMainList(){
+    boardEl.classList.add("board-list");
+    var totalCols = META_COL_COUNT;
+    boardEl.style.gridTemplateColumns = mainGridTemplateColumns();
+
+    var html = mainMetaHeaderHTML();
+    if (state.projects.length === 0){
+      boardEl.style.gridTemplateRows = "42px 64px";
+      html += '<div class="cell empty-state" style="grid-column:1 / span '+totalCols+'; grid-row:2; justify-content:center;">'+
+        'No projects yet. Click “+ Add project” or use “Import Excel / CSV” to bring in your list.</div>';
+    } else if (visibleProjects.length === 0){
+      boardEl.style.gridTemplateRows = "42px 64px";
+      html += '<div class="cell empty-state" style="grid-column:1 / span '+totalCols+'; grid-row:2; justify-content:center;">'+
+        'No projects match this filter. <button type="button" class="filter-clear" id="clear-filter-btn-2">Clear filter ×</button></div>';
+    } else {
+      boardEl.style.gridTemplateRows = "42px " + "repeat("+visibleProjects.length+", minmax(64px, auto))";
+      visibleProjects.forEach(function(p, idx){ html += mainRowHTML(p, idx); });
+    }
+    boardEl.innerHTML = html;
+    autosizeAllTextareas(boardEl);
+  }
+
+  // Schedule grid modal: the full meta + day-by-day Gantt grid, exactly as
+  // the main page used to show it, now reached via the Dashboard's "View
+  // schedule grid" button. Shows every project (unaffected by the main
+  // list's search/status/team filters), same as the Team Allocation tab.
+  function renderGridModal(){
+    var gridBoardEl = document.getElementById("grid-modal-board");
+    if (!gridBoardEl) return;
+    var projects = state.projects;
+    var totalCols = TOTAL_META_COLS + DAYS.length;
+    gridBoardEl.style.gridTemplateColumns = gridTemplateColumns();
+
+    var html = metaHeaderHTML() + dayHeaderHTML();
+    if (projects.length === 0){
+      gridBoardEl.style.gridTemplateRows = "30px 42px 64px";
+      html += '<div class="cell empty-state" style="grid-column:1 / span '+totalCols+'; grid-row:3; justify-content:center;">'+
+        'No projects yet. Click “+ Add project” or use “Import Excel / CSV” to bring in your list.</div>';
+    } else {
+      gridBoardEl.style.gridTemplateRows = "30px 42px " + "repeat("+projects.length+", 64px)";
+      projects.forEach(function(p, idx){ html += projectRowHTML(p, idx); });
+    }
+    gridBoardEl.innerHTML = html;
+  }
+
+  function openGridModal(){
+    renderGridModal();
+    document.getElementById("grid-modal-backdrop").hidden = false;
+  }
+  function closeGridModal(){
+    document.getElementById("grid-modal-backdrop").hidden = true;
   }
 
   // ---- dashboard ----
@@ -1244,7 +1374,6 @@
     {key:"finish", label:"Finish Date"},
     {key:"pct", label:"% Complete"},
     {key:"team", label:"Assigned Team"},
-    {key:"value", label:"Project Value"},
     {key:"comments", label:"Comments"}
   ];
   var REPORT_COLUMNS_DATE_FILTER = [
@@ -1252,7 +1381,6 @@
     {key:"team", label:"Assigned Team"},
     {key:"start", label:"Start Date"},
     {key:"finish", label:"Finish Date"},
-    {key:"value", label:"Project Value"},
     {key:"comments", label:"Comments"}
   ];
   function reportCellHTML(p, key){
@@ -1263,7 +1391,6 @@
     if (key==="finish") return fmtDateDisplay(p.finish)||"—";
     if (key==="pct") return (Number(p.pct)||0)+"%";
     if (key==="team") return escText(p.team||"—");
-    if (key==="value") return AED_FMT.format(Number(p.value)||0);
     if (key==="comments") return escText(p.comments||"—");
     return "";
   }
@@ -1360,25 +1487,27 @@
       dashEl.innerHTML = '<div class="dash-empty">No projects yet — add or import some to see the dashboard.</div>';
       return;
     }
-    var totalValue=0, pctSum=0, unassigned=0, notStarted=0, inProgress=0, complete=0;
+    var pctSum=0, unassigned=0, notStarted=0, inProgress=0, complete=0;
     var byTeam = {}; allTeamNames().forEach(function(t){ byTeam[t]=0; });
     var byClient = {};
     projects.forEach(function(p){
-      totalValue += Number(p.value)||0;
       pctSum += Number(p.pct)||0;
       if (!p.team) unassigned++; else byTeam[p.team] = (byTeam[p.team]||0)+1;
       var b = statusBucket(p);
       if (b==="notStarted") notStarted++; else if (b==="complete") complete++; else inProgress++;
       var c = (p.client||"").trim() || "No client";
-      byClient[c] = (byClient[c]||0) + (Number(p.value)||0);
+      byClient[c] = (byClient[c]||0) + 1;
     });
     var avgPct = Math.round(pctSum/projects.length);
 
-    var toolbarHTML = '<div class="dash-toolbar"><button type="button" class="btn" id="view-all-report-btn">View all projects (report)</button></div>';
+    var toolbarHTML = '<div class="dash-toolbar">'+
+      '<button type="button" class="btn" id="view-grid-btn">View schedule grid</button>'+
+      '<button type="button" class="btn" id="view-all-report-btn">View all projects (report)</button>'+
+      '</div>';
 
     var kpiHTML = '<div class="dash-grid">'+
         kpiCard("Total projects", projects.length, projects.length+" tracked", "all") +
-        kpiCard("Total value", AED_FMT.format(totalValue), "across all projects", "all") +
+        kpiCard("In progress", inProgress, "currently underway", "inProgress") +
         kpiCard("Avg. completion", avgPct+"%", "mean of all % complete", "all") +
         kpiCard("Unassigned", unassigned, unassigned ? "need a team" : "fully staffed", "unassigned") +
       '</div>';
@@ -1391,8 +1520,8 @@
     var clientEntries = Object.keys(byClient).map(function(c){ return {label:c, value:byClient[c]}; })
       .sort(function(a,b){ return b.value-a.value; }).slice(0,8);
     var maxClient = Math.max.apply(null, [1].concat(clientEntries.map(function(r){return r.value;})));
-    var clientHTML = clientEntries.length ? clientEntries.map(function(r){ return barRow(r.label, AED_FMT.format(r.value), r.value/maxClient, "var(--accent)", 'data-report-client="'+escAttr(r.label)+'"'); }).join("")
-      : '<div class="dash-empty">No client values yet.</div>';
+    var clientHTML = clientEntries.length ? clientEntries.map(function(r){ return barRow(r.label, String(r.value), r.value/maxClient, "var(--accent)", 'data-report-client="'+escAttr(r.label)+'"'); }).join("")
+      : '<div class="dash-empty">No client data yet.</div>';
 
     var statusTotal = (notStarted+inProgress+complete) || 1;
     var statusHTML = '<div class="bar-track" style="display:flex; height:16px;">'+
@@ -1422,15 +1551,22 @@
       '</tbody></table>'
     ) : '<div class="dash-empty">Nothing overdue or due in the next 14 days.</div>';
 
+    var settingsHTML = '<div class="panel">'+
+      '<h2>Settings</h2>'+
+      '<p style="font-size:12px; color:var(--text-muted); margin:0 0 12px;">This affects everyone sharing this planner — use it right before importing a fresh project list.</p>'+
+      '<button type="button" class="btn danger" id="clear-all-btn" title="Delete every project — for everyone sharing this planner — so you can start fresh">Clear all projects</button>'+
+      '</div>';
+
     dashEl.innerHTML = toolbarHTML + kpiHTML +
       '<div class="dash-panels">'+
         '<div class="panel"><h2>Projects by team</h2>'+teamHTML+'</div>'+
-        '<div class="panel"><h2>Value by client</h2>'+clientHTML+'</div>'+
+        '<div class="panel"><h2>Projects by client</h2>'+clientHTML+'</div>'+
       '</div>'+
       '<div class="dash-panels">'+
         '<div class="panel"><h2>Status breakdown</h2>'+statusHTML+'</div>'+
         '<div class="panel"><h2>Due soon / overdue</h2>'+upcomingHTML+'</div>'+
-      '</div>';
+      '</div>'+
+      settingsHTML;
   }
 
   // ---- team allocation view: a full-page, 3-month Gantt-style summary —
@@ -1621,8 +1757,6 @@
       }
     } else if (field==="pct"){
       p.pct = Math.max(0, Math.min(100, Math.round(Number(t.value)||0)));
-    } else if (field==="value"){
-      p.value = Math.max(0, Number(String(t.value).replace(/,/g,""))||0);
     } else {
       p[field] = t.value;
       if (field==="name" || field==="client") t.title = t.value;
@@ -1637,30 +1771,13 @@
     if (needsGridUpdate){
       if (field==="team") t.setAttribute("data-team", t.value);
       doGridUpdate(t);
-    } else {
-      if (field==="value") renderStats();
+    } else if (t.classList.contains("autosize-field")){
+      // Scope/Comments: grow the textarea to fit what's just been typed,
+      // instead of a full re-render, so the field stays fully visible as
+      // its content grows (see item 3/4 — "visible in full at all times").
+      autosizeTextarea(t);
     }
     scheduleSave();
-  });
-
-  // Project value: show comma-grouped "23,000.12" while not focused, but
-  // swap to a plain, comma-free number the instant the field is focused so
-  // typing/editing digits isn't fighting against live comma insertion —
-  // then reformat with commas again on blur.
-  document.addEventListener("focusin", function(e){
-    var t = e.target;
-    if (!t.matches || !t.matches('[data-field="value"]')) return;
-    var p = findProject(t.dataset.id);
-    if (!p) return;
-    t.value = String(Number(p.value)||0);
-    t.select();
-  });
-  document.addEventListener("focusout", function(e){
-    var t = e.target;
-    if (!t.matches || !t.matches('[data-field="value"]')) return;
-    var p = findProject(t.dataset.id);
-    if (!p) return;
-    t.value = fmtValueDisplay(p.value);
   });
 
   // ---- custom Start/Finish date picker ----
@@ -1982,12 +2099,17 @@
       openReport("All projects", state.projects.length+" project"+(state.projects.length===1?"":"s"), state.projects);
       return;
     }
+    if (e.target.id === "view-grid-btn"){ openGridModal(); return; }
+    if (e.target.id === "clear-all-btn"){ openClearAllConfirm(); return; }
     var kpiEl = e.target.closest('[data-report-kpi]');
     if (kpiEl){
       var kpiKey = kpiEl.dataset.reportKpi;
       if (kpiKey === "unassigned"){
         var unassignedList = state.projects.filter(function(p){ return !p.team; });
         openReport("Unassigned projects", unassignedList.length+" project"+(unassignedList.length===1?"":"s")+" without a team", unassignedList);
+      } else if (kpiKey === "inProgress"){
+        var inProgressList = state.projects.filter(function(p){ return statusBucket(p) === "inProgress"; });
+        openReport("In progress projects", inProgressList.length+" project"+(inProgressList.length===1?"":"s"), inProgressList);
       } else {
         openReport("All projects", state.projects.length+" project"+(state.projects.length===1?"":"s"), state.projects);
       }
@@ -2026,6 +2148,10 @@
       closeReport();
       return;
     }
+    if (e.target.id === "grid-modal-close" || e.target.id === "grid-modal-backdrop"){
+      closeGridModal();
+      return;
+    }
   });
 
   document.addEventListener("keydown", function(e){
@@ -2034,6 +2160,8 @@
       if (!dateFilterPopupEl.hidden){ closeDateFilterPopup(); return; }
       var confirmBackdrop = document.getElementById("confirm-modal-backdrop");
       if (confirmBackdrop && !confirmBackdrop.hidden){ closeConfirmModal(); return; }
+      var gridBackdrop2 = document.getElementById("grid-modal-backdrop");
+      if (gridBackdrop2 && !gridBackdrop2.hidden){ closeGridModal(); return; }
       var backdrop = document.getElementById("report-modal-backdrop");
       if (backdrop && !backdrop.hidden) closeReport();
       return;
@@ -2050,8 +2178,11 @@
   window.addEventListener("scroll", function(){ if (datePopupState) closeDatePopup(); if (!dateFilterPopupEl.hidden) closeDateFilterPopup(); }, true);
   window.addEventListener("resize", function(){ if (datePopupState) closeDatePopup(); if (!dateFilterPopupEl.hidden) closeDateFilterPopup(); });
 
-  document.getElementById("zoom-btn").addEventListener("click", function(){
-    var compact = boardEl.classList.toggle("compact");
+  // "Compact view" only affects the day-by-day Gantt columns, which now live
+  // exclusively in the Schedule grid modal — see openGridModal().
+  document.getElementById("grid-zoom-btn").addEventListener("click", function(){
+    var gridBoardEl = document.getElementById("grid-modal-board");
+    var compact = gridBoardEl.classList.toggle("compact");
     this.textContent = compact ? "Full view" : "Compact view";
   });
 
@@ -2062,7 +2193,9 @@
 
   document.getElementById("sync-now-btn").addEventListener("click", syncNowClicked);
 
-  document.getElementById("clear-all-btn").addEventListener("click", openClearAllConfirm);
+  // "Clear all" now lives in the Dashboard's Settings panel (rendered
+  // dynamically), so its click is handled by the delegated document click
+  // listener above rather than bound directly here.
 
   // ---- search by project name ----
   document.getElementById("search-input").addEventListener("input", function(e){
@@ -2148,6 +2281,11 @@
     document.getElementById("tab-dashboard").setAttribute("aria-selected", view==="dashboard");
     if (view === "dashboard") renderDashboard();
     if (view === "allocation") renderAllocation();
+    // Textareas that auto-grow to fit Scope/Comments can't measure their
+    // real height while the Schedule tab is hidden (display:none collapses
+    // layout, so scrollHeight reads as 0) — e.g. importing or clearing
+    // projects while viewing the Dashboard. Re-measure now that it's visible.
+    if (view === "schedule") autosizeAllTextareas(boardEl);
   }
   document.getElementById("tab-schedule").addEventListener("click", function(){ switchView("schedule"); });
   document.getElementById("tab-allocation").addEventListener("click", function(){ switchView("allocation"); });
@@ -2231,7 +2369,6 @@
     finish: ["finishdate","finish","enddate","end","completiondate"],
     pct: ["completed","percentcompleted","pctcompleted","progress","percentcomplete","complete"],
     team: ["assignedteam","team","installationteam","installer","assignedto"],
-    value: ["projectvalue","value","contractvalue","amount","price","projectcost","cost"],
     comments: ["comments","comment","notes","note"]
   };
 
@@ -2281,8 +2418,6 @@
       }
       var pctRaw = get("pct");
       var pct = Math.max(0, Math.min(100, Math.round(Number(String(pctRaw).replace(/[^0-9.\-]/g,""))||0)));
-      var valueRaw = get("value");
-      var value = Math.max(0, Number(String(valueRaw).replace(/[^0-9.\-]/g,""))||0);
       var name = String(get("name")||"").trim();
       if (!name) continue;
       out.push({
@@ -2295,7 +2430,6 @@
         finish:parseDateFlexible(get("finish")),
         pct:pct,
         team:matchedTeam,
-        value:value,
         comments:comments
       });
     }
@@ -2331,23 +2465,22 @@
     var body = rows.map(function(p){
       return [
         p.name || "Untitled", p.client || "—", fmtDateDisplay(p.start) || "—", fmtDateDisplay(p.finish) || "—",
-        (Number(p.pct)||0)+"%", p.team || "—", AED_FMT.format(Number(p.value)||0),
+        (Number(p.pct)||0)+"%", p.team || "—",
         (p.scope||"").slice(0,60), (p.comments||"").slice(0,60)
       ];
     });
     doc.autoTable({
       startY: fLabel ? 84 : 72,
-      head: [["Project","Client","Start","Finish","%","Team","Value","Scope","Comments"]],
+      head: [["Project","Client","Start","Finish","%","Team","Scope","Comments"]],
       body: body,
       styles:{ fontSize:8, cellPadding:4, overflow:"linebreak" },
       headStyles:{ fillColor:[46,92,138], textColor:255 },
-      columnStyles:{ 4:{halign:"right"}, 6:{halign:"right"} }
+      columnStyles:{ 4:{halign:"right"} }
     });
 
-    var totalValue = rows.reduce(function(s,p){ return s + (Number(p.value)||0); }, 0);
     var finalY = (doc.lastAutoTable && doc.lastAutoTable.finalY) ? doc.lastAutoTable.finalY : 90;
     doc.setFont("helvetica","bold"); doc.setFontSize(10);
-    doc.text("Total value: "+AED_FMT.format(totalValue)+"   ·   "+rows.length+" project"+(rows.length===1?"":"s"), 40, finalY+22);
+    doc.text(rows.length+" project"+(rows.length===1?"":"s"), 40, finalY+22);
 
     doc.save("Eurolux-Installation-Schedule-"+TODAY_ISO+".pdf");
     } catch(err){
