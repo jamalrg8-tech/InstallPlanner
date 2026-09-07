@@ -40,11 +40,12 @@
     --team-none:#7C8493;
 
     --w-idx:40px; --w-name:195px; --w-team:122px; --w-divider:10px;
-    --base-w-client:108px; --base-w-scope:160px; --base-w-start:124px;
+    --base-w-client:108px; --base-w-scope:160px; --base-w-matdelivery:124px; --base-w-start:124px;
     --base-w-finish:124px; --base-w-pct:78px; --base-w-comments:175px;
     --detail-scale:1;
     --w-client: calc(var(--base-w-client) * var(--detail-scale));
     --w-scope: calc(var(--base-w-scope) * var(--detail-scale));
+    --w-matdelivery: calc(var(--base-w-matdelivery) * var(--detail-scale));
     --w-start: calc(var(--base-w-start) * var(--detail-scale));
     --w-finish: calc(var(--base-w-finish) * var(--detail-scale));
     --w-pct: calc(var(--base-w-pct) * var(--detail-scale));
@@ -174,12 +175,13 @@
   .c-name{ position:sticky; left:var(--w-idx); z-index:3; width:var(--w-name); }
   .c-client{ position:sticky; left:calc(var(--w-idx) + var(--w-name)); z-index:3; width:var(--w-client); }
   .c-scope{ position:sticky; left:calc(var(--w-idx) + var(--w-name) + var(--w-client)); z-index:3; width:var(--w-scope); }
-  .c-start{ position:sticky; left:calc(var(--w-idx) + var(--w-name) + var(--w-client) + var(--w-scope)); z-index:3; width:var(--w-start); }
-  .c-finish{ position:sticky; left:calc(var(--w-idx) + var(--w-name) + var(--w-client) + var(--w-scope) + var(--w-start)); z-index:3; width:var(--w-finish); }
-  .c-comments{ position:sticky; left:calc(var(--w-idx) + var(--w-name) + var(--w-client) + var(--w-scope) + var(--w-start) + var(--w-finish)); z-index:3; width:var(--w-comments); }
-  .c-pct{ position:sticky; left:calc(var(--w-idx) + var(--w-name) + var(--w-client) + var(--w-scope) + var(--w-start) + var(--w-finish) + var(--w-comments)); z-index:3; width:var(--w-pct); }
-  .c-team{ position:sticky; left:calc(var(--w-idx) + var(--w-name) + var(--w-client) + var(--w-scope) + var(--w-start) + var(--w-finish) + var(--w-comments) + var(--w-pct)); z-index:3; width:var(--w-team); }
-  .c-divider{ position:sticky; left:calc(var(--w-idx) + var(--w-name) + var(--w-client) + var(--w-scope) + var(--w-start) + var(--w-finish) + var(--w-comments) + var(--w-pct) + var(--w-team)); z-index:5; width:var(--w-divider); min-width:var(--w-divider); padding:0; border-right:1px solid var(--border-strong); box-shadow:2px 0 4px rgba(0,0,0,.08); background:var(--surface-2); cursor:col-resize; display:block; }
+  .c-matdelivery{ position:sticky; left:calc(var(--w-idx) + var(--w-name) + var(--w-client) + var(--w-scope)); z-index:3; width:var(--w-matdelivery); }
+  .c-start{ position:sticky; left:calc(var(--w-idx) + var(--w-name) + var(--w-client) + var(--w-scope) + var(--w-matdelivery)); z-index:3; width:var(--w-start); }
+  .c-finish{ position:sticky; left:calc(var(--w-idx) + var(--w-name) + var(--w-client) + var(--w-scope) + var(--w-matdelivery) + var(--w-start)); z-index:3; width:var(--w-finish); }
+  .c-comments{ position:sticky; left:calc(var(--w-idx) + var(--w-name) + var(--w-client) + var(--w-scope) + var(--w-matdelivery) + var(--w-start) + var(--w-finish)); z-index:3; width:var(--w-comments); }
+  .c-pct{ position:sticky; left:calc(var(--w-idx) + var(--w-name) + var(--w-client) + var(--w-scope) + var(--w-matdelivery) + var(--w-start) + var(--w-finish) + var(--w-comments)); z-index:3; width:var(--w-pct); }
+  .c-team{ position:sticky; left:calc(var(--w-idx) + var(--w-name) + var(--w-client) + var(--w-scope) + var(--w-matdelivery) + var(--w-start) + var(--w-finish) + var(--w-comments) + var(--w-pct)); z-index:3; width:var(--w-team); }
+  .c-divider{ position:sticky; left:calc(var(--w-idx) + var(--w-name) + var(--w-client) + var(--w-scope) + var(--w-matdelivery) + var(--w-start) + var(--w-finish) + var(--w-comments) + var(--w-pct) + var(--w-team)); z-index:5; width:var(--w-divider); min-width:var(--w-divider); padding:0; border-right:1px solid var(--border-strong); box-shadow:2px 0 4px rgba(0,0,0,.08); background:var(--surface-2); cursor:col-resize; display:block; }
   .c-divider:hover, .c-divider.dragging{ background:var(--accent-soft); }
   .c-divider::after{ content:""; position:absolute; top:50%; left:50%; width:2px; height:28px; background:var(--border-strong); border-radius:1px; transform:translate(-50%,-50%); }
   .c-divider:hover::after, .c-divider.dragging::after{ background:var(--accent); }
@@ -655,9 +657,9 @@
 
   // ---- state ----
   var EXAMPLE_PROJECTS = [
-    { id:"ex1", isExample:true, name:"Marina Heights Tower — Unit 2104", client:"GTS", scope:"Supply & install ducted AC system, 3BR apartment", start:"2026-08-25", finish:"2026-09-10", pct:60, team:"Mark", comments:"Awaiting client access confirmation for Friday visit." },
-    { id:"ex2", isExample:true, name:"Al Barari Villa 12 — Lighting Retrofit", client:"GreenBull", scope:"Retrofit lighting control panel and fixtures", start:"2026-09-08", finish:"2026-09-25", pct:15, team:"Angelo", comments:"Materials on order, ETA Sep 8." },
-    { id:"ex3", isExample:true, name:"Downtown Office L14 — Containment", client:"MACS", scope:"First-fix electrical containment and cable tray", start:"2026-10-01", finish:"2026-10-20", pct:0, team:"Sammy", comments:"Start pending permit approval." }
+    { id:"ex1", isExample:true, name:"Marina Heights Tower — Unit 2104", client:"GTS", scope:"Supply & install ducted AC system, 3BR apartment", matDelivery:"2026-08-20", start:"2026-08-25", finish:"2026-09-10", pct:60, team:"Mark", comments:"Awaiting client access confirmation for Friday visit." },
+    { id:"ex2", isExample:true, name:"Al Barari Villa 12 — Lighting Retrofit", client:"GreenBull", scope:"Retrofit lighting control panel and fixtures", matDelivery:"2026-09-05", start:"2026-09-08", finish:"2026-09-25", pct:15, team:"Angelo", comments:"Materials on order, ETA Sep 8." },
+    { id:"ex3", isExample:true, name:"Downtown Office L14 — Containment", client:"MACS", scope:"First-fix electrical containment and cable tray", matDelivery:"2026-09-28", start:"2026-10-01", finish:"2026-10-20", pct:0, team:"Sammy", comments:"Start pending permit approval." }
   ];
 
   var state = { projects: null, bannerDismissed:false, customTeams: [] };
@@ -673,10 +675,10 @@
   // ---- column widths / details-panel width: a per-device display preference,
   // stored separately from project data (not synced to the shared backend). ----
   var UI_PREFS_KEY = "installPlanner.uiPrefs.v1";
-  var DEFAULT_COL_W = { name:195, client:108, scope:160, start:124, finish:124, pct:78, team:122, comments:175 };
-  var COL_MIN_W = { name:110, client:60, scope:60, start:90, finish:90, pct:50, team:80, comments:60 };
-  var COL_MAX_W = { name:420, client:260, scope:420, start:170, finish:170, pct:110, team:220, comments:420 };
-  var SCALED_COLS = ["client","scope","start","finish","pct","comments"];
+  var DEFAULT_COL_W = { name:195, client:108, scope:160, matDelivery:124, start:124, finish:124, pct:78, team:122, comments:175 };
+  var COL_MIN_W = { name:110, client:60, scope:60, matDelivery:90, start:90, finish:90, pct:50, team:80, comments:60 };
+  var COL_MAX_W = { name:420, client:260, scope:420, matDelivery:170, start:170, finish:170, pct:110, team:220, comments:420 };
+  var SCALED_COLS = ["client","scope","matDelivery","start","finish","pct","comments"];
   var colWidths = Object.assign({}, DEFAULT_COL_W);
   var detailScale = 1;
 
@@ -699,6 +701,7 @@
     root.setProperty("--w-team", colWidths.team+"px");
     root.setProperty("--base-w-client", colWidths.client+"px");
     root.setProperty("--base-w-scope", colWidths.scope+"px");
+    root.setProperty("--base-w-matdelivery", colWidths.matDelivery+"px");
     root.setProperty("--base-w-start", colWidths.start+"px");
     root.setProperty("--base-w-finish", colWidths.finish+"px");
     root.setProperty("--base-w-pct", colWidths.pct+"px");
@@ -714,11 +717,12 @@
 
   function newProject(){
     return { id:"p"+Date.now().toString(36)+Math.random().toString(36).slice(2,7), isExample:false,
-      name:"", client:"", scope:"", start:"", finish:"", pct:0, team:"", comments:"" };
+      name:"", client:"", scope:"", matDelivery:"", start:"", finish:"", pct:0, team:"", comments:"" };
   }
 
   function normalizeProject(p){
     if (p.client==null) p.client = "";
+    if (p.matDelivery==null) p.matDelivery = "";
     return p;
   }
 
@@ -972,20 +976,20 @@
     statRowEl.innerHTML = chips;
   }
 
-  var META_COL_COUNT = 9;    // the 9 project-detail columns (Project Value removed)
+  var META_COL_COUNT = 10;    // the 10 project-detail columns (Project Value removed, Material delivery date added)
   var DIVIDER_COL = META_COL_COUNT + 1;   // the draggable divider between details and the day grid
-  var TOTAL_META_COLS = DIVIDER_COL;      // 10 — details + divider
+  var TOTAL_META_COLS = DIVIDER_COL;      // 11 — details + divider
   var DAY_COL_START = TOTAL_META_COLS + 1;
 
   // Full grid (meta + day columns): used only by the Schedule grid modal now
   // (see renderGridModal()) — the main Schedule tab shows the meta columns
   // only, via mainGridTemplateColumns()/renderMainList().
   function gridTemplateColumns(){
-    return "var(--w-idx) var(--w-name) var(--w-client) var(--w-scope) var(--w-start) var(--w-finish) var(--w-comments) var(--w-pct) var(--w-team) var(--w-divider) repeat("+DAYS.length+", var(--day))";
+    return "var(--w-idx) var(--w-name) var(--w-client) var(--w-scope) var(--w-matdelivery) var(--w-start) var(--w-finish) var(--w-comments) var(--w-pct) var(--w-team) var(--w-divider) repeat("+DAYS.length+", var(--day))";
   }
 
   function mainGridTemplateColumns(){
-    return "var(--w-idx) var(--w-name) var(--w-client) var(--w-scope) var(--w-start) var(--w-finish) var(--w-comments) var(--w-pct) var(--w-team)";
+    return "var(--w-idx) var(--w-name) var(--w-client) var(--w-scope) var(--w-matdelivery) var(--w-start) var(--w-finish) var(--w-comments) var(--w-pct) var(--w-team)";
   }
 
   var META_LABELS = [
@@ -993,6 +997,7 @@
     {cls:"c-name", txt:"Project name", key:"name"},
     {cls:"c-client", txt:"Client", key:"client"},
     {cls:"c-scope", txt:"Project scope", key:"scope"},
+    {cls:"c-matdelivery", txt:"Material delivery date", key:"matDelivery"},
     {cls:"c-start", txt:"Start date", key:"start"},
     {cls:"c-finish", txt:"Finish date", key:"finish"},
     {cls:"c-comments", txt:"Comments", key:"comments"},
@@ -1052,21 +1057,24 @@
     html += '<div class="cell c-scope" style="grid-column:4; grid-row:'+row+';">'+
       '<textarea class="field" data-field="scope" data-id="'+p.id+'" placeholder="Scope of work" aria-label="Project scope">'+escText(p.scope)+'</textarea></div>';
 
-    html += '<div class="cell c-start" style="grid-column:5; grid-row:'+row+';">'+
+    html += '<div class="cell c-matdelivery" style="grid-column:5; grid-row:'+row+';">'+
+      '<button type="button" class="date-btn'+(p.matDelivery?"":" placeholder")+'" data-date-btn="matDelivery" data-id="'+p.id+'" aria-label="Material delivery date">'+(fmtDateDisplay(p.matDelivery)||"d/mm/yyyy")+'</button></div>';
+
+    html += '<div class="cell c-start" style="grid-column:6; grid-row:'+row+';">'+
       '<button type="button" class="date-btn'+(p.start?"":" placeholder")+'" data-date-btn="start" data-id="'+p.id+'" aria-label="Start date">'+(fmtDateDisplay(p.start)||"d/mm/yyyy")+'</button></div>';
 
-    html += '<div class="cell c-finish" style="grid-column:6; grid-row:'+row+';">'+
+    html += '<div class="cell c-finish" style="grid-column:7; grid-row:'+row+';">'+
       '<button type="button" class="date-btn'+(p.finish?"":" placeholder")+'" data-date-btn="finish" data-id="'+p.id+'" aria-label="Finish date">'+(fmtDateDisplay(p.finish)||"d/mm/yyyy")+'</button></div>';
 
-    html += '<div class="cell c-comments" style="grid-column:7; grid-row:'+row+';">'+
+    html += '<div class="cell c-comments" style="grid-column:8; grid-row:'+row+';">'+
       '<textarea class="field" data-field="comments" data-id="'+p.id+'" placeholder="Comments" aria-label="Comments">'+escText(p.comments)+'</textarea></div>';
 
-    html += '<div class="cell c-pct" style="grid-column:8; grid-row:'+row+';">'+
+    html += '<div class="cell c-pct" style="grid-column:9; grid-row:'+row+';">'+
       '<input class="field pct-text" type="number" min="0" max="100" step="5" data-field="pct" data-id="'+p.id+'" value="'+p.pct+'" aria-label="Percent complete">'+
       '<span class="pct-text" style="color:var(--text-faint)">%</span></div>';
 
     var teamColorStyle = p.team ? ' style="color:'+teamColorValue(p.team)+';"' : "";
-    html += '<div class="cell c-team" style="grid-column:9; grid-row:'+row+';">'+
+    html += '<div class="cell c-team" style="grid-column:10; grid-row:'+row+';">'+
       '<select class="field" data-field="team" data-id="'+p.id+'" data-team="'+escAttr(p.team)+'" aria-label="Assigned team"'+teamColorStyle+'>'+
       '<option value=""'+(p.team===""?" selected":"")+'>—</option>'+
       allTeamNames().map(function(t){ return '<option value="'+escAttr(t)+'"'+(p.team===t?" selected":"")+'>'+escText(t)+'</option>'; }).join("")+
@@ -1099,21 +1107,24 @@
     html += '<div class="cell c-scope" style="grid-column:4; grid-row:'+row+';">'+
       '<textarea class="field autosize-field" data-field="scope" data-id="'+p.id+'" placeholder="Scope of work" aria-label="Project scope">'+escText(p.scope)+'</textarea></div>';
 
-    html += '<div class="cell c-start" style="grid-column:5; grid-row:'+row+';">'+
+    html += '<div class="cell c-matdelivery" style="grid-column:5; grid-row:'+row+';">'+
+      '<button type="button" class="date-btn'+(p.matDelivery?"":" placeholder")+'" data-date-btn="matDelivery" data-id="'+p.id+'" aria-label="Material delivery date">'+(fmtDateDisplay(p.matDelivery)||"d/mm/yyyy")+'</button></div>';
+
+    html += '<div class="cell c-start" style="grid-column:6; grid-row:'+row+';">'+
       '<button type="button" class="date-btn'+(p.start?"":" placeholder")+'" data-date-btn="start" data-id="'+p.id+'" aria-label="Start date">'+(fmtDateDisplay(p.start)||"d/mm/yyyy")+'</button></div>';
 
-    html += '<div class="cell c-finish" style="grid-column:6; grid-row:'+row+';">'+
+    html += '<div class="cell c-finish" style="grid-column:7; grid-row:'+row+';">'+
       '<button type="button" class="date-btn'+(p.finish?"":" placeholder")+'" data-date-btn="finish" data-id="'+p.id+'" aria-label="Finish date">'+(fmtDateDisplay(p.finish)||"d/mm/yyyy")+'</button></div>';
 
-    html += '<div class="cell c-comments" style="grid-column:7; grid-row:'+row+';">'+
+    html += '<div class="cell c-comments" style="grid-column:8; grid-row:'+row+';">'+
       '<textarea class="field autosize-field" data-field="comments" data-id="'+p.id+'" placeholder="Comments" aria-label="Comments">'+escText(p.comments)+'</textarea></div>';
 
-    html += '<div class="cell c-pct" style="grid-column:8; grid-row:'+row+';">'+
+    html += '<div class="cell c-pct" style="grid-column:9; grid-row:'+row+';">'+
       '<input class="field pct-text" type="number" min="0" max="100" step="5" data-field="pct" data-id="'+p.id+'" value="'+p.pct+'" aria-label="Percent complete">'+
       '<span class="pct-text" style="color:var(--text-faint)">%</span></div>';
 
     var teamColorStyle = p.team ? ' style="color:'+teamColorValue(p.team)+';"' : "";
-    html += '<div class="cell c-team" style="grid-column:9; grid-row:'+row+';">'+
+    html += '<div class="cell c-team" style="grid-column:10; grid-row:'+row+';">'+
       '<select class="field" data-field="team" data-id="'+p.id+'" data-team="'+escAttr(p.team)+'" aria-label="Assigned team"'+teamColorStyle+'>'+
       '<option value=""'+(p.team===""?" selected":"")+'>—</option>'+
       allTeamNames().map(function(t){ return '<option value="'+escAttr(t)+'"'+(p.team===t?" selected":"")+'>'+escText(t)+'</option>'; }).join("")+
@@ -1406,6 +1417,7 @@
     {key:"name", label:"Project Name"},
     {key:"client", label:"Client"},
     {key:"scope", label:"Project Scope"},
+    {key:"matDelivery", label:"Material Delivery Date"},
     {key:"start", label:"Start Date"},
     {key:"finish", label:"Finish Date"},
     {key:"pct", label:"% Complete"},
@@ -1423,6 +1435,7 @@
     if (key==="name") return escText(p.name||"Untitled");
     if (key==="client") return escText(p.client||"—");
     if (key==="scope") return escText(p.scope||"—");
+    if (key==="matDelivery") return fmtDateDisplay(p.matDelivery)||"—";
     if (key==="start") return fmtDateDisplay(p.start)||"—";
     if (key==="finish") return fmtDateDisplay(p.finish)||"—";
     if (key==="pct") return (Number(p.pct)||0)+"%";
@@ -1830,11 +1843,30 @@
     positionDatePopup(anchorBtn);
   }
 
+  // Material delivery date must always be on or before the Start date — see
+  // openDatePopup() below, where both directions of this edit are checked
+  // before the new value is accepted.
+  function violatesDeliveryBeforeStart(field, isoVal, p){
+    if (!isoVal) return null; // clearing a date never violates the rule
+    if (field === "matDelivery" && p.start && isoVal > p.start){
+      return "Material delivery date must be on or before the Start date.";
+    }
+    if (field === "start" && p.matDelivery && p.matDelivery > isoVal){
+      return "Start date can't be before the Material delivery date — update the delivery date first.";
+    }
+    return null;
+  }
+
   function openDatePopup(btn){
     var id = btn.dataset.id, field = btn.dataset.dateBtn;
     var p = findProject(id);
     if (!p) return;
     openDatePopupGeneric(btn, p[field], function(isoVal){
+      var violation = violatesDeliveryBeforeStart(field, isoVal, p);
+      if (violation){
+        showToast(violation, null, null);
+        return;
+      }
       p[field] = isoVal;
       if (p.isExample){
         p.isExample = false;
@@ -2380,6 +2412,7 @@
     name: ["projectname","name","project"],
     client: ["client","customer","clientname","account"],
     scope: ["projectscope","scope","description","desc"],
+    matDelivery: ["materialdeliverydate","materialdelivery","deliverydate","matdelivery"],
     start: ["startdate","start"],
     finish: ["finishdate","finish","enddate","end","completiondate"],
     pct: ["completed","percentcompleted","pctcompleted","progress","percentcomplete","complete"],
@@ -2435,13 +2468,23 @@
       var pct = Math.max(0, Math.min(100, Math.round(Number(String(pctRaw).replace(/[^0-9.\-]/g,""))||0)));
       var name = String(get("name")||"").trim();
       if (!name) continue;
+      var importStart = parseDateFlexible(get("start"));
+      var importMatDelivery = parseDateFlexible(get("matDelivery"));
+      if (importMatDelivery && importStart && importMatDelivery > importStart){
+        // Keep the invariant even for imported data rather than rejecting
+        // the whole row — drop the delivery date and note it in Comments so
+        // it's not silently lost.
+        comments = (comments ? comments+" " : "") + "(Material delivery date from import was after Start date — cleared, please re-enter.)";
+        importMatDelivery = "";
+      }
       out.push({
         id:"p"+Date.now().toString(36)+Math.random().toString(36).slice(2,7)+r,
         isExample:false,
         name:name,
         client:String(get("client")||"").trim(),
         scope:String(get("scope")||"").trim(),
-        start:parseDateFlexible(get("start")),
+        matDelivery:importMatDelivery,
+        start:importStart,
         finish:parseDateFlexible(get("finish")),
         pct:pct,
         team:matchedTeam,
@@ -2479,18 +2522,18 @@
 
     var body = rows.map(function(p){
       return [
-        p.name || "Untitled", p.client || "—", fmtDateDisplay(p.start) || "—", fmtDateDisplay(p.finish) || "—",
+        p.name || "Untitled", p.client || "—", fmtDateDisplay(p.matDelivery) || "—", fmtDateDisplay(p.start) || "—", fmtDateDisplay(p.finish) || "—",
         (Number(p.pct)||0)+"%", p.team || "—",
         (p.scope||"").slice(0,60), (p.comments||"").slice(0,60)
       ];
     });
     doc.autoTable({
       startY: fLabel ? 84 : 72,
-      head: [["Project","Client","Start","Finish","%","Team","Scope","Comments"]],
+      head: [["Project","Client","Material Delivery","Start","Finish","%","Team","Scope","Comments"]],
       body: body,
       styles:{ fontSize:8, cellPadding:4, overflow:"linebreak" },
       headStyles:{ fillColor:[46,92,138], textColor:255 },
-      columnStyles:{ 4:{halign:"right"} }
+      columnStyles:{ 5:{halign:"right"} }
     });
 
     var finalY = (doc.lastAutoTable && doc.lastAutoTable.finalY) ? doc.lastAutoTable.finalY : 90;
