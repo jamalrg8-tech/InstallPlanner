@@ -39,13 +39,16 @@
     --team-sammy:#5B7B3F;
     --team-none:#7C8493;
 
-    --w-idx:40px; --w-name:195px; --w-team:122px; --w-divider:10px;
-    --base-w-client:108px; --base-w-scope:160px; --base-w-matdelivery:124px; --base-w-start:124px;
+    --w-idx:40px; --w-name:195px; --w-team:122px; --w-materialsdelivered:110px; --w-divider:10px;
+    --base-w-client:108px; --base-w-scope:160px; --base-w-matdelivery:124px; --base-w-glassdelivery:124px;
+    --base-w-framedelivery:124px; --base-w-start:124px;
     --base-w-finish:124px; --base-w-pct:78px; --base-w-comments:175px;
     --detail-scale:1;
     --w-client: calc(var(--base-w-client) * var(--detail-scale));
     --w-scope: calc(var(--base-w-scope) * var(--detail-scale));
     --w-matdelivery: calc(var(--base-w-matdelivery) * var(--detail-scale));
+    --w-glassdelivery: calc(var(--base-w-glassdelivery) * var(--detail-scale));
+    --w-framedelivery: calc(var(--base-w-framedelivery) * var(--detail-scale));
     --w-start: calc(var(--base-w-start) * var(--detail-scale));
     --w-finish: calc(var(--base-w-finish) * var(--detail-scale));
     --w-pct: calc(var(--base-w-pct) * var(--detail-scale));
@@ -150,10 +153,15 @@
   .banner button{ background:none; border:none; color:var(--text-muted); font-size:16px; cursor:pointer; line-height:1; padding:2px 4px; }
   .banner[hidden]{ display:none; }
 
-  .conflict-banner{ display:flex; flex-direction:column; gap:5px; background:var(--danger-soft); border:1px solid var(--danger); color:var(--text); padding:10px 14px; border-radius:10px; font-size:12.5px; }
-  .conflict-banner .conflict-title{ font-weight:700; color:var(--danger); }
-  .conflict-row{ display:block; }
-  .conflict-banner[hidden]{ display:none; }
+  /* Clickable, count-only conflict notification: replaces the old always-on
+     detailed banner. It stays visible (no auto-timeout) for as long as any
+     conflicts exist; clicking it opens the details in a small popup that the
+     user closes manually when done reading — see openConflictModal(). */
+  .conflict-notif{ display:inline-flex; align-self:flex-start; align-items:center; gap:8px; background:var(--danger-soft); border:1px solid var(--danger); color:var(--danger); padding:9px 16px; border-radius:100px; font-size:12.5px; font-weight:700; font-family:inherit; cursor:pointer; box-shadow:var(--shadow); }
+  .conflict-notif:hover{ filter:brightness(0.97); }
+  .conflict-notif[hidden]{ display:none; }
+  .conflict-row{ display:block; margin-bottom:6px; }
+  .conflict-row:last-child{ margin-bottom:0; }
 
   .toast{ position:fixed; bottom:20px; left:50%; transform:translateX(-50%); background:var(--text); color:var(--bg); padding:10px 16px; border-radius:8px; font-size:13px; box-shadow:var(--shadow); display:flex; gap:14px; align-items:center; z-index:100; opacity:0; pointer-events:none; transition:opacity .2s ease; }
   .toast.show{ opacity:1; pointer-events:auto; }
@@ -176,12 +184,15 @@
   .c-client{ position:sticky; left:calc(var(--w-idx) + var(--w-name)); z-index:3; width:var(--w-client); }
   .c-scope{ position:sticky; left:calc(var(--w-idx) + var(--w-name) + var(--w-client)); z-index:3; width:var(--w-scope); }
   .c-matdelivery{ position:sticky; left:calc(var(--w-idx) + var(--w-name) + var(--w-client) + var(--w-scope)); z-index:3; width:var(--w-matdelivery); }
-  .c-start{ position:sticky; left:calc(var(--w-idx) + var(--w-name) + var(--w-client) + var(--w-scope) + var(--w-matdelivery)); z-index:3; width:var(--w-start); }
-  .c-finish{ position:sticky; left:calc(var(--w-idx) + var(--w-name) + var(--w-client) + var(--w-scope) + var(--w-matdelivery) + var(--w-start)); z-index:3; width:var(--w-finish); }
-  .c-comments{ position:sticky; left:calc(var(--w-idx) + var(--w-name) + var(--w-client) + var(--w-scope) + var(--w-matdelivery) + var(--w-start) + var(--w-finish)); z-index:3; width:var(--w-comments); }
-  .c-pct{ position:sticky; left:calc(var(--w-idx) + var(--w-name) + var(--w-client) + var(--w-scope) + var(--w-matdelivery) + var(--w-start) + var(--w-finish) + var(--w-comments)); z-index:3; width:var(--w-pct); }
-  .c-team{ position:sticky; left:calc(var(--w-idx) + var(--w-name) + var(--w-client) + var(--w-scope) + var(--w-matdelivery) + var(--w-start) + var(--w-finish) + var(--w-comments) + var(--w-pct)); z-index:3; width:var(--w-team); }
-  .c-divider{ position:sticky; left:calc(var(--w-idx) + var(--w-name) + var(--w-client) + var(--w-scope) + var(--w-matdelivery) + var(--w-start) + var(--w-finish) + var(--w-comments) + var(--w-pct) + var(--w-team)); z-index:5; width:var(--w-divider); min-width:var(--w-divider); padding:0; border-right:1px solid var(--border-strong); box-shadow:2px 0 4px rgba(0,0,0,.08); background:var(--surface-2); cursor:col-resize; display:block; }
+  .c-glassdelivery{ position:sticky; left:calc(var(--w-idx) + var(--w-name) + var(--w-client) + var(--w-scope) + var(--w-matdelivery)); z-index:3; width:var(--w-glassdelivery); }
+  .c-framedelivery{ position:sticky; left:calc(var(--w-idx) + var(--w-name) + var(--w-client) + var(--w-scope) + var(--w-matdelivery) + var(--w-glassdelivery)); z-index:3; width:var(--w-framedelivery); }
+  .c-start{ position:sticky; left:calc(var(--w-idx) + var(--w-name) + var(--w-client) + var(--w-scope) + var(--w-matdelivery) + var(--w-glassdelivery) + var(--w-framedelivery)); z-index:3; width:var(--w-start); }
+  .c-finish{ position:sticky; left:calc(var(--w-idx) + var(--w-name) + var(--w-client) + var(--w-scope) + var(--w-matdelivery) + var(--w-glassdelivery) + var(--w-framedelivery) + var(--w-start)); z-index:3; width:var(--w-finish); }
+  .c-comments{ position:sticky; left:calc(var(--w-idx) + var(--w-name) + var(--w-client) + var(--w-scope) + var(--w-matdelivery) + var(--w-glassdelivery) + var(--w-framedelivery) + var(--w-start) + var(--w-finish)); z-index:3; width:var(--w-comments); }
+  .c-pct{ position:sticky; left:calc(var(--w-idx) + var(--w-name) + var(--w-client) + var(--w-scope) + var(--w-matdelivery) + var(--w-glassdelivery) + var(--w-framedelivery) + var(--w-start) + var(--w-finish) + var(--w-comments)); z-index:3; width:var(--w-pct); }
+  .c-team{ position:sticky; left:calc(var(--w-idx) + var(--w-name) + var(--w-client) + var(--w-scope) + var(--w-matdelivery) + var(--w-glassdelivery) + var(--w-framedelivery) + var(--w-start) + var(--w-finish) + var(--w-comments) + var(--w-pct)); z-index:3; width:var(--w-team); }
+  .c-materialsdelivered{ position:sticky; left:calc(var(--w-idx) + var(--w-name) + var(--w-client) + var(--w-scope) + var(--w-matdelivery) + var(--w-glassdelivery) + var(--w-framedelivery) + var(--w-start) + var(--w-finish) + var(--w-comments) + var(--w-pct) + var(--w-team)); z-index:3; width:var(--w-materialsdelivered); }
+  .c-divider{ position:sticky; left:calc(var(--w-idx) + var(--w-name) + var(--w-client) + var(--w-scope) + var(--w-matdelivery) + var(--w-glassdelivery) + var(--w-framedelivery) + var(--w-start) + var(--w-finish) + var(--w-comments) + var(--w-pct) + var(--w-team) + var(--w-materialsdelivered)); z-index:5; width:var(--w-divider); min-width:var(--w-divider); padding:0; border-right:1px solid var(--border-strong); box-shadow:2px 0 4px rgba(0,0,0,.08); background:var(--surface-2); cursor:col-resize; display:block; }
   .c-divider:hover, .c-divider.dragging{ background:var(--accent-soft); }
   .c-divider::after{ content:""; position:absolute; top:50%; left:50%; width:2px; height:28px; background:var(--border-strong); border-radius:1px; transform:translate(-50%,-50%); }
   .c-divider:hover::after, .c-divider.dragging::after{ background:var(--accent); }
@@ -450,7 +461,7 @@
     <button type="button" id="banner-close" aria-label="Dismiss">×</button>
   </div>
 
-  <div class="conflict-banner" id="conflict-banner" hidden></div>
+  <button type="button" class="conflict-notif" id="conflict-notif-btn" hidden></button>
 
   <datalist id="client-list">
     <option value="GTS"><option value="MACS"><option value="JCT"><option value="GreenBull">
@@ -505,6 +516,16 @@
   <div class="datefilter-actions">
     <button type="button" class="datefilter-link" id="datefilter-reset">Reset</button>
     <button type="button" class="btn primary" id="datefilter-apply">Show results</button>
+  </div>
+</div>
+
+<div class="report-modal-backdrop" id="conflict-modal-backdrop" hidden>
+  <div class="report-modal-card" role="dialog" aria-modal="true" aria-labelledby="conflict-modal-title" style="width:min(640px, 100%);">
+    <div class="report-modal-header">
+      <h2 id="conflict-modal-title">Scheduling conflicts</h2>
+      <button type="button" class="report-modal-close" id="conflict-modal-close" aria-label="Close">×</button>
+    </div>
+    <div class="report-modal-body" id="conflict-modal-body"></div>
   </div>
 </div>
 
@@ -657,9 +678,9 @@
 
   // ---- state ----
   var EXAMPLE_PROJECTS = [
-    { id:"ex1", isExample:true, name:"Marina Heights Tower — Unit 2104", client:"GTS", scope:"Supply & install ducted AC system, 3BR apartment", matDelivery:"2026-08-20", start:"2026-08-25", finish:"2026-09-10", pct:60, team:"Mark", comments:"Awaiting client access confirmation for Friday visit." },
-    { id:"ex2", isExample:true, name:"Al Barari Villa 12 — Lighting Retrofit", client:"GreenBull", scope:"Retrofit lighting control panel and fixtures", matDelivery:"2026-09-05", start:"2026-09-08", finish:"2026-09-25", pct:15, team:"Angelo", comments:"Materials on order, ETA Sep 8." },
-    { id:"ex3", isExample:true, name:"Downtown Office L14 — Containment", client:"MACS", scope:"First-fix electrical containment and cable tray", matDelivery:"2026-09-28", start:"2026-10-01", finish:"2026-10-20", pct:0, team:"Sammy", comments:"Start pending permit approval." }
+    { id:"ex1", isExample:true, name:"Marina Heights Tower — Unit 2104", client:"GTS", scope:"Supply & install ducted AC system, 3BR apartment", matDelivery:"2026-08-20", glassDelivery:"2026-08-18", frameDelivery:"2026-08-16", start:"2026-08-25", finish:"2026-09-10", pct:60, team:"Mark", comments:"Awaiting client access confirmation for Friday visit.", materialsDelivered:"Yes" },
+    { id:"ex2", isExample:true, name:"Al Barari Villa 12 — Lighting Retrofit", client:"GreenBull", scope:"Retrofit lighting control panel and fixtures", matDelivery:"2026-09-05", glassDelivery:"", frameDelivery:"", start:"2026-09-08", finish:"2026-09-25", pct:15, team:"Angelo", comments:"Materials on order, ETA Sep 8.", materialsDelivered:"No" },
+    { id:"ex3", isExample:true, name:"Downtown Office L14 — Containment", client:"MACS", scope:"First-fix electrical containment and cable tray", matDelivery:"2026-09-28", glassDelivery:"2026-09-25", frameDelivery:"2026-09-25", start:"2026-10-01", finish:"2026-10-20", pct:0, team:"Sammy", comments:"Start pending permit approval.", materialsDelivered:"No" }
   ];
 
   var state = { projects: null, bannerDismissed:false, customTeams: [] };
@@ -667,18 +688,16 @@
   var lastSnapshotForUndo = null;
   var conflictDaysByProject = {};
   var conflictList = [];
-  var previousConflictKeys = [];
-  var hasRenderedOnce = false;
 
   function cloneState(){ return JSON.parse(JSON.stringify(state)); }
 
   // ---- column widths / details-panel width: a per-device display preference,
   // stored separately from project data (not synced to the shared backend). ----
   var UI_PREFS_KEY = "installPlanner.uiPrefs.v1";
-  var DEFAULT_COL_W = { name:195, client:108, scope:160, matDelivery:124, start:124, finish:124, pct:78, team:122, comments:175 };
-  var COL_MIN_W = { name:110, client:60, scope:60, matDelivery:90, start:90, finish:90, pct:50, team:80, comments:60 };
-  var COL_MAX_W = { name:420, client:260, scope:420, matDelivery:170, start:170, finish:170, pct:110, team:220, comments:420 };
-  var SCALED_COLS = ["client","scope","matDelivery","start","finish","pct","comments"];
+  var DEFAULT_COL_W = { name:195, client:108, scope:160, matDelivery:124, glassDelivery:124, frameDelivery:124, start:124, finish:124, pct:78, team:122, comments:175, materialsDelivered:110 };
+  var COL_MIN_W = { name:110, client:60, scope:60, matDelivery:90, glassDelivery:90, frameDelivery:90, start:90, finish:90, pct:50, team:80, comments:60, materialsDelivered:80 };
+  var COL_MAX_W = { name:420, client:260, scope:420, matDelivery:170, glassDelivery:170, frameDelivery:170, start:170, finish:170, pct:110, team:220, comments:420, materialsDelivered:160 };
+  var SCALED_COLS = ["client","scope","matDelivery","glassDelivery","frameDelivery","start","finish","pct","comments"];
   var colWidths = Object.assign({}, DEFAULT_COL_W);
   var detailScale = 1;
 
@@ -702,10 +721,13 @@
     root.setProperty("--base-w-client", colWidths.client+"px");
     root.setProperty("--base-w-scope", colWidths.scope+"px");
     root.setProperty("--base-w-matdelivery", colWidths.matDelivery+"px");
+    root.setProperty("--base-w-glassdelivery", colWidths.glassDelivery+"px");
+    root.setProperty("--base-w-framedelivery", colWidths.frameDelivery+"px");
     root.setProperty("--base-w-start", colWidths.start+"px");
     root.setProperty("--base-w-finish", colWidths.finish+"px");
     root.setProperty("--base-w-pct", colWidths.pct+"px");
     root.setProperty("--base-w-comments", colWidths.comments+"px");
+    root.setProperty("--w-materialsdelivered", colWidths.materialsDelivered+"px");
     root.setProperty("--detail-scale", String(detailScale));
   }
   function resetColumnLayout(){
@@ -717,12 +739,15 @@
 
   function newProject(){
     return { id:"p"+Date.now().toString(36)+Math.random().toString(36).slice(2,7), isExample:false,
-      name:"", client:"", scope:"", matDelivery:"", start:"", finish:"", pct:0, team:"", comments:"" };
+      name:"", client:"", scope:"", matDelivery:"", glassDelivery:"", frameDelivery:"", start:"", finish:"", pct:0, team:"", comments:"", materialsDelivered:"No" };
   }
 
   function normalizeProject(p){
     if (p.client==null) p.client = "";
     if (p.matDelivery==null) p.matDelivery = "";
+    if (p.glassDelivery==null) p.glassDelivery = "";
+    if (p.frameDelivery==null) p.frameDelivery = "";
+    if (p.materialsDelivered !== "Yes") p.materialsDelivered = "No";
     return p;
   }
 
@@ -976,20 +1001,20 @@
     statRowEl.innerHTML = chips;
   }
 
-  var META_COL_COUNT = 10;    // the 10 project-detail columns (Project Value removed, Material delivery date added)
+  var META_COL_COUNT = 13;    // the 13 project-detail columns (Glass/Frame delivery date + Materials delivered added)
   var DIVIDER_COL = META_COL_COUNT + 1;   // the draggable divider between details and the day grid
-  var TOTAL_META_COLS = DIVIDER_COL;      // 11 — details + divider
+  var TOTAL_META_COLS = DIVIDER_COL;      // 14 — details + divider
   var DAY_COL_START = TOTAL_META_COLS + 1;
 
   // Full grid (meta + day columns): used only by the Schedule grid modal now
   // (see renderGridModal()) — the main Schedule tab shows the meta columns
   // only, via mainGridTemplateColumns()/renderMainList().
   function gridTemplateColumns(){
-    return "var(--w-idx) var(--w-name) var(--w-client) var(--w-scope) var(--w-matdelivery) var(--w-start) var(--w-finish) var(--w-comments) var(--w-pct) var(--w-team) var(--w-divider) repeat("+DAYS.length+", var(--day))";
+    return "var(--w-idx) var(--w-name) var(--w-client) var(--w-scope) var(--w-matdelivery) var(--w-glassdelivery) var(--w-framedelivery) var(--w-start) var(--w-finish) var(--w-comments) var(--w-pct) var(--w-team) var(--w-materialsdelivered) var(--w-divider) repeat("+DAYS.length+", var(--day))";
   }
 
   function mainGridTemplateColumns(){
-    return "var(--w-idx) var(--w-name) var(--w-client) var(--w-scope) var(--w-matdelivery) var(--w-start) var(--w-finish) var(--w-comments) var(--w-pct) var(--w-team)";
+    return "var(--w-idx) var(--w-name) var(--w-client) var(--w-scope) var(--w-matdelivery) var(--w-glassdelivery) var(--w-framedelivery) var(--w-start) var(--w-finish) var(--w-comments) var(--w-pct) var(--w-team) var(--w-materialsdelivered)";
   }
 
   var META_LABELS = [
@@ -998,11 +1023,14 @@
     {cls:"c-client", txt:"Client", key:"client"},
     {cls:"c-scope", txt:"Project scope", key:"scope"},
     {cls:"c-matdelivery", txt:"Material delivery date", key:"matDelivery"},
+    {cls:"c-glassdelivery", txt:"Glass delivery date", key:"glassDelivery"},
+    {cls:"c-framedelivery", txt:"Frame delivery date", key:"frameDelivery"},
     {cls:"c-start", txt:"Start date", key:"start"},
     {cls:"c-finish", txt:"Finish date", key:"finish"},
     {cls:"c-comments", txt:"Comments", key:"comments"},
     {cls:"c-pct", txt:"% complete", key:"pct"},
-    {cls:"c-team", txt:"Assigned team", key:"team"}
+    {cls:"c-team", txt:"Assigned team", key:"team"},
+    {cls:"c-materialsdelivered", txt:"Materials delivered", key:"materialsDelivered"}
   ];
 
   // Full grid header (meta + day columns) — used by the Schedule grid modal.
@@ -1060,25 +1088,37 @@
     html += '<div class="cell c-matdelivery" style="grid-column:5; grid-row:'+row+';">'+
       '<button type="button" class="date-btn'+(p.matDelivery?"":" placeholder")+'" data-date-btn="matDelivery" data-id="'+p.id+'" aria-label="Material delivery date">'+(fmtDateDisplay(p.matDelivery)||"d/mm/yyyy")+'</button></div>';
 
-    html += '<div class="cell c-start" style="grid-column:6; grid-row:'+row+';">'+
+    html += '<div class="cell c-glassdelivery" style="grid-column:6; grid-row:'+row+';">'+
+      '<button type="button" class="date-btn'+(p.glassDelivery?"":" placeholder")+'" data-date-btn="glassDelivery" data-id="'+p.id+'" aria-label="Glass delivery date">'+(fmtDateDisplay(p.glassDelivery)||"d/mm/yyyy")+'</button></div>';
+
+    html += '<div class="cell c-framedelivery" style="grid-column:7; grid-row:'+row+';">'+
+      '<button type="button" class="date-btn'+(p.frameDelivery?"":" placeholder")+'" data-date-btn="frameDelivery" data-id="'+p.id+'" aria-label="Frame delivery date">'+(fmtDateDisplay(p.frameDelivery)||"d/mm/yyyy")+'</button></div>';
+
+    html += '<div class="cell c-start" style="grid-column:8; grid-row:'+row+';">'+
       '<button type="button" class="date-btn'+(p.start?"":" placeholder")+'" data-date-btn="start" data-id="'+p.id+'" aria-label="Start date">'+(fmtDateDisplay(p.start)||"d/mm/yyyy")+'</button></div>';
 
-    html += '<div class="cell c-finish" style="grid-column:7; grid-row:'+row+';">'+
+    html += '<div class="cell c-finish" style="grid-column:9; grid-row:'+row+';">'+
       '<button type="button" class="date-btn'+(p.finish?"":" placeholder")+'" data-date-btn="finish" data-id="'+p.id+'" aria-label="Finish date">'+(fmtDateDisplay(p.finish)||"d/mm/yyyy")+'</button></div>';
 
-    html += '<div class="cell c-comments" style="grid-column:8; grid-row:'+row+';">'+
+    html += '<div class="cell c-comments" style="grid-column:10; grid-row:'+row+';">'+
       '<textarea class="field" data-field="comments" data-id="'+p.id+'" placeholder="Comments" aria-label="Comments">'+escText(p.comments)+'</textarea></div>';
 
-    html += '<div class="cell c-pct" style="grid-column:9; grid-row:'+row+';">'+
+    html += '<div class="cell c-pct" style="grid-column:11; grid-row:'+row+';">'+
       '<input class="field pct-text" type="number" min="0" max="100" step="5" data-field="pct" data-id="'+p.id+'" value="'+p.pct+'" aria-label="Percent complete">'+
       '<span class="pct-text" style="color:var(--text-faint)">%</span></div>';
 
     var teamColorStyle = p.team ? ' style="color:'+teamColorValue(p.team)+';"' : "";
-    html += '<div class="cell c-team" style="grid-column:10; grid-row:'+row+';">'+
+    html += '<div class="cell c-team" style="grid-column:12; grid-row:'+row+';">'+
       '<select class="field" data-field="team" data-id="'+p.id+'" data-team="'+escAttr(p.team)+'" aria-label="Assigned team"'+teamColorStyle+'>'+
       '<option value=""'+(p.team===""?" selected":"")+'>—</option>'+
       allTeamNames().map(function(t){ return '<option value="'+escAttr(t)+'"'+(p.team===t?" selected":"")+'>'+escText(t)+'</option>'; }).join("")+
       '<option value="__add_new__">+ Add new team…</option>'+
+      '</select></div>';
+
+    html += '<div class="cell c-materialsdelivered" style="grid-column:13; grid-row:'+row+';">'+
+      '<select class="field" data-field="materialsDelivered" data-id="'+p.id+'" aria-label="All materials delivered">'+
+      '<option value="No"'+(p.materialsDelivered!=="Yes"?" selected":"")+'>No</option>'+
+      '<option value="Yes"'+(p.materialsDelivered==="Yes"?" selected":"")+'>Yes</option>'+
       '</select></div>';
 
     html += dayCellsHTML(p, row);
@@ -1110,25 +1150,37 @@
     html += '<div class="cell c-matdelivery" style="grid-column:5; grid-row:'+row+';">'+
       '<button type="button" class="date-btn'+(p.matDelivery?"":" placeholder")+'" data-date-btn="matDelivery" data-id="'+p.id+'" aria-label="Material delivery date">'+(fmtDateDisplay(p.matDelivery)||"d/mm/yyyy")+'</button></div>';
 
-    html += '<div class="cell c-start" style="grid-column:6; grid-row:'+row+';">'+
+    html += '<div class="cell c-glassdelivery" style="grid-column:6; grid-row:'+row+';">'+
+      '<button type="button" class="date-btn'+(p.glassDelivery?"":" placeholder")+'" data-date-btn="glassDelivery" data-id="'+p.id+'" aria-label="Glass delivery date">'+(fmtDateDisplay(p.glassDelivery)||"d/mm/yyyy")+'</button></div>';
+
+    html += '<div class="cell c-framedelivery" style="grid-column:7; grid-row:'+row+';">'+
+      '<button type="button" class="date-btn'+(p.frameDelivery?"":" placeholder")+'" data-date-btn="frameDelivery" data-id="'+p.id+'" aria-label="Frame delivery date">'+(fmtDateDisplay(p.frameDelivery)||"d/mm/yyyy")+'</button></div>';
+
+    html += '<div class="cell c-start" style="grid-column:8; grid-row:'+row+';">'+
       '<button type="button" class="date-btn'+(p.start?"":" placeholder")+'" data-date-btn="start" data-id="'+p.id+'" aria-label="Start date">'+(fmtDateDisplay(p.start)||"d/mm/yyyy")+'</button></div>';
 
-    html += '<div class="cell c-finish" style="grid-column:7; grid-row:'+row+';">'+
+    html += '<div class="cell c-finish" style="grid-column:9; grid-row:'+row+';">'+
       '<button type="button" class="date-btn'+(p.finish?"":" placeholder")+'" data-date-btn="finish" data-id="'+p.id+'" aria-label="Finish date">'+(fmtDateDisplay(p.finish)||"d/mm/yyyy")+'</button></div>';
 
-    html += '<div class="cell c-comments" style="grid-column:8; grid-row:'+row+';">'+
+    html += '<div class="cell c-comments" style="grid-column:10; grid-row:'+row+';">'+
       '<textarea class="field autosize-field" data-field="comments" data-id="'+p.id+'" placeholder="Comments" aria-label="Comments">'+escText(p.comments)+'</textarea></div>';
 
-    html += '<div class="cell c-pct" style="grid-column:9; grid-row:'+row+';">'+
+    html += '<div class="cell c-pct" style="grid-column:11; grid-row:'+row+';">'+
       '<input class="field pct-text" type="number" min="0" max="100" step="5" data-field="pct" data-id="'+p.id+'" value="'+p.pct+'" aria-label="Percent complete">'+
       '<span class="pct-text" style="color:var(--text-faint)">%</span></div>';
 
     var teamColorStyle = p.team ? ' style="color:'+teamColorValue(p.team)+';"' : "";
-    html += '<div class="cell c-team" style="grid-column:10; grid-row:'+row+';">'+
+    html += '<div class="cell c-team" style="grid-column:12; grid-row:'+row+';">'+
       '<select class="field" data-field="team" data-id="'+p.id+'" data-team="'+escAttr(p.team)+'" aria-label="Assigned team"'+teamColorStyle+'>'+
       '<option value=""'+(p.team===""?" selected":"")+'>—</option>'+
       allTeamNames().map(function(t){ return '<option value="'+escAttr(t)+'"'+(p.team===t?" selected":"")+'>'+escText(t)+'</option>'; }).join("")+
       '<option value="__add_new__">+ Add new team…</option>'+
+      '</select></div>';
+
+    html += '<div class="cell c-materialsdelivered" style="grid-column:13; grid-row:'+row+';">'+
+      '<select class="field" data-field="materialsDelivered" data-id="'+p.id+'" aria-label="All materials delivered">'+
+      '<option value="No"'+(p.materialsDelivered!=="Yes"?" selected":"")+'>No</option>'+
+      '<option value="Yes"'+(p.materialsDelivered==="Yes"?" selected":"")+'>Yes</option>'+
       '</select></div>';
 
     return html;
@@ -1210,30 +1262,30 @@
     return d+"/"+isoStr.slice(5,7)+"/"+isoStr.slice(0,4);
   }
 
-  function renderConflictBanner(){
-    var el = document.getElementById("conflict-banner");
-    if (!conflictList.length){ el.hidden = true; el.innerHTML = ""; return; }
-    var title = conflictList.length===1 ? "1 scheduling conflict detected" : conflictList.length+" scheduling conflicts detected";
-    var rows = conflictList.slice(0,5).map(function(c){
+  // Clickable, count-only conflict notification (see .conflict-notif CSS
+  // above): stays put with no auto-timeout for as long as conflicts exist —
+  // it only ever shows how many, never the details — and the user clicks it
+  // to read the full list in a popup, then closes that popup manually when
+  // done. Full details live in openConflictModal() below.
+  function renderConflictNotif(){
+    var btn = document.getElementById("conflict-notif-btn");
+    if (!conflictList.length){ btn.hidden = true; btn.textContent = ""; return; }
+    btn.textContent = "⚠ " + (conflictList.length===1 ? "1 scheduling conflict detected" : conflictList.length+" scheduling conflicts detected");
+    btn.hidden = false;
+  }
+
+  function openConflictModal(){
+    var bodyEl = document.getElementById("conflict-modal-body");
+    var rows = conflictList.map(function(c){
       var range = c.start===c.end ? fmtDate(c.start) : (fmtDate(c.start)+" – "+fmtDate(c.end));
       return '<span class="conflict-row">&#9888; '+escText(c.team)+' is booked on both “'+escText(c.aName)+'” and “'+escText(c.bName)+
         '” from '+range+' ('+c.count+' day'+(c.count===1?"":"s")+').</span>';
     }).join("");
-    var more = conflictList.length>5 ? '<span class="conflict-row">+'+(conflictList.length-5)+' more…</span>' : "";
-    el.innerHTML = '<span class="conflict-title">'+title+'</span>' + rows + more;
-    el.hidden = false;
-
-    var newKeys = conflictList.map(function(c){ return c.team+"|"+[c.aId,c.bId].sort().join("|"); });
-    if (hasRenderedOnce){
-      var seen = {}; previousConflictKeys.forEach(function(k){ seen[k]=true; });
-      var fresh = conflictList.filter(function(c,i){ return !seen[newKeys[i]]; });
-      if (fresh.length){
-        var f = fresh[0];
-        var range = f.start===f.end ? fmtDate(f.start) : (fmtDate(f.start)+" – "+fmtDate(f.end));
-        showToast("Double-booking: "+f.team+" is on both \""+f.aName+"\" and \""+f.bName+"\" ("+range+").");
-      }
-    }
-    previousConflictKeys = newKeys;
+    bodyEl.innerHTML = rows || '<div class="report-empty">No scheduling conflicts.</div>';
+    document.getElementById("conflict-modal-backdrop").hidden = false;
+  }
+  function closeConflictModal(){
+    document.getElementById("conflict-modal-backdrop").hidden = true;
   }
 
   function dayCellsHTML(p, row){
@@ -1312,8 +1364,7 @@
     banner.hidden = state.bannerDismissed || !hasExamplesOnly;
 
     computeConflicts();
-    renderConflictBanner();
-    hasRenderedOnce = true;
+    renderConflictNotif();
 
     visibleProjects = state.projects.filter(matchesFilter);
 
@@ -1418,10 +1469,13 @@
     {key:"client", label:"Client"},
     {key:"scope", label:"Project Scope"},
     {key:"matDelivery", label:"Material Delivery Date"},
+    {key:"glassDelivery", label:"Glass Delivery Date"},
+    {key:"frameDelivery", label:"Frame Delivery Date"},
     {key:"start", label:"Start Date"},
     {key:"finish", label:"Finish Date"},
     {key:"pct", label:"% Complete"},
     {key:"team", label:"Assigned Team"},
+    {key:"materialsDelivered", label:"Materials Delivered"},
     {key:"comments", label:"Comments"}
   ];
   var REPORT_COLUMNS_DATE_FILTER = [
@@ -1436,10 +1490,13 @@
     if (key==="client") return escText(p.client||"—");
     if (key==="scope") return escText(p.scope||"—");
     if (key==="matDelivery") return fmtDateDisplay(p.matDelivery)||"—";
+    if (key==="glassDelivery") return fmtDateDisplay(p.glassDelivery)||"—";
+    if (key==="frameDelivery") return fmtDateDisplay(p.frameDelivery)||"—";
     if (key==="start") return fmtDateDisplay(p.start)||"—";
     if (key==="finish") return fmtDateDisplay(p.finish)||"—";
     if (key==="pct") return (Number(p.pct)||0)+"%";
     if (key==="team") return escText(p.team||"—");
+    if (key==="materialsDelivered") return escText(p.materialsDelivered==="Yes" ? "Yes" : "No");
     if (key==="comments") return escText(p.comments||"—");
     return "";
   }
@@ -1843,16 +1900,25 @@
     positionDatePopup(anchorBtn);
   }
 
-  // Material delivery date must always be on or before the Start date — see
-  // openDatePopup() below, where both directions of this edit are checked
-  // before the new value is accepted.
+  // Material/Glass/Frame delivery dates must always be on or before the
+  // Start date — see openDatePopup() below, where both directions of this
+  // edit are checked before the new value is accepted.
+  var DELIVERY_DATE_FIELDS = ["matDelivery", "glassDelivery", "frameDelivery"];
+  var DELIVERY_DATE_LABELS = {
+    matDelivery: "Material delivery date",
+    glassDelivery: "Glass delivery date",
+    frameDelivery: "Frame delivery date"
+  };
   function violatesDeliveryBeforeStart(field, isoVal, p){
     if (!isoVal) return null; // clearing a date never violates the rule
-    if (field === "matDelivery" && p.start && isoVal > p.start){
-      return "Material delivery date must be on or before the Start date.";
+    if (DELIVERY_DATE_FIELDS.indexOf(field) !== -1 && p.start && isoVal > p.start){
+      return DELIVERY_DATE_LABELS[field] + " must be on or before the Start date.";
     }
-    if (field === "start" && p.matDelivery && p.matDelivery > isoVal){
-      return "Start date can't be before the Material delivery date — update the delivery date first.";
+    if (field === "start"){
+      var offender = DELIVERY_DATE_FIELDS.filter(function(f){ return p[f] && p[f] > isoVal; })[0];
+      if (offender){
+        return "Start date can't be before the " + DELIVERY_DATE_LABELS[offender] + " — update the delivery date first.";
+      }
     }
     return null;
   }
@@ -2148,6 +2214,11 @@
     }
     if (e.target.id === "view-grid-btn"){ openGridModal(); return; }
     if (e.target.id === "clear-all-btn"){ openClearAllConfirm(); return; }
+    if (e.target.id === "conflict-notif-btn"){ openConflictModal(); return; }
+    if (e.target.id === "conflict-modal-close" || e.target.id === "conflict-modal-backdrop"){
+      closeConflictModal();
+      return;
+    }
     var kpiEl = e.target.closest('[data-report-kpi]');
     if (kpiEl){
       var kpiKey = kpiEl.dataset.reportKpi;
@@ -2210,7 +2281,9 @@
       var gridBackdrop2 = document.getElementById("grid-modal-backdrop");
       if (gridBackdrop2 && !gridBackdrop2.hidden){ closeGridModal(); return; }
       var backdrop = document.getElementById("report-modal-backdrop");
-      if (backdrop && !backdrop.hidden) closeReport();
+      if (backdrop && !backdrop.hidden){ closeReport(); return; }
+      var conflictBackdrop = document.getElementById("conflict-modal-backdrop");
+      if (conflictBackdrop && !conflictBackdrop.hidden) closeConflictModal();
       return;
     }
     if (e.key === "Enter" || e.key === " "){
@@ -2413,10 +2486,13 @@
     client: ["client","customer","clientname","account"],
     scope: ["projectscope","scope","description","desc"],
     matDelivery: ["materialdeliverydate","materialdelivery","deliverydate","matdelivery"],
+    glassDelivery: ["glassdeliverydate","glassdelivery"],
+    frameDelivery: ["framedeliverydate","framedelivery"],
     start: ["startdate","start"],
     finish: ["finishdate","finish","enddate","end","completiondate"],
     pct: ["completed","percentcompleted","pctcompleted","progress","percentcomplete","complete"],
     team: ["assignedteam","team","installationteam","installer","assignedto"],
+    materialsDelivered: ["allmaterialsdelivered","materialsdelivered","materialdelivered"],
     comments: ["comments","comment","notes","note"]
   };
 
@@ -2477,6 +2553,18 @@
         comments = (comments ? comments+" " : "") + "(Material delivery date from import was after Start date — cleared, please re-enter.)";
         importMatDelivery = "";
       }
+      var importGlassDelivery = parseDateFlexible(get("glassDelivery"));
+      if (importGlassDelivery && importStart && importGlassDelivery > importStart){
+        comments = (comments ? comments+" " : "") + "(Glass delivery date from import was after Start date — cleared, please re-enter.)";
+        importGlassDelivery = "";
+      }
+      var importFrameDelivery = parseDateFlexible(get("frameDelivery"));
+      if (importFrameDelivery && importStart && importFrameDelivery > importStart){
+        comments = (comments ? comments+" " : "") + "(Frame delivery date from import was after Start date — cleared, please re-enter.)";
+        importFrameDelivery = "";
+      }
+      var rawMaterialsDelivered = String(get("materialsDelivered")||"").trim().toLowerCase();
+      var importMaterialsDelivered = (["yes","y","true","1"].indexOf(rawMaterialsDelivered) !== -1) ? "Yes" : "No";
       out.push({
         id:"p"+Date.now().toString(36)+Math.random().toString(36).slice(2,7)+r,
         isExample:false,
@@ -2484,11 +2572,14 @@
         client:String(get("client")||"").trim(),
         scope:String(get("scope")||"").trim(),
         matDelivery:importMatDelivery,
+        glassDelivery:importGlassDelivery,
+        frameDelivery:importFrameDelivery,
         start:importStart,
         finish:parseDateFlexible(get("finish")),
         pct:pct,
         team:matchedTeam,
-        comments:comments
+        comments:comments,
+        materialsDelivered:importMaterialsDelivered
       });
     }
     return out;
@@ -2522,18 +2613,18 @@
 
     var body = rows.map(function(p){
       return [
-        p.name || "Untitled", p.client || "—", fmtDateDisplay(p.matDelivery) || "—", fmtDateDisplay(p.start) || "—", fmtDateDisplay(p.finish) || "—",
-        (Number(p.pct)||0)+"%", p.team || "—",
+        p.name || "Untitled", p.client || "—", fmtDateDisplay(p.matDelivery) || "—", fmtDateDisplay(p.glassDelivery) || "—", fmtDateDisplay(p.frameDelivery) || "—", fmtDateDisplay(p.start) || "—", fmtDateDisplay(p.finish) || "—",
+        (Number(p.pct)||0)+"%", p.team || "—", (p.materialsDelivered==="Yes" ? "Yes" : "No"),
         (p.scope||"").slice(0,60), (p.comments||"").slice(0,60)
       ];
     });
     doc.autoTable({
       startY: fLabel ? 84 : 72,
-      head: [["Project","Client","Material Delivery","Start","Finish","%","Team","Scope","Comments"]],
+      head: [["Project","Client","Material Delivery","Glass Delivery","Frame Delivery","Start","Finish","%","Team","Materials Delivered","Scope","Comments"]],
       body: body,
       styles:{ fontSize:8, cellPadding:4, overflow:"linebreak" },
       headStyles:{ fillColor:[46,92,138], textColor:255 },
-      columnStyles:{ 5:{halign:"right"} }
+      columnStyles:{ 7:{halign:"right"} }
     });
 
     var finalY = (doc.lastAutoTable && doc.lastAutoTable.finalY) ? doc.lastAutoTable.finalY : 90;
