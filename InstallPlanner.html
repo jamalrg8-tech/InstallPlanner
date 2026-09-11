@@ -439,30 +439,59 @@
      glass/frame/coating fabrication status board (state.waRows). Its own
      flat table, no day grid and no need to freeze columns while scrolling
      (see the main-list note above for why that pinning is left off), so
-     every column here is a plain, fixed-width, non-sticky cell — the whole
-     row just scrolls together as one unit. This CSS (plus the row/header
-     markup it styles) is shared with the standalone factory page,
-     wa-tracker.html — keep the two in sync if it changes. ---- */
+     every column here is a plain, non-sticky cell — the whole row just
+     scrolls together as one unit. Column widths are resizable (drag the
+     handle on the right edge of each header cell) and live in --wa-w-*
+     custom properties set by WA.createBoardControls() in wa-shared.js,
+     which also owns the row-height preset and the always-reachable bottom
+     scrollbar (see .wa-hbar below). This CSS (plus the row/header markup it
+     styles) is shared with the standalone factory page, wa-tracker.html —
+     keep the two in sync if it changes. ---- */
   .wa-toolbar{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:12px; }
+  .wa-rowheight-label{ display:flex; align-items:center; gap:6px; font-size:12.5px; color:var(--text-muted); white-space:nowrap; }
+  .wa-rowheight-label select{ width:auto; padding:6px 8px; }
   .wa-board .row-head{ display:none; }
 
-  .wc-idx{ position:relative; width:40px; justify-content:center; padding:0; }
-  .wc-no{ width:56px; }
-  .wc-jobno{ width:86px; }
-  .wc-projectname{ width:190px; }
-  .wc-deliverydate{ width:116px; }
-  .wc-delivered{ width:88px; }
-  .wc-description{ width:170px; }
-  .wc-itemqty{ width:76px; }
-  .wc-scope{ width:260px; }
-  .wc-etacoating{ width:190px; }
-  .wc-etaframe{ width:190px; }
-  .wc-etashutter{ width:190px; }
+  .wc-idx{ position:relative; width:var(--wa-w-idx, 40px); justify-content:center; padding:0; }
+  .wc-no{ width:var(--wa-w-no, 56px); }
+  .wc-jobno{ width:var(--wa-w-jobno, 86px); }
+  .wc-projectname{ width:var(--wa-w-projectname, 190px); }
+  .wc-deliverydate{ width:var(--wa-w-deliverydate, 150px); }
+  .wc-framedeliverydate{ width:var(--wa-w-framedeliverydate, 130px); }
+  .wc-shutterdeliverydate{ width:var(--wa-w-shutterdeliverydate, 130px); }
+  .wc-delivered{ width:var(--wa-w-delivered, 88px); }
+  .wc-description{ width:var(--wa-w-description, 170px); }
+  .wc-itemqty{ width:var(--wa-w-itemqty, 76px); }
+  .wc-scope{ width:var(--wa-w-scope, 220px); }
+  .wc-etacoating{ width:var(--wa-w-etacoating, 170px); }
+  .wc-etaframe{ width:var(--wa-w-etaframe, 170px); }
+  .wc-etashutter{ width:var(--wa-w-etashutter, 170px); }
+  .wc-remarks{ width:var(--wa-w-remarks, 200px); }
   /* The WA tracker's idx column has no row number to hide behind (see the
      comment on WA.rowHTML in wa-shared.js), and needs to work as well from
      a factory tablet as a desktop — so its delete button is always visible
      rather than only appearing on hover like the project board's. */
   .wc-idx .del-btn{ position:static; opacity:1; pointer-events:auto; }
+
+  /* Column resize handles — visually identical to the main schedule's
+     .col-handle, but a distinct class so the two boards' drag interactions
+     (and their independently-persisted widths) never collide. .meta-head
+     already establishes position:sticky (below), which also serves as the
+     containing block these absolutely-positioned handles need. */
+  .wa-col-handle{ position:absolute; top:0; right:-3px; width:6px; height:100%; cursor:col-resize; z-index:10; background:transparent; }
+  .wa-col-handle:hover, .wa-col-handle.dragging{ background:var(--accent); opacity:.55; }
+
+  /* The WA board's own native horizontal scrollbar is hidden in favor of
+     .wa-hbar below — a slim, always-visible "shadow" scrollbar pinned right
+     under the table (outside the vertically-scrolling .board-scroll), so
+     you never have to scroll all the way down through the rows just to
+     reach a horizontal scrollbar. Dragging it (or a trackpad swipe directly
+     over the table — see the wheel listener in createBoardControls()) pans
+     the real board via scrollLeft; .wa-hbar-inner is sized in JS to match
+     the board's full scrollWidth so the thumb's proportions are honest. */
+  .wa-board-wrap .board-scroll{ overflow-x:hidden; }
+  .wa-hbar{ overflow-x:auto; overflow-y:hidden; height:14px; border-top:1px solid var(--border); background:var(--surface-2); }
+  .wa-hbar-inner{ height:1px; }
 
   /* ---- Main list (Schedule tab): meta columns only, no day grid — see
      mainRowHTML()/renderMainList(). Rows auto-grow to fit Scope/Comments. ---- */
@@ -568,12 +597,23 @@
       <button class="btn" id="wa-add-btn" type="button">+ Add row</button>
       <button class="btn" id="wa-import-btn" type="button">Import Excel / CSV</button>
       <input class="import-input" id="wa-import-input" type="file" accept=".xlsx,.xls,.csv">
+      <button class="btn" id="wa-export-xlsx-btn" type="button">Export Excel</button>
+      <button class="btn" id="wa-export-pdf-btn" type="button">Export PDF</button>
       <button class="btn" id="wa-share-btn" type="button" title="Copy a link to a factory-only view of just this tracker">Share factory link</button>
+      <label class="wa-rowheight-label">Row height
+        <select id="wa-rowheight-select" class="field">
+          <option value="compact">Compact</option>
+          <option value="comfortable" selected>Comfortable</option>
+          <option value="expanded">Expanded</option>
+        </select>
+      </label>
+      <button class="btn" id="wa-reset-cols-btn" type="button" title="Reset column widths and row height back to defaults">Reset columns</button>
     </div>
-    <div class="board-wrap">
+    <div class="board-wrap wa-board-wrap">
       <div class="board-scroll" id="wa-tracker-scroll">
         <div class="board wa-board" id="wa-tracker-board"></div>
       </div>
+      <div class="wa-hbar" id="wa-hbar" title="Drag to scroll across all columns"><div class="wa-hbar-inner" id="wa-hbar-inner"></div></div>
     </div>
   </div>
 
@@ -1629,18 +1669,18 @@
     var rows = state.waRows || [];
     var totalCols = WA.META_LABELS.length;
     waBoardEl.style.gridTemplateColumns = WA.gridTemplateColumns();
+    waBoardEl.style.gridTemplateRows = WA.gridTemplateRows(rows.length);
 
     var html = WA.metaHeaderHTML();
     if (rows.length === 0){
-      waBoardEl.style.gridTemplateRows = "42px 64px";
       html += '<div class="cell empty-state" style="grid-column:1 / span '+totalCols+'; grid-row:2; justify-content:center;">'+
         'No rows yet. Click “+ Add row” or use “Import Excel / CSV” to bring in a list.</div>';
     } else {
-      waBoardEl.style.gridTemplateRows = "42px " + "repeat("+rows.length+", minmax(64px, auto))";
       rows.forEach(function(row, idx){ html += WA.rowHTML(row, idx); });
     }
     waBoardEl.innerHTML = html;
     autosizeAllTextareas(waBoardEl);
+    if (waControls) waControls.refreshScrollbar();
   }
 
   // Copies a link to wa-tracker.html — a separate, standalone page (see
@@ -1663,6 +1703,39 @@
       fallback();
     }
   }
+
+  function waExportFilename(ext){
+    return "Eurolux-WA-Production-Tracker-"+TODAY_ISO+"."+ext;
+  }
+  document.getElementById("wa-export-xlsx-btn").addEventListener("click", function(){
+    var ok = WA.exportXLSX(state.waRows, waExportFilename("xlsx"));
+    if (!ok) showToast("Couldn't generate the Excel file. Try again, or check your connection.", null, null);
+  });
+  document.getElementById("wa-export-pdf-btn").addEventListener("click", function(){
+    var ok = WA.exportPDF(state.waRows, waExportFilename("pdf"));
+    if (!ok) showToast("Couldn't generate the PDF. Try again, or check your connection.", null, null);
+  });
+
+  // ---- WA board column widths / row height / always-reachable bottom
+  // scrollbar — one shared implementation (wa-shared.js) so this tab and
+  // the standalone factory page never drift apart. Per-device preference,
+  // not synced — like the main schedule's own column widths, resizing here
+  // only affects this browser. ----
+  var waControls = WA.createBoardControls({
+    storageKey: "installPlanner.waUiPrefs.v1",
+    boardEl: document.getElementById("wa-tracker-board"),
+    hscrollEl: document.getElementById("wa-tracker-scroll"),
+    hbarEl: document.getElementById("wa-hbar"),
+    hbarInnerEl: document.getElementById("wa-hbar-inner")
+  });
+  document.getElementById("wa-rowheight-select").addEventListener("change", function(e){
+    waControls.setRowHeight(e.target.value);
+  });
+  document.getElementById("wa-reset-cols-btn").addEventListener("click", function(){
+    waControls.resetToDefaults();
+    document.getElementById("wa-rowheight-select").value = waControls.getRowHeight();
+    showToast("WA tracker column widths and row height reset.", null, null);
+  });
 
   // ---- dashboard ----
   function daysBetween(isoA, isoB){
@@ -3087,6 +3160,8 @@
 
     loadUIPrefs();
     applyColumnVars();
+    waControls.init();
+    document.getElementById("wa-rowheight-select").value = waControls.getRowHeight();
 
     setSaveStatus("connecting");
     await initBackend();

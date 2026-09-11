@@ -137,18 +137,36 @@
   .del-btn{ width:22px; height:22px; border-radius:6px; border:1px solid transparent; background:transparent; color:var(--text-faint); cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:13px; }
   .del-btn:hover{ background:var(--danger-soft); color:var(--danger); border-color:var(--danger); }
 
-  .wc-idx{ position:relative; width:40px; justify-content:center; padding:0; }
-  .wc-no{ width:56px; }
-  .wc-jobno{ width:86px; }
-  .wc-projectname{ width:190px; }
-  .wc-deliverydate{ width:116px; }
-  .wc-delivered{ width:88px; }
-  .wc-description{ width:170px; }
-  .wc-itemqty{ width:76px; }
-  .wc-scope{ width:260px; }
-  .wc-etacoating{ width:190px; }
-  .wc-etaframe{ width:190px; }
-  .wc-etashutter{ width:190px; }
+  .wc-idx{ position:relative; width:var(--wa-w-idx, 40px); justify-content:center; padding:0; }
+  .wc-no{ width:var(--wa-w-no, 56px); }
+  .wc-jobno{ width:var(--wa-w-jobno, 86px); }
+  .wc-projectname{ width:var(--wa-w-projectname, 190px); }
+  .wc-deliverydate{ width:var(--wa-w-deliverydate, 150px); }
+  .wc-framedeliverydate{ width:var(--wa-w-framedeliverydate, 130px); }
+  .wc-shutterdeliverydate{ width:var(--wa-w-shutterdeliverydate, 130px); }
+  .wc-delivered{ width:var(--wa-w-delivered, 88px); }
+  .wc-description{ width:var(--wa-w-description, 170px); }
+  .wc-itemqty{ width:var(--wa-w-itemqty, 76px); }
+  .wc-scope{ width:var(--wa-w-scope, 220px); }
+  .wc-etacoating{ width:var(--wa-w-etacoating, 170px); }
+  .wc-etaframe{ width:var(--wa-w-etaframe, 170px); }
+  .wc-etashutter{ width:var(--wa-w-etashutter, 170px); }
+  .wc-remarks{ width:var(--wa-w-remarks, 200px); }
+
+  /* Column resize handles — see the matching comment in InstallPlanner.html;
+     .meta-head already establishes position:sticky (above), which also
+     serves as the containing block these absolutely-positioned handles need. */
+  .wa-col-handle{ position:absolute; top:0; right:-3px; width:6px; height:100%; cursor:col-resize; z-index:10; background:transparent; }
+  .wa-col-handle:hover, .wa-col-handle.dragging{ background:var(--accent); opacity:.55; }
+
+  /* Always-reachable "shadow" horizontal scrollbar pinned under the table —
+     see the matching comment in InstallPlanner.html. */
+  .board-wrap .board-scroll{ overflow-x:hidden; }
+  .wa-hbar{ overflow-x:auto; overflow-y:hidden; height:14px; border-top:1px solid var(--border); background:var(--surface-2); }
+  .wa-hbar-inner{ height:1px; }
+
+  .wa-rowheight-label{ display:flex; align-items:center; gap:6px; font-size:12.5px; color:var(--text-muted); white-space:nowrap; }
+  .wa-rowheight-label select{ width:auto; padding:6px 8px; }
 
   .empty-state{ padding:40px 20px; text-align:center; color:var(--text-muted); font-size:13px; }
 
@@ -183,6 +201,16 @@
       <button class="btn" id="add-btn" type="button">+ Add row</button>
       <button class="btn" id="import-btn" type="button">Import Excel / CSV</button>
       <input class="import-input" id="import-input" type="file" accept=".xlsx,.xls,.csv">
+      <button class="btn" id="export-xlsx-btn" type="button">Export Excel</button>
+      <button class="btn" id="export-pdf-btn" type="button">Export PDF</button>
+      <label class="wa-rowheight-label">Row height
+        <select id="rowheight-select" class="field">
+          <option value="compact">Compact</option>
+          <option value="comfortable" selected>Comfortable</option>
+          <option value="expanded">Expanded</option>
+        </select>
+      </label>
+      <button class="btn" id="reset-cols-btn" type="button" title="Reset column widths and row height back to defaults">Reset columns</button>
     </div>
   </div>
 
@@ -190,6 +218,7 @@
     <div class="board-scroll" id="board-scroll">
       <div class="board wa-board" id="wa-board"></div>
     </div>
+    <div class="wa-hbar" id="wa-hbar" title="Drag to scroll across all columns"><div class="wa-hbar-inner" id="wa-hbar-inner"></div></div>
   </div>
 
   <div class="app-footer">Eurolux Doors and Windows — WA Production Tracker</div>
@@ -220,8 +249,12 @@
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
 <script src="./firebase-config.js"></script>
 
-<!-- Excel / CSV import -->
+<!-- Excel / CSV import and export -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+<!-- PDF export -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
 
 <!-- WA production tracker's shared data model + rendering (window.WA) —
      the same file InstallPlanner.html uses for its "WA Tracker" tab, so
@@ -300,20 +333,54 @@
     var rows = state.waRows || [];
     var totalCols = WA.META_LABELS.length;
     boardEl.style.gridTemplateColumns = WA.gridTemplateColumns();
+    boardEl.style.gridTemplateRows = WA.gridTemplateRows(rows.length);
 
     var html = WA.metaHeaderHTML();
     if (rows.length === 0){
-      boardEl.style.gridTemplateRows = "42px 64px";
       html += '<div class="cell empty-state" style="grid-column:1 / span '+totalCols+'; grid-row:2; justify-content:center;">'+
         'No rows yet. Click “+ Add row” or use “Import Excel / CSV” to bring in a list.</div>';
     } else {
-      boardEl.style.gridTemplateRows = "42px " + "repeat("+rows.length+", minmax(64px, auto))";
       rows.forEach(function(row, idx){ html += WA.rowHTML(row, idx); });
     }
     boardEl.innerHTML = html;
     autosizeAllTextareas(boardEl);
     restoreFocusInfo(focusInfo);
+    if (waControls) waControls.refreshScrollbar();
   }
+
+  // ---- column widths / row height / always-reachable bottom scrollbar —
+  // one shared implementation (wa-shared.js) so this page and the "WA
+  // Tracker" tab inside InstallPlanner.html never drift apart. Per-device
+  // preference, not synced — resizing here only affects this device. ----
+  var waControls = WA.createBoardControls({
+    storageKey: "installPlanner.waUiPrefs.v1",
+    boardEl: boardEl,
+    hscrollEl: document.getElementById("board-scroll"),
+    hbarEl: document.getElementById("wa-hbar"),
+    hbarInnerEl: document.getElementById("wa-hbar-inner")
+  });
+  document.getElementById("rowheight-select").addEventListener("change", function(e){
+    waControls.setRowHeight(e.target.value);
+  });
+  document.getElementById("reset-cols-btn").addEventListener("click", function(){
+    waControls.resetToDefaults();
+    document.getElementById("rowheight-select").value = waControls.getRowHeight();
+    showToast("Column widths and row height reset.", null, null);
+  });
+
+  function waExportFilename(ext){
+    var d = new Date();
+    var iso8601 = d.getFullYear()+"-"+pad2(d.getMonth()+1)+"-"+pad2(d.getDate());
+    return "Eurolux-WA-Production-Tracker-"+iso8601+"."+ext;
+  }
+  document.getElementById("export-xlsx-btn").addEventListener("click", function(){
+    var ok = WA.exportXLSX(state.waRows, waExportFilename("xlsx"));
+    if (!ok) showToast("Couldn't generate the Excel file. Try again, or check your connection.", null, null);
+  });
+  document.getElementById("export-pdf-btn").addEventListener("click", function(){
+    var ok = WA.exportPDF(state.waRows, waExportFilename("pdf"));
+    if (!ok) showToast("Couldn't generate the PDF. Try again, or check your connection.", null, null);
+  });
 
   // ---- persistence: reads/writes ONLY the "waRows" field of the shared
   // doc/local-storage blob — see the note above the script includes. ----
@@ -700,6 +767,8 @@
 
   // ---- boot ----
   async function init(){
+    waControls.init();
+    document.getElementById("rowheight-select").value = waControls.getRowHeight();
     setSaveStatus("connecting");
     await initBackend();
     setSaveStatus(backendMode === "firestore" ? "synced" : "local-saved");
