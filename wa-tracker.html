@@ -235,6 +235,15 @@
   var boardEl = document.getElementById("wa-board");
   var state = { waRows: [] };
   var saveTimer = null;
+  // True from the instant a Firestore write is kicked off until it settles.
+  // Firestore's local cache echoes a write back through onSnapshot almost
+  // immediately (well before the network round-trip completes), and that
+  // echo can land in the gap right after doSave() clears saveTimer but
+  // before the write's promise resolves. Without this flag, that echo was
+  // treated as "no local edit pending" and triggered a full board re-render
+  // — rebuilding every input from scratch and stealing focus — which is
+  // what made typing feel like it kept getting interrupted.
+  var writeInFlight = false;
   var lastSnapshotForUndo = null;
 
   // ---- date helpers (same as InstallPlanner.html's — kept local rather
@@ -258,7 +267,36 @@
     for (var i=0;i<els.length;i++) autosizeTextarea(els[i]);
   }
 
+  // Same focus-preservation pattern as the main app's render(): capture
+  // which field (and cursor position) is focused before rebuilding the
+  // board's innerHTML, then restore it afterwards, so a re-render that
+  // happens to land while someone's mid-edit (e.g. a legitimate update
+  // from someone else editing the same tracker) doesn't kick them out of
+  // the field they're typing in.
+  function captureFocusInfo(){
+    var active = document.activeElement;
+    if (!active || !active.matches || !active.matches("[data-wa-field][data-id]")) return null;
+    return {
+      field: active.dataset.waField,
+      id: active.dataset.id,
+      selStart: (typeof active.selectionStart === "number") ? active.selectionStart : null,
+      selEnd: (typeof active.selectionEnd === "number") ? active.selectionEnd : null
+    };
+  }
+  function restoreFocusInfo(info){
+    if (!info) return;
+    requestAnimationFrame(function(){
+      var again = document.querySelector('[data-wa-field="'+info.field+'"][data-id="'+info.id+'"]');
+      if (!again) return;
+      again.focus();
+      if (info.selStart !== null && again.setSelectionRange){
+        try { again.setSelectionRange(info.selStart, info.selEnd); } catch(e){}
+      }
+    });
+  }
+
   function render(){
+    var focusInfo = captureFocusInfo();
     var rows = state.waRows || [];
     var totalCols = WA.META_LABELS.length;
     boardEl.style.gridTemplateColumns = WA.gridTemplateColumns();
@@ -274,6 +312,7 @@
     }
     boardEl.innerHTML = html;
     autosizeAllTextareas(boardEl);
+    restoreFocusInfo(focusInfo);
   }
 
   // ---- persistence: reads/writes ONLY the "waRows" field of the shared
@@ -335,9 +374,10 @@
       // merge:true — touches ONLY the "waRows" key of the shared doc, never
       // "projects"/"customTeams"/"bannerDismissed", so this page can never
       // clobber the project schedule even though it's the same document.
+      writeInFlight = true;
       fsDocRef.set({ waRows: state.waRows, updatedAt: firebase.firestore.FieldValue.serverTimestamp() }, { merge:true })
-        .then(function(){ setSaveStatus("synced"); })
-        .catch(function(){ setSaveStatus("sync-error"); });
+        .then(function(){ writeInFlight = false; setSaveStatus("synced"); })
+        .catch(function(){ writeInFlight = false; setSaveStatus("sync-error"); });
       return;
     }
     try{
@@ -366,7 +406,7 @@
         var settled = false;
         fsDocRef.onSnapshot(function(snap){
           applyingRemoteUpdate = true;
-          var hasPendingLocalEdit = !!saveTimer;
+          var hasPendingLocalEdit = !!saveTimer || writeInFlight;
           if (snap.exists){
             var data = snap.data();
             if (!hasPendingLocalEdit){

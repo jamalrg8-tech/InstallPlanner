@@ -779,6 +779,15 @@
 
   var state = { projects: null, bannerDismissed:false, customTeams: [], waRows: [] };
   var saveTimer = null;
+  // True from the instant a Firestore write is kicked off until it settles.
+  // Firestore's local cache echoes a write back through onSnapshot almost
+  // immediately (well before the network round-trip completes), and that
+  // echo can land in the gap right after doSave() clears saveTimer but
+  // before the write's promise resolves. Without this flag, that echo was
+  // treated as "no local edit pending" and triggered a full board re-render
+  // — rebuilding every input from scratch and stealing focus — which is
+  // what made typing feel like it kept getting interrupted.
+  var writeInFlight = false;
   var lastSnapshotForUndo = null;
   var conflictDaysByProject = {};
   var conflictList = [];
@@ -931,9 +940,10 @@
     var payload = { projects: state.projects, bannerDismissed: state.bannerDismissed, customTeams: state.customTeams||[], waRows: state.waRows||[] };
     if (backendMode === "firestore" && fsDocRef){
       var withStamp = Object.assign({}, payload, { updatedAt: firebase.firestore.FieldValue.serverTimestamp() });
+      writeInFlight = true;
       fsDocRef.set(withStamp)
-        .then(function(){ setSaveStatus("synced"); })
-        .catch(function(){ setSaveStatus("sync-error"); });
+        .then(function(){ writeInFlight = false; setSaveStatus("synced"); })
+        .catch(function(){ writeInFlight = false; setSaveStatus("sync-error"); });
       return;
     }
     try{
@@ -974,7 +984,7 @@
           // re-render) entirely; our own pending save will push the newer
           // text momentarily, and the next snapshot after that (once
           // saveTimer is idle again) applies normally.
-          var hasPendingLocalEdit = !!saveTimer;
+          var hasPendingLocalEdit = !!saveTimer || writeInFlight;
           if (snap.exists){
             var data = snap.data();
             if (data && Array.isArray(data.projects) && !hasPendingLocalEdit){
@@ -1485,18 +1495,37 @@
   // regardless of what triggered the re-render.
   function captureFocusInfo(){
     var active = document.activeElement;
-    if (!active || !active.matches || !active.matches("[data-field][data-id]")) return null;
-    return {
-      field: active.dataset.field,
-      id: active.dataset.id,
-      selStart: (typeof active.selectionStart === "number") ? active.selectionStart : null,
-      selEnd: (typeof active.selectionEnd === "number") ? active.selectionEnd : null
-    };
+    if (!active || !active.matches) return null;
+    // Covers both the main project board ([data-field]) and the WA tracker
+    // board ([data-wa-field]) — render() re-renders whichever is on screen,
+    // and either one can be mid-edit when that happens.
+    if (active.matches("[data-field][data-id]")){
+      return {
+        attr: "data-field",
+        field: active.dataset.field,
+        id: active.dataset.id,
+        selStart: (typeof active.selectionStart === "number") ? active.selectionStart : null,
+        selEnd: (typeof active.selectionEnd === "number") ? active.selectionEnd : null
+      };
+    }
+    if (active.matches("[data-wa-field][data-id]")){
+      return {
+        attr: "data-wa-field",
+        field: active.dataset.waField,
+        id: active.dataset.id,
+        selStart: (typeof active.selectionStart === "number") ? active.selectionStart : null,
+        selEnd: (typeof active.selectionEnd === "number") ? active.selectionEnd : null
+      };
+    }
+    return null;
   }
   function restoreFocusInfo(info){
     if (!info) return;
     requestAnimationFrame(function(){
-      var again = document.querySelector('[data-field="'+info.field+'"][data-id="'+info.id+'"]');
+      var selector = info.attr === "data-wa-field"
+        ? '[data-wa-field="'+info.field+'"][data-id="'+info.id+'"]'
+        : '[data-field="'+info.field+'"][data-id="'+info.id+'"]';
+      var again = document.querySelector(selector);
       if (!again) return;
       again.focus();
       if (info.selStart !== null && again.setSelectionRange){
