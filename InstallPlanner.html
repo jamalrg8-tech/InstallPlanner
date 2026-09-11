@@ -39,7 +39,7 @@
     --team-sammy:#5B7B3F;
     --team-none:#7C8493;
 
-    --w-idx:40px; --w-name:195px; --w-team:122px; --w-bondingrequired:118px; --w-divider:10px;
+    --w-idx:40px; --w-name:195px; --w-team:122px; --w-extrateams:150px; --w-bondingrequired:118px; --w-divider:10px;
     --base-w-client:108px; --base-w-scope:160px; --base-w-glassdelivery:124px;
     --base-w-glassdeliverycomments:150px;
     --base-w-framedelivery:124px; --base-w-framedeliverycomments:150px;
@@ -195,8 +195,9 @@
   .c-comments{ position:sticky; left:calc(var(--w-idx) + var(--w-name) + var(--w-client) + var(--w-scope) + var(--w-glassdelivery) + var(--w-glassdeliverycomments) + var(--w-framedelivery) + var(--w-framedeliverycomments) + var(--w-start) + var(--w-finish)); z-index:3; width:var(--w-comments); }
   .c-pct{ position:sticky; left:calc(var(--w-idx) + var(--w-name) + var(--w-client) + var(--w-scope) + var(--w-glassdelivery) + var(--w-glassdeliverycomments) + var(--w-framedelivery) + var(--w-framedeliverycomments) + var(--w-start) + var(--w-finish) + var(--w-comments)); z-index:3; width:var(--w-pct); }
   .c-team{ position:sticky; left:calc(var(--w-idx) + var(--w-name) + var(--w-client) + var(--w-scope) + var(--w-glassdelivery) + var(--w-glassdeliverycomments) + var(--w-framedelivery) + var(--w-framedeliverycomments) + var(--w-start) + var(--w-finish) + var(--w-comments) + var(--w-pct)); z-index:3; width:var(--w-team); }
-  .c-bondingrequired{ position:sticky; left:calc(var(--w-idx) + var(--w-name) + var(--w-client) + var(--w-scope) + var(--w-glassdelivery) + var(--w-glassdeliverycomments) + var(--w-framedelivery) + var(--w-framedeliverycomments) + var(--w-start) + var(--w-finish) + var(--w-comments) + var(--w-pct) + var(--w-team)); z-index:3; width:var(--w-bondingrequired); }
-  .c-divider{ position:sticky; left:calc(var(--w-idx) + var(--w-name) + var(--w-client) + var(--w-scope) + var(--w-glassdelivery) + var(--w-glassdeliverycomments) + var(--w-framedelivery) + var(--w-framedeliverycomments) + var(--w-start) + var(--w-finish) + var(--w-comments) + var(--w-pct) + var(--w-team) + var(--w-bondingrequired)); z-index:5; width:var(--w-divider); min-width:var(--w-divider); padding:0; border-right:1px solid var(--border-strong); box-shadow:2px 0 4px rgba(0,0,0,.08); background:var(--surface-2); cursor:col-resize; display:block; }
+  .c-extrateams{ position:sticky; left:calc(var(--w-idx) + var(--w-name) + var(--w-client) + var(--w-scope) + var(--w-glassdelivery) + var(--w-glassdeliverycomments) + var(--w-framedelivery) + var(--w-framedeliverycomments) + var(--w-start) + var(--w-finish) + var(--w-comments) + var(--w-pct) + var(--w-team)); z-index:3; width:var(--w-extrateams); }
+  .c-bondingrequired{ position:sticky; left:calc(var(--w-idx) + var(--w-name) + var(--w-client) + var(--w-scope) + var(--w-glassdelivery) + var(--w-glassdeliverycomments) + var(--w-framedelivery) + var(--w-framedeliverycomments) + var(--w-start) + var(--w-finish) + var(--w-comments) + var(--w-pct) + var(--w-team) + var(--w-extrateams)); z-index:3; width:var(--w-bondingrequired); }
+  .c-divider{ position:sticky; left:calc(var(--w-idx) + var(--w-name) + var(--w-client) + var(--w-scope) + var(--w-glassdelivery) + var(--w-glassdeliverycomments) + var(--w-framedelivery) + var(--w-framedeliverycomments) + var(--w-start) + var(--w-finish) + var(--w-comments) + var(--w-pct) + var(--w-team) + var(--w-extrateams) + var(--w-bondingrequired)); z-index:5; width:var(--w-divider); min-width:var(--w-divider); padding:0; border-right:1px solid var(--border-strong); box-shadow:2px 0 4px rgba(0,0,0,.08); background:var(--surface-2); cursor:col-resize; display:block; }
   .c-divider:hover, .c-divider.dragging{ background:var(--accent-soft); }
   .c-divider::after{ content:""; position:absolute; top:50%; left:50%; width:2px; height:28px; background:var(--border-strong); border-radius:1px; transform:translate(-50%,-50%); }
   .c-divider:hover::after, .c-divider.dragging::after{ background:var(--accent); }
@@ -254,7 +255,7 @@
   .date-btn.active, .date-btn:focus-visible{ background:var(--surface); box-shadow:inset 0 0 0 1px var(--accent); outline:none; }
   .date-btn.placeholder{ color:var(--text-faint); }
 
-  .date-popup{ position:fixed; z-index:155; width:236px; background:var(--surface); border:1px solid var(--border-strong); border-radius:10px; box-shadow:var(--shadow); padding:10px; font-size:12.5px; }
+  .date-popup{ position:fixed; z-index:220; width:236px; background:var(--surface); border:1px solid var(--border-strong); border-radius:10px; box-shadow:var(--shadow); padding:10px; font-size:12.5px; }
   .date-popup[hidden]{ display:none; }
   .date-popup-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; }
   .date-popup-nav{ background:none; border:none; color:var(--text-muted); font-size:15px; line-height:1; cursor:pointer; padding:4px 8px; border-radius:6px; }
@@ -271,8 +272,28 @@
   .date-popup-link{ background:none; border:none; color:var(--accent); font-family:inherit; font-size:11.5px; font-weight:600; cursor:pointer; padding:2px 4px; }
   .date-popup-link:hover{ text-decoration:underline; }
 
+  /* ---- Helper teams: a project's primary "Assigned team" stays a single
+     dropdown; this lets more than one team be tagged onto the same project
+     (e.g. two crews sharing a big job) without replacing that primary
+     field. The cell is a button showing the tagged names as chips (or a
+     placeholder), and clicking it opens a small checklist popup. ---- */
+  .teams-btn{ width:100%; height:100%; min-height:32px; border:1px solid transparent; background:transparent; padding:4px; border-radius:6px; text-align:left; cursor:pointer; display:flex; flex-wrap:wrap; gap:3px; align-items:center; }
+  .teams-btn:hover{ background:var(--surface-2); }
+  .teams-btn.active, .teams-btn:focus-visible{ background:var(--surface); box-shadow:inset 0 0 0 1px var(--accent); outline:none; }
+  .teams-btn .placeholder-text{ color:var(--text-faint); font-size:12px; }
+  .teams-chip{ font-size:10.5px; font-weight:600; padding:2px 6px; border-radius:10px; background:var(--surface-2); color:var(--text); white-space:nowrap; }
+  .teams-popup{ position:fixed; z-index:220; width:200px; background:var(--surface); border:1px solid var(--border-strong); border-radius:10px; box-shadow:var(--shadow); padding:10px; font-size:12.5px; }
+  .teams-popup[hidden]{ display:none; }
+  .teams-popup-head{ font-weight:700; font-size:11px; text-transform:uppercase; letter-spacing:.03em; color:var(--text-muted); margin-bottom:8px; }
+  .teams-popup-list{ display:flex; flex-direction:column; gap:2px; max-height:220px; overflow:auto; }
+  .teams-popup-row{ display:flex; align-items:center; gap:8px; padding:6px 4px; border-radius:6px; cursor:pointer; font-size:12.5px; }
+  .teams-popup-row:hover{ background:var(--surface-2); }
+  .teams-popup-row input{ margin:0; cursor:pointer; }
+  .teams-popup-empty{ color:var(--text-faint); font-size:12px; padding:6px 4px; }
+  .teams-popup-foot{ display:flex; justify-content:flex-end; margin-top:8px; padding-top:8px; border-top:1px solid var(--border); }
+
   /* ---- Date filter popup: search for projects by start/finish month ---- */
-  .datefilter-popup{ position:fixed; z-index:150; width:310px; background:var(--surface); border:1px solid var(--border-strong); border-radius:10px; box-shadow:var(--shadow); padding:14px; font-size:12.5px; }
+  .datefilter-popup{ position:fixed; z-index:215; width:310px; background:var(--surface); border:1px solid var(--border-strong); border-radius:10px; box-shadow:var(--shadow); padding:14px; font-size:12.5px; }
   .datefilter-popup[hidden]{ display:none; }
   .datefilter-section{ margin-bottom:12px; }
   .datefilter-section label{ display:block; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.03em; color:var(--text-muted); margin-bottom:5px; }
@@ -413,6 +434,36 @@
   .grid-modal-body .board-wrap{ height:100%; }
   .grid-modal-body .board-scroll{ max-height:none; height:100%; }
 
+  /* ---- WA production tracker: a full-screen tab (like Schedule/Team
+     Allocation/Dashboard — see #wa-view), not a popup, for a separate
+     glass/frame/coating fabrication status board (state.waRows). Its own
+     flat table, no day grid and no need to freeze columns while scrolling
+     (see the main-list note above for why that pinning is left off), so
+     every column here is a plain, fixed-width, non-sticky cell — the whole
+     row just scrolls together as one unit. This CSS (plus the row/header
+     markup it styles) is shared with the standalone factory page,
+     wa-tracker.html — keep the two in sync if it changes. ---- */
+  .wa-toolbar{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:12px; }
+  .wa-board .row-head{ display:none; }
+
+  .wc-idx{ position:relative; width:40px; justify-content:center; padding:0; }
+  .wc-no{ width:56px; }
+  .wc-jobno{ width:86px; }
+  .wc-projectname{ width:190px; }
+  .wc-deliverydate{ width:116px; }
+  .wc-delivered{ width:88px; }
+  .wc-description{ width:170px; }
+  .wc-itemqty{ width:76px; }
+  .wc-scope{ width:260px; }
+  .wc-etacoating{ width:190px; }
+  .wc-etaframe{ width:190px; }
+  .wc-etashutter{ width:190px; }
+  /* The WA tracker's idx column has no row number to hide behind (see the
+     comment on WA.rowHTML in wa-shared.js), and needs to work as well from
+     a factory tablet as a desktop — so its delete button is always visible
+     rather than only appearing on hover like the project board's. */
+  .wc-idx .del-btn{ position:static; opacity:1; pointer-events:auto; }
+
   /* ---- Main list (Schedule tab): meta columns only, no day grid — see
      mainRowHTML()/renderMainList(). Rows auto-grow to fit Scope/Comments. ---- */
   .board-list .row-head{ display:none; }
@@ -460,6 +511,7 @@
         <button class="tab-btn active" id="tab-schedule" type="button" role="tab" aria-selected="true">Schedule</button>
         <button class="tab-btn" id="tab-allocation" type="button" role="tab" aria-selected="false">Team Allocation</button>
         <button class="tab-btn" id="tab-dashboard" type="button" role="tab" aria-selected="false">Dashboard</button>
+        <button class="tab-btn" id="tab-wa" type="button" role="tab" aria-selected="false">WA Tracker</button>
       </div>
       <button class="btn" id="reset-cols-btn" type="button" title="Reset column widths and the details panel back to defaults">Reset columns</button>
       <button class="btn" id="import-btn" type="button">Import Excel / CSV</button>
@@ -506,12 +558,32 @@
 
   <div id="dashboard-view" class="dashboard" hidden></div>
 
+  <!-- WA production tracker — a separate glass/frame/coating fabrication
+       status board, shown as its own full-screen tab (not a popup). Its
+       row/header rendering lives in wa-shared.js (window.WA), shared with
+       the standalone factory page (wa-tracker.html) reached via "Share
+       factory link". See renderWaView(). -->
+  <div id="wa-view" hidden>
+    <div class="wa-toolbar">
+      <button class="btn" id="wa-add-btn" type="button">+ Add row</button>
+      <button class="btn" id="wa-import-btn" type="button">Import Excel / CSV</button>
+      <input class="import-input" id="wa-import-input" type="file" accept=".xlsx,.xls,.csv">
+      <button class="btn" id="wa-share-btn" type="button" title="Copy a link to a factory-only view of just this tracker">Share factory link</button>
+    </div>
+    <div class="board-wrap">
+      <div class="board-scroll" id="wa-tracker-scroll">
+        <div class="board wa-board" id="wa-tracker-board"></div>
+      </div>
+    </div>
+  </div>
+
   <div class="app-footer">Developed with love by Uncle Ed, Version 4.20</div>
 </div>
 
 <div class="toast" id="toast"></div>
 
 <div class="date-popup" id="date-popup" hidden></div>
+<div class="teams-popup" id="teams-popup" hidden></div>
 
 <div class="datefilter-popup" id="datefilter-popup" hidden>
   <div class="datefilter-section">
@@ -602,6 +674,10 @@
 
 <!-- Excel / CSV import -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+<!-- WA production tracker's shared data model + rendering (window.WA) —
+     also used standalone by wa-tracker.html, the factory-facing link. -->
+<script src="./wa-shared.js"></script>
 
 <script>
 (function(){
@@ -695,12 +771,13 @@
 
   // ---- state ----
   var EXAMPLE_PROJECTS = [
-    { id:"ex1", isExample:true, name:"Marina Heights Tower — Unit 2104", client:"GTS", scope:"Supply & install ducted AC system, 3BR apartment", glassDelivery:"2026-08-18", glassDeliveryComments:"", frameDelivery:"2026-08-16", frameDeliveryComments:"", start:"2026-08-25", finish:"2026-09-10", pct:60, team:"Mark", comments:"Awaiting client access confirmation for Friday visit.", bondingRequired:"No" },
-    { id:"ex2", isExample:true, name:"Al Barari Villa 12 — Lighting Retrofit", client:"GreenBull", scope:"Retrofit lighting control panel and fixtures", glassDelivery:"", glassDeliveryComments:"", frameDelivery:"", frameDeliveryComments:"", start:"2026-09-08", finish:"2026-09-25", pct:15, team:"Angelo", comments:"Materials on order, ETA Sep 8.", bondingRequired:"No" },
-    { id:"ex3", isExample:true, name:"Downtown Office L14 — Containment", client:"MACS", scope:"First-fix electrical containment and cable tray", glassDelivery:"2026-09-25", glassDeliveryComments:"", frameDelivery:"2026-09-25", frameDeliveryComments:"", start:"2026-10-01", finish:"2026-10-20", pct:0, team:"Sammy", comments:"Start pending permit approval.", bondingRequired:"Yes" }
+    { id:"ex1", isExample:true, name:"Marina Heights Tower — Unit 2104", client:"GTS", scope:"Supply & install ducted AC system, 3BR apartment", glassDelivery:"2026-08-18", glassDeliveryComments:"", frameDelivery:"2026-08-16", frameDeliveryComments:"", start:"2026-08-25", finish:"2026-09-10", pct:60, team:"Mark", extraTeams:["Alex"], comments:"Awaiting client access confirmation for Friday visit.", bondingRequired:"No" },
+    { id:"ex2", isExample:true, name:"Al Barari Villa 12 — Lighting Retrofit", client:"GreenBull", scope:"Retrofit lighting control panel and fixtures", glassDelivery:"", glassDeliveryComments:"", frameDelivery:"", frameDeliveryComments:"", start:"2026-09-08", finish:"2026-09-25", pct:15, team:"Angelo", extraTeams:[], comments:"Materials on order, ETA Sep 8.", bondingRequired:"No" },
+    { id:"ex3", isExample:true, name:"Downtown Office L14 — Containment", client:"MACS", scope:"First-fix electrical containment and cable tray", glassDelivery:"2026-09-25", glassDeliveryComments:"", frameDelivery:"2026-09-25", frameDeliveryComments:"", start:"2026-10-01", finish:"2026-10-20", pct:0, team:"Sammy", extraTeams:[], comments:"Start pending permit approval.", bondingRequired:"Yes" }
   ];
 
-  var state = { projects: null, bannerDismissed:false, customTeams: [] };
+
+  var state = { projects: null, bannerDismissed:false, customTeams: [], waRows: [] };
   var saveTimer = null;
   var lastSnapshotForUndo = null;
   var conflictDaysByProject = {};
@@ -711,9 +788,9 @@
   // ---- column widths / details-panel width: a per-device display preference,
   // stored separately from project data (not synced to the shared backend). ----
   var UI_PREFS_KEY = "installPlanner.uiPrefs.v1";
-  var DEFAULT_COL_W = { name:195, client:108, scope:160, glassDelivery:124, glassDeliveryComments:150, frameDelivery:124, frameDeliveryComments:150, start:124, finish:124, pct:78, team:122, comments:175, bondingRequired:118 };
-  var COL_MIN_W = { name:110, client:60, scope:60, glassDelivery:90, glassDeliveryComments:60, frameDelivery:90, frameDeliveryComments:60, start:90, finish:90, pct:50, team:80, comments:60, bondingRequired:80 };
-  var COL_MAX_W = { name:420, client:260, scope:420, glassDelivery:170, glassDeliveryComments:420, frameDelivery:170, frameDeliveryComments:420, start:170, finish:170, pct:110, team:220, comments:420, bondingRequired:160 };
+  var DEFAULT_COL_W = { name:195, client:108, scope:160, glassDelivery:124, glassDeliveryComments:150, frameDelivery:124, frameDeliveryComments:150, start:124, finish:124, pct:78, team:122, extraTeams:150, comments:175, bondingRequired:118 };
+  var COL_MIN_W = { name:110, client:60, scope:60, glassDelivery:90, glassDeliveryComments:60, frameDelivery:90, frameDeliveryComments:60, start:90, finish:90, pct:50, team:80, extraTeams:80, comments:60, bondingRequired:80 };
+  var COL_MAX_W = { name:420, client:260, scope:420, glassDelivery:170, glassDeliveryComments:420, frameDelivery:170, frameDeliveryComments:420, start:170, finish:170, pct:110, team:220, extraTeams:320, comments:420, bondingRequired:160 };
   var SCALED_COLS = ["client","scope","glassDelivery","glassDeliveryComments","frameDelivery","frameDeliveryComments","start","finish","pct","comments"];
   var colWidths = Object.assign({}, DEFAULT_COL_W);
   var detailScale = 1;
@@ -735,6 +812,7 @@
     var root = document.documentElement.style;
     root.setProperty("--w-name", colWidths.name+"px");
     root.setProperty("--w-team", colWidths.team+"px");
+    root.setProperty("--w-extrateams", colWidths.extraTeams+"px");
     root.setProperty("--w-bondingrequired", colWidths.bondingRequired+"px");
     root.setProperty("--base-w-client", colWidths.client+"px");
     root.setProperty("--base-w-scope", colWidths.scope+"px");
@@ -757,7 +835,7 @@
 
   function newProject(){
     return { id:"p"+Date.now().toString(36)+Math.random().toString(36).slice(2,7), isExample:false,
-      name:"", client:"", scope:"", glassDelivery:"", glassDeliveryComments:"", frameDelivery:"", frameDeliveryComments:"", start:"", finish:"", pct:0, team:"", comments:"", bondingRequired:"No" };
+      name:"", client:"", scope:"", glassDelivery:"", glassDeliveryComments:"", frameDelivery:"", frameDeliveryComments:"", start:"", finish:"", pct:0, team:"", extraTeams:[], comments:"", bondingRequired:"No" };
   }
 
   function normalizeProject(p){
@@ -767,8 +845,13 @@
     if (p.frameDelivery==null) p.frameDelivery = "";
     if (p.frameDeliveryComments==null) p.frameDeliveryComments = "";
     if (p.bondingRequired!=="Yes") p.bondingRequired = "No";
+    if (!Array.isArray(p.extraTeams)) p.extraTeams = [];
     return p;
   }
+
+  // WA production tracker's row shape/defaults (newWaRow/normalizeWaRow)
+  // now live in wa-shared.js as WA.newRow()/WA.normalizeRow(), shared with
+  // the standalone factory page.
 
   // ---- persistence ----
   // Two modes, chosen automatically at startup:
@@ -790,6 +873,7 @@
     state.projects = JSON.parse(JSON.stringify(EXAMPLE_PROJECTS));
     state.bannerDismissed = false;
     state.customTeams = [];
+    state.waRows = JSON.parse(JSON.stringify(WA.SEED_ROWS));
   }
 
   function loadLocalState(){
@@ -801,6 +885,7 @@
           state.projects = data.projects.map(normalizeProject);
           state.bannerDismissed = !!data.bannerDismissed;
           state.customTeams = Array.isArray(data.customTeams) ? data.customTeams : [];
+          state.waRows = Array.isArray(data.waRows) ? data.waRows.map(WA.normalizeRow) : JSON.parse(JSON.stringify(WA.SEED_ROWS));
           return;
         }
       }
@@ -843,7 +928,7 @@
     // truthy forever after the first edit of the session.
     saveTimer = null;
     if (applyingRemoteUpdate) return; // don't echo back a change we just received
-    var payload = { projects: state.projects, bannerDismissed: state.bannerDismissed, customTeams: state.customTeams||[] };
+    var payload = { projects: state.projects, bannerDismissed: state.bannerDismissed, customTeams: state.customTeams||[], waRows: state.waRows||[] };
     if (backendMode === "firestore" && fsDocRef){
       var withStamp = Object.assign({}, payload, { updatedAt: firebase.firestore.FieldValue.serverTimestamp() });
       fsDocRef.set(withStamp)
@@ -896,6 +981,7 @@
               state.projects = data.projects.map(normalizeProject);
               state.bannerDismissed = !!data.bannerDismissed;
               state.customTeams = Array.isArray(data.customTeams) ? data.customTeams : [];
+              state.waRows = Array.isArray(data.waRows) ? data.waRows.map(WA.normalizeRow) : [];
             }
           } else if (!settled){
             // No shared document yet — this is the first time anyone has
@@ -1038,20 +1124,20 @@
     statRowEl.innerHTML = chips;
   }
 
-  var META_COL_COUNT = 14;    // the 14 project-detail columns (Glass/Frame delivery comments + Bonding required added)
+  var META_COL_COUNT = 15;    // the 15 project-detail columns (Helper teams added)
   var DIVIDER_COL = META_COL_COUNT + 1;   // the draggable divider between details and the day grid
-  var TOTAL_META_COLS = DIVIDER_COL;      // 15 — details + divider
+  var TOTAL_META_COLS = DIVIDER_COL;      // 16 — details + divider
   var DAY_COL_START = TOTAL_META_COLS + 1;
 
   // Full grid (meta + day columns): used only by the Schedule grid modal now
   // (see renderGridModal()) — the main Schedule tab shows the meta columns
   // only, via mainGridTemplateColumns()/renderMainList().
   function gridTemplateColumns(){
-    return "var(--w-idx) var(--w-name) var(--w-client) var(--w-scope) var(--w-glassdelivery) var(--w-glassdeliverycomments) var(--w-framedelivery) var(--w-framedeliverycomments) var(--w-start) var(--w-finish) var(--w-comments) var(--w-pct) var(--w-team) var(--w-bondingrequired) var(--w-divider) repeat("+DAYS.length+", var(--day))";
+    return "var(--w-idx) var(--w-name) var(--w-client) var(--w-scope) var(--w-glassdelivery) var(--w-glassdeliverycomments) var(--w-framedelivery) var(--w-framedeliverycomments) var(--w-start) var(--w-finish) var(--w-comments) var(--w-pct) var(--w-team) var(--w-extrateams) var(--w-bondingrequired) var(--w-divider) repeat("+DAYS.length+", var(--day))";
   }
 
   function mainGridTemplateColumns(){
-    return "var(--w-idx) var(--w-name) var(--w-client) var(--w-scope) var(--w-glassdelivery) var(--w-glassdeliverycomments) var(--w-framedelivery) var(--w-framedeliverycomments) var(--w-start) var(--w-finish) var(--w-comments) var(--w-pct) var(--w-team) var(--w-bondingrequired)";
+    return "var(--w-idx) var(--w-name) var(--w-client) var(--w-scope) var(--w-glassdelivery) var(--w-glassdeliverycomments) var(--w-framedelivery) var(--w-framedeliverycomments) var(--w-start) var(--w-finish) var(--w-comments) var(--w-pct) var(--w-team) var(--w-extrateams) var(--w-bondingrequired)";
   }
 
   var META_LABELS = [
@@ -1068,8 +1154,14 @@
     {cls:"c-comments", txt:"Comments", key:"comments"},
     {cls:"c-pct", txt:"% complete", key:"pct"},
     {cls:"c-team", txt:"Assigned team", key:"team"},
+    {cls:"c-extrateams", txt:"Helper teams", key:"extraTeams"},
     {cls:"c-bondingrequired", txt:"Bonding required", key:"bondingRequired"}
   ];
+
+  // WA production tracker's column labels, grid template, header and row
+  // rendering all now live in wa-shared.js (window.WA) — shared verbatim
+  // with the standalone factory page (wa-tracker.html) so the two never
+  // drift apart. See renderWaView() below for where it's used here.
 
   // Full grid header (meta + day columns) — used by the Schedule grid modal.
   function metaHeaderHTML(){
@@ -1104,6 +1196,20 @@
       col++;
     });
     return html;
+  }
+
+  // Helper teams cell: shared by the grid modal and the main list. A project
+  // keeps its single "Assigned team" dropdown as the primary team; this is
+  // an additional, unlimited set of other teams also tagged onto the same
+  // project (e.g. two crews sharing a big job). Shown as small colored chips
+  // — click the cell to open the checklist popup (see openExtraTeamsPopup()).
+  function extraTeamsCellHTML(p, gridCol, row){
+    var names = Array.isArray(p.extraTeams) ? p.extraTeams : [];
+    var inner = names.length
+      ? names.map(function(t){ return '<span class="teams-chip" style="color:'+teamColorValue(t)+';">'+escText(t)+'</span>'; }).join("")
+      : '<span class="placeholder-text">—</span>';
+    return '<div class="cell c-extrateams" style="grid-column:'+gridCol+'; grid-row:'+row+';">'+
+      '<button type="button" class="teams-btn" data-extra-teams-btn="1" data-id="'+p.id+'" aria-label="Helper teams">'+inner+'</button></div>';
   }
 
   function projectRowHTML(p, rowIndex){
@@ -1156,7 +1262,9 @@
       '<option value="__add_new__">+ Add new team…</option>'+
       '</select></div>';
 
-    html += '<div class="cell c-bondingrequired" style="grid-column:14; grid-row:'+row+';">'+
+    html += extraTeamsCellHTML(p, 14, row);
+
+    html += '<div class="cell c-bondingrequired" style="grid-column:15; grid-row:'+row+';">'+
       '<select class="field" data-field="bondingRequired" data-id="'+p.id+'" aria-label="Bonding required">'+
       '<option value="No"'+(p.bondingRequired!=="Yes"?" selected":"")+'>No</option>'+
       '<option value="Yes"'+(p.bondingRequired==="Yes"?" selected":"")+'>Yes</option>'+
@@ -1221,7 +1329,9 @@
       '<option value="__add_new__">+ Add new team…</option>'+
       '</select></div>';
 
-    html += '<div class="cell c-bondingrequired" style="grid-column:14; grid-row:'+row+';">'+
+    html += extraTeamsCellHTML(p, 14, row);
+
+    html += '<div class="cell c-bondingrequired" style="grid-column:15; grid-row:'+row+';">'+
       '<select class="field" data-field="bondingRequired" data-id="'+p.id+'" aria-label="Bonding required">'+
       '<option value="No"'+(p.bondingRequired!=="Yes"?" selected":"")+'>No</option>'+
       '<option value="Yes"'+(p.bondingRequired==="Yes"?" selected":"")+'>Yes</option>'+
@@ -1416,6 +1526,7 @@
 
     if (currentView === "dashboard") renderDashboard();
     if (currentView === "allocation") renderAllocation();
+    if (currentView === "wa") renderWaView();
     var gridBackdrop = document.getElementById("grid-modal-backdrop");
     if (gridBackdrop && !gridBackdrop.hidden) renderGridModal();
 
@@ -1477,6 +1588,53 @@
     document.getElementById("grid-modal-backdrop").hidden = true;
   }
 
+  // WA production tracker: its own full-screen tab (like Schedule/Team
+  // Allocation/Dashboard), not a popup — see switchView("wa"). Its board
+  // (state.waRows) is independent of the project schedule but shares the
+  // same save/sync backend. Rendering itself (header/row HTML, column
+  // widths) lives in wa-shared.js as WA.* so this tab and the standalone
+  // factory page (wa-tracker.html) always render rows identically.
+  function renderWaView(){
+    var waBoardEl = document.getElementById("wa-tracker-board");
+    if (!waBoardEl) return;
+    var rows = state.waRows || [];
+    var totalCols = WA.META_LABELS.length;
+    waBoardEl.style.gridTemplateColumns = WA.gridTemplateColumns();
+
+    var html = WA.metaHeaderHTML();
+    if (rows.length === 0){
+      waBoardEl.style.gridTemplateRows = "42px 64px";
+      html += '<div class="cell empty-state" style="grid-column:1 / span '+totalCols+'; grid-row:2; justify-content:center;">'+
+        'No rows yet. Click “+ Add row” or use “Import Excel / CSV” to bring in a list.</div>';
+    } else {
+      waBoardEl.style.gridTemplateRows = "42px " + "repeat("+rows.length+", minmax(64px, auto))";
+      rows.forEach(function(row, idx){ html += WA.rowHTML(row, idx); });
+    }
+    waBoardEl.innerHTML = html;
+    autosizeAllTextareas(waBoardEl);
+  }
+
+  // Copies a link to wa-tracker.html — a separate, standalone page (see
+  // that file) that shows and edits ONLY the WA production tracker, with
+  // none of the rest of this planner. It reads/writes the very same
+  // "waRows" data (same shared Firestore document, or this browser's local
+  // storage as a fallback), so anyone using that link sees the same rows
+  // as this tab, live. Safe to hand to the factory: there is no way from
+  // that page to reach the project schedule, dashboard, or anything else.
+  function shareFactoryLink(){
+    var url = new URL("wa-tracker.html", window.location.href).href;
+    function fallback(){
+      window.prompt("Copy this link and send it to the factory:", url);
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(url).then(function(){
+        showToast("Factory link copied — anyone with this link can view and update only the WA production tracker.", null, null);
+      }).catch(fallback);
+    } else {
+      fallback();
+    }
+  }
+
   // ---- dashboard ----
   function daysBetween(isoA, isoB){
     var a = Date.UTC(+isoA.slice(0,4), +isoA.slice(5,7)-1, +isoA.slice(8,10));
@@ -1520,6 +1678,7 @@
     {key:"finish", label:"Finish Date"},
     {key:"pct", label:"% Complete"},
     {key:"team", label:"Assigned Team"},
+    {key:"extraTeams", label:"Helper Teams"},
     {key:"bondingRequired", label:"Bonding Required"},
     {key:"comments", label:"Comments"}
   ];
@@ -1542,6 +1701,7 @@
     if (key==="finish") return fmtDateDisplay(p.finish)||"—";
     if (key==="pct") return (Number(p.pct)||0)+"%";
     if (key==="team") return escText(p.team||"—");
+    if (key==="extraTeams") return (Array.isArray(p.extraTeams) && p.extraTeams.length) ? escText(p.extraTeams.join(", ")) : "—";
     if (key==="bondingRequired") return escText(p.bondingRequired||"No");
     if (key==="comments") return escText(p.comments||"—");
     return "";
@@ -1595,6 +1755,16 @@
       "Delete"
     );
   }
+  function openDeleteWaConfirm(id){
+    var row = findWaRow(id);
+    if (!row) return;
+    pendingConfirm = { type:"delete-wa", id:id };
+    openConfirmModal(
+      "Delete this row?",
+      'Delete "'+(row.projectName || "Untitled row")+'" from the WA production tracker? This can be undone right after with the Undo button, but not once you leave or refresh the page.',
+      "Delete"
+    );
+  }
   function openClearAllConfirm(){
     if (!state.projects.length){
       showToast("There are no projects to clear.", null, null);
@@ -1620,6 +1790,15 @@
         render();
         scheduleSave();
         showToast("Project deleted.", "Undo", undoLast);
+      }
+    } else if (action.type === "delete-wa"){
+      var waIdx = (state.waRows||[]).findIndex(function(r){return r.id===action.id;});
+      if (waIdx>-1){
+        lastSnapshotForUndo = cloneState();
+        state.waRows.splice(waIdx,1);
+        render();
+        scheduleSave();
+        showToast("Row deleted.", "Undo", undoLast);
       }
     } else if (action.type === "clear-all"){
       lastSnapshotForUndo = cloneState();
@@ -1654,6 +1833,7 @@
 
     var toolbarHTML = '<div class="dash-toolbar">'+
       '<button type="button" class="btn" id="view-grid-btn">View schedule grid</button>'+
+      '<button type="button" class="btn" id="view-wa-btn">WA production tracker</button>'+
       '<button type="button" class="btn" id="view-all-report-btn">View all projects (report)</button>'+
       '</div>';
 
@@ -1867,6 +2047,7 @@
 
   // ---- event handling ----
   function findProject(id){ return state.projects.find(function(p){ return p.id===id; }); }
+  function findWaRow(id){ return (state.waRows||[]).find(function(r){ return r.id===id; }); }
 
   document.addEventListener("input", function(e){
     var t = e.target;
@@ -1900,7 +2081,16 @@
       // % complete and team affect the conflict/progress highlighting, so a
       // full re-render is needed — render() itself now restores this field's
       // focus and cursor position afterward (see captureFocusInfo() above).
-      if (field==="team") t.setAttribute("data-team", t.value);
+      if (field==="team"){
+        t.setAttribute("data-team", t.value);
+        // Keep the primary team from also appearing as a "helper" chip —
+        // if it was tagged as a helper before being promoted to primary,
+        // drop it from extraTeams so it isn't listed twice.
+        if (Array.isArray(p.extraTeams) && t.value){
+          var dupIdx = p.extraTeams.indexOf(t.value);
+          if (dupIdx !== -1) p.extraTeams.splice(dupIdx, 1);
+        }
+      }
       render();
     } else if (t.classList.contains("autosize-field")){
       // Scope/Comments: grow the textarea to fit what's just been typed,
@@ -1909,6 +2099,34 @@
       autosizeTextarea(t);
     }
     scheduleSave();
+  });
+
+  // ---- WA production tracker: field editing. Parallel to the [data-field]
+  // listener above but scoped to [data-wa-field] so the two boards' data
+  // models (state.projects vs state.waRows) never cross-wire. No field here
+  // triggers a full render() — nothing in the WA tracker feeds into the
+  // conflict/progress highlighting the project board tracks — so typing
+  // never loses focus; only autosize textareas get their height adjusted.
+  document.addEventListener("input", function(e){
+    var t = e.target;
+    if (!t.matches("[data-wa-field]")) return;
+    var row = findWaRow(t.dataset.id);
+    if (!row) return;
+    var field = t.dataset.waField;
+    row[field] = t.value;
+    if (t.classList.contains("autosize-field")) autosizeTextarea(t);
+    scheduleSave();
+  });
+
+  // ---- helper teams checklist: a checkbox change here is delivered as a
+  // "change" event (Chrome/Firefox/Safari all dispatch "change" rather than
+  // "input" for a checkbox's default toggle action), so this is a separate
+  // listener rather than folded into the [data-field] handler above.
+  document.addEventListener("change", function(e){
+    var t = e.target;
+    if (!t.matches("[data-teams-check]")) return;
+    if (!teamsPopupState) return;
+    toggleExtraTeam(teamsPopupState.projectId, t.dataset.teamsCheck, t.checked);
   });
 
   // ---- custom Start/Finish date picker ----
@@ -1967,6 +2185,20 @@
     });
   }
 
+  // WA production tracker's delivery-date field uses the same shared
+  // date-popup component (see openDatePopupGeneric() above), just wired to
+  // state.waRows instead of state.projects.
+  function openWaDatePopup(btn){
+    var id = btn.dataset.id, field = btn.dataset.waDateBtn;
+    var row = findWaRow(id);
+    if (!row) return;
+    openDatePopupGeneric(btn, row[field], function(isoVal){
+      row[field] = isoVal;
+      render();
+      scheduleSave();
+    });
+  }
+
   function closeDatePopup(){
     if (!datePopupState) return;
     if (datePopupState.anchor) datePopupState.anchor.classList.remove("active");
@@ -1985,6 +2217,90 @@
     if (top < 8) top = 8;
     datePopupEl.style.left = left + "px";
     datePopupEl.style.top = top + "px";
+  }
+
+  // ---- Helper teams popup: tags extra teams onto a project without
+  // disturbing its single primary "Assigned team" dropdown (see
+  // extraTeamsCellHTML() above). A small checklist of every other team —
+  // ticking/unticking updates state immediately (no full render(), so the
+  // popup itself stays open); it just repaints the trigger button's chips
+  // in every view that currently shows this project. ----
+  var teamsPopupEl = document.getElementById("teams-popup");
+  var teamsPopupState = null; // { anchor, projectId } while open, else null
+
+  function renderTeamsPopup(){
+    if (!teamsPopupState) return;
+    var p = findProject(teamsPopupState.projectId);
+    if (!p){ closeExtraTeamsPopup(); return; }
+    var names = allTeamNames().filter(function(t){ return t !== p.team; });
+    var selected = Array.isArray(p.extraTeams) ? p.extraTeams : [];
+    var listHTML = names.length
+      ? names.map(function(t){
+          var checked = selected.indexOf(t) !== -1;
+          return '<label class="teams-popup-row"><input type="checkbox" data-teams-check="'+escAttr(t)+'"'+(checked?" checked":"")+'>'+
+            '<span style="color:'+teamColorValue(t)+';">'+escText(t)+'</span></label>';
+        }).join("")
+      : '<div class="teams-popup-empty">No other teams yet — add one from any project\'s Assigned team dropdown first.</div>';
+    teamsPopupEl.innerHTML =
+      '<div class="teams-popup-head">Helper teams</div>'+
+      '<div class="teams-popup-list">'+listHTML+'</div>'+
+      '<div class="teams-popup-foot"><button type="button" class="btn" id="teams-popup-done">Done</button></div>';
+  }
+
+  function openExtraTeamsPopup(btn){
+    if (teamsPopupState && teamsPopupState.anchor === btn){ closeExtraTeamsPopup(); return; }
+    closeDatePopup();
+    closeExtraTeamsPopup();
+    teamsPopupState = { anchor: btn, projectId: btn.dataset.id };
+    btn.classList.add("active");
+    renderTeamsPopup();
+    teamsPopupEl.hidden = false;
+    positionTeamsPopup(btn);
+  }
+
+  function closeExtraTeamsPopup(){
+    if (!teamsPopupState) return;
+    if (teamsPopupState.anchor) teamsPopupState.anchor.classList.remove("active");
+    teamsPopupState = null;
+    teamsPopupEl.hidden = true;
+  }
+
+  function positionTeamsPopup(btn){
+    var rect = btn.getBoundingClientRect();
+    var popW = teamsPopupEl.offsetWidth || 200;
+    var popH = teamsPopupEl.offsetHeight || 220;
+    var left = Math.min(rect.left, window.innerWidth - popW - 8);
+    left = Math.max(8, left);
+    var top = rect.bottom + 4;
+    if (top + popH > window.innerHeight - 8) top = rect.top - popH - 4;
+    if (top < 8) top = 8;
+    teamsPopupEl.style.left = left + "px";
+    teamsPopupEl.style.top = top + "px";
+  }
+
+  function toggleExtraTeam(projectId, teamName, checked){
+    var p = findProject(projectId);
+    if (!p) return;
+    if (!Array.isArray(p.extraTeams)) p.extraTeams = [];
+    var idx = p.extraTeams.indexOf(teamName);
+    if (checked && idx === -1) p.extraTeams.push(teamName);
+    else if (!checked && idx !== -1) p.extraTeams.splice(idx, 1);
+    var names = p.extraTeams;
+    var chipsHTML = names.length
+      ? names.map(function(t){ return '<span class="teams-chip" style="color:'+teamColorValue(t)+';">'+escText(t)+'</span>'; }).join("")
+      : '<span class="placeholder-text">—</span>';
+    // Repaint every matching trigger button in the DOM (the main list and,
+    // if it happens to be open, the grid modal both render this project),
+    // rather than calling render(), so the popup itself stays open.
+    document.querySelectorAll('[data-extra-teams-btn][data-id="'+projectId+'"]').forEach(function(b){ b.innerHTML = chipsHTML; });
+    if (p.isExample){
+      p.isExample = false;
+      var badge = boardEl.querySelector('.example-badge[data-owner="'+p.id+'"]');
+      if (badge) badge.remove();
+      var banner = document.getElementById("example-banner");
+      if (!state.bannerDismissed) banner.hidden = true;
+    }
+    scheduleSave();
   }
 
   // ---- date filter: search for projects by any custom start/finish date range ----
@@ -2151,6 +2467,8 @@
   document.addEventListener("click", function(e){
     var dateBtn = e.target.closest("[data-date-btn]");
     if (dateBtn){ openDatePopup(dateBtn); return; }
+    var waDateBtn = e.target.closest("[data-wa-date-btn]");
+    if (waDateBtn){ openWaDatePopup(waDateBtn); return; }
     if (datePopupState){
       // Use composedPath() rather than e.target.closest(): a click inside the
       // popup (month nav, a day) re-renders the popup's innerHTML in the
@@ -2161,6 +2479,14 @@
       // captured at dispatch time and still lists #date-popup correctly.
       var path = typeof e.composedPath === "function" ? e.composedPath() : [];
       if (path.indexOf(datePopupEl) === -1) closeDatePopup();
+    }
+
+    var extraTeamsBtn = e.target.closest("[data-extra-teams-btn]");
+    if (extraTeamsBtn){ openExtraTeamsPopup(extraTeamsBtn); return; }
+    if (teamsPopupState){
+      if (e.target.id === "teams-popup-done"){ closeExtraTeamsPopup(); return; }
+      var teamsPath = typeof e.composedPath === "function" ? e.composedPath() : [];
+      if (teamsPath.indexOf(teamsPopupEl) === -1) closeExtraTeamsPopup();
     }
 
     var dateFilterBtn = e.target.closest("#date-filter-btn");
@@ -2199,6 +2525,11 @@
       openDeleteConfirm(del.dataset.id);
       return;
     }
+    var delWa = e.target.closest('[data-wa-action="delete"]');
+    if (delWa){
+      openDeleteWaConfirm(delWa.dataset.id);
+      return;
+    }
     if (e.target.id === "confirm-modal-cancel" || e.target.id === "confirm-modal-backdrop"){
       closeConfirmModal();
       return;
@@ -2234,6 +2565,7 @@
       return;
     }
     if (e.target.id === "view-grid-btn"){ openGridModal(); return; }
+    if (e.target.id === "view-wa-btn"){ switchView("wa"); return; }
     if (e.target.id === "clear-all-btn"){ openClearAllConfirm(); return; }
     if (e.target.id === "conflict-notif-btn"){ openConflictModal(); return; }
     if (e.target.id === "conflict-modal-close" || e.target.id === "conflict-modal-backdrop"){
@@ -2291,11 +2623,29 @@
       closeGridModal();
       return;
     }
+    if (e.target.id === "wa-add-btn"){
+      var newRow = WA.newRow();
+      state.waRows.push(newRow);
+      render();
+      scheduleSave();
+      var waInput = document.getElementById("wa-tracker-board").querySelector('[data-wa-field="no"][data-id="'+newRow.id+'"]');
+      if (waInput){ waInput.focus(); document.getElementById("wa-tracker-scroll").scrollTop = document.getElementById("wa-tracker-scroll").scrollHeight; }
+      return;
+    }
+    if (e.target.id === "wa-import-btn"){
+      document.getElementById("wa-import-input").click();
+      return;
+    }
+    if (e.target.id === "wa-share-btn"){
+      shareFactoryLink();
+      return;
+    }
   });
 
   document.addEventListener("keydown", function(e){
     if (e.key === "Escape"){
       if (datePopupState){ closeDatePopup(); return; }
+      if (teamsPopupState){ closeExtraTeamsPopup(); return; }
       if (!dateFilterPopupEl.hidden){ closeDateFilterPopup(); return; }
       var confirmBackdrop = document.getElementById("confirm-modal-backdrop");
       if (confirmBackdrop && !confirmBackdrop.hidden){ closeConfirmModal(); return; }
@@ -2316,8 +2666,8 @@
   // Close the popup on scroll/resize rather than trying to keep it glued to
   // its anchor — the anchor can scroll under a sticky column or off-screen
   // entirely, and closing is simpler and more predictable than chasing it.
-  window.addEventListener("scroll", function(){ if (datePopupState) closeDatePopup(); if (!dateFilterPopupEl.hidden) closeDateFilterPopup(); }, true);
-  window.addEventListener("resize", function(){ if (datePopupState) closeDatePopup(); if (!dateFilterPopupEl.hidden) closeDateFilterPopup(); });
+  window.addEventListener("scroll", function(){ if (datePopupState) closeDatePopup(); if (teamsPopupState) closeExtraTeamsPopup(); if (!dateFilterPopupEl.hidden) closeDateFilterPopup(); }, true);
+  window.addEventListener("resize", function(){ if (datePopupState) closeDatePopup(); if (teamsPopupState) closeExtraTeamsPopup(); if (!dateFilterPopupEl.hidden) closeDateFilterPopup(); });
 
   // "Compact view" only affects the day-by-day Gantt columns, which now live
   // exclusively in the Schedule grid modal — see openGridModal().
@@ -2407,21 +2757,25 @@
     renderAllocation();
   });
 
-  // ---- view switching (Schedule / Dashboard) ----
+  // ---- view switching (Schedule / Team Allocation / Dashboard / WA Tracker) ----
   var currentView = "schedule";
   function switchView(view){
     currentView = view;
     document.getElementById("schedule-view").hidden = (view !== "schedule");
     document.getElementById("allocation-view").hidden = (view !== "allocation");
     document.getElementById("dashboard-view").hidden = (view !== "dashboard");
+    document.getElementById("wa-view").hidden = (view !== "wa");
     document.getElementById("tab-schedule").classList.toggle("active", view==="schedule");
     document.getElementById("tab-schedule").setAttribute("aria-selected", view==="schedule");
     document.getElementById("tab-allocation").classList.toggle("active", view==="allocation");
     document.getElementById("tab-allocation").setAttribute("aria-selected", view==="allocation");
     document.getElementById("tab-dashboard").classList.toggle("active", view==="dashboard");
     document.getElementById("tab-dashboard").setAttribute("aria-selected", view==="dashboard");
+    document.getElementById("tab-wa").classList.toggle("active", view==="wa");
+    document.getElementById("tab-wa").setAttribute("aria-selected", view==="wa");
     if (view === "dashboard") renderDashboard();
     if (view === "allocation") renderAllocation();
+    if (view === "wa") renderWaView();
     // Textareas that auto-grow to fit Scope/Comments can't measure their
     // real height while the Schedule tab is hidden (display:none collapses
     // layout, so scrollHeight reads as 0) — e.g. importing or clearing
@@ -2431,6 +2785,7 @@
   document.getElementById("tab-schedule").addEventListener("click", function(){ switchView("schedule"); });
   document.getElementById("tab-allocation").addEventListener("click", function(){ switchView("allocation"); });
   document.getElementById("tab-dashboard").addEventListener("click", function(){ switchView("dashboard"); });
+  document.getElementById("tab-wa").addEventListener("click", function(){ switchView("wa"); });
 
   document.getElementById("add-btn").addEventListener("click", function(){
     var p = newProject();
@@ -2500,6 +2855,37 @@
     reader.readAsArrayBuffer(file);
   });
 
+  // ---- WA production tracker: its own import, parallel to the project
+  // board's above but mapped onto state.waRows via WA.mapRows() (shared
+  // with the standalone factory page — see wa-shared.js). ----
+  document.getElementById("wa-import-input").addEventListener("change", function(e){
+    var file = e.target.files[0];
+    if (!file) return;
+    var reader = new FileReader();
+    reader.onload = function(evt){
+      try{
+        var data = new Uint8Array(evt.target.result);
+        var wb = XLSX.read(data, {type:"array", cellDates:true});
+        var sheet = wb.Sheets[wb.SheetNames[0]];
+        var rows = XLSX.utils.sheet_to_json(sheet, {header:1, defval:""});
+        var imported = WA.mapRows(rows);
+        if (imported.length===0){
+          showToast("No rows found to import.", null, null);
+          return;
+        }
+        lastSnapshotForUndo = cloneState();
+        state.waRows = (state.waRows||[]).concat(imported);
+        render();
+        scheduleSave();
+        showToast("Imported "+imported.length+" row"+(imported.length===1?"":"s")+" from "+file.name+".", "Undo", undoLast);
+      } catch(err){
+        showToast("Couldn't read that file. Try exporting as .xlsx or .csv.", null, null);
+      }
+      e.target.value = "";
+    };
+    reader.readAsArrayBuffer(file);
+  });
+
   function normHeader(s){ return String(s||"").toLowerCase().replace(/[^a-z0-9]/g,""); }
 
   var HEADER_MAP = {
@@ -2514,6 +2900,7 @@
     finish: ["finishdate","finish","enddate","end","completiondate"],
     pct: ["completed","percentcompleted","pctcompleted","progress","percentcomplete","complete"],
     team: ["assignedteam","team","installationteam","installer","assignedto"],
+    extraTeams: ["helperteams","extrateams","additionalteams","otherteams"],
     comments: ["comments","comment","notes","note"],
     bondingRequired: ["bondingrequired","bonding"]
   };
@@ -2574,6 +2961,13 @@
       var importFrameDeliveryComments = String(get("frameDeliveryComments")||"").trim();
       var bondingRaw = String(get("bondingRequired")||"").trim().toLowerCase();
       var importBondingRequired = ["yes","y","true","1"].indexOf(bondingRaw) !== -1 ? "Yes" : "No";
+      var rawExtraTeams = String(get("extraTeams")||"").split(/[,;]/).map(function(s){ return s.trim(); }).filter(Boolean);
+      var importExtraTeams = [];
+      rawExtraTeams.forEach(function(rt){
+        var matched = allTeamNames().find(function(t){ return t.toLowerCase()===rt.toLowerCase(); });
+        if (matched && matched !== matchedTeam && importExtraTeams.indexOf(matched)===-1) importExtraTeams.push(matched);
+        else if (!matched) comments = (comments ? comments+" " : "") + "(Helper team: "+rt+")";
+      });
       out.push({
         id:"p"+Date.now().toString(36)+Math.random().toString(36).slice(2,7)+r,
         isExample:false,
@@ -2588,6 +2982,7 @@
         finish:parseDateFlexible(get("finish")),
         pct:pct,
         team:matchedTeam,
+        extraTeams:importExtraTeams,
         comments:comments,
         bondingRequired:importBondingRequired
       });
@@ -2627,13 +3022,15 @@
         fmtDateDisplay(p.glassDelivery) || "—", (p.glassDeliveryComments||"").slice(0,60) || "—",
         fmtDateDisplay(p.frameDelivery) || "—", (p.frameDeliveryComments||"").slice(0,60) || "—",
         fmtDateDisplay(p.start) || "—", fmtDateDisplay(p.finish) || "—",
-        (Number(p.pct)||0)+"%", p.team || "—", p.bondingRequired || "No",
+        (Number(p.pct)||0)+"%", p.team || "—",
+        (Array.isArray(p.extraTeams) && p.extraTeams.length) ? p.extraTeams.join(", ") : "—",
+        p.bondingRequired || "No",
         (p.scope||"").slice(0,60), (p.comments||"").slice(0,60)
       ];
     });
     doc.autoTable({
       startY: fLabel ? 84 : 72,
-      head: [["Project","Client","Glass Delivery","Glass Delivery Comments","Frame Delivery","Frame Delivery Comments","Start","Finish","%","Team","Bonding Required","Scope","Comments"]],
+      head: [["Project","Client","Glass Delivery","Glass Delivery Comments","Frame Delivery","Frame Delivery Comments","Start","Finish","%","Team","Helper Teams","Bonding Required","Scope","Comments"]],
       body: body,
       styles:{ fontSize:8, cellPadding:4, overflow:"linebreak" },
       headStyles:{ fillColor:[46,92,138], textColor:255 },

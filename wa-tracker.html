@@ -1,0 +1,672 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>Eurolux WA Production Tracker</title>
+<meta name="description" content="Factory view of the WA production tracker — glass/frame/coating fabrication status.">
+<meta name="theme-color" content="#2E5C8A">
+<link rel="icon" href="./icon-192.png" type="image/png">
+<link rel="apple-touch-icon" href="./icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="WA Tracker">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F3F1EA;
+    --surface:#FFFFFF;
+    --surface-2:#EAE6DB;
+    --border:#DAD4C5;
+    --border-strong:#C4BCA8;
+    --text:#1C2129;
+    --text-muted:#636B74;
+    --text-faint:#8B9099;
+    --accent:#2E5C8A;
+    --accent-soft:#DCE7F2;
+    --accent-strong:#1F4468;
+    --danger:#A6432E;
+    --danger-soft:#F3DFD9;
+    --shadow:0 1px 2px rgba(28,33,41,.06), 0 6px 16px rgba(28,33,41,.06);
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#14181D; --surface:#1B2029; --surface-2:#232B36;
+      --border:#2E3742; --border-strong:#3C4753;
+      --text:#E9E7E0; --text-muted:#9AA3AD; --text-faint:#6E7680;
+      --accent:#6FA8DB; --accent-soft:#223A52; --accent-strong:#8FC0EA;
+      --danger:#E08A73; --danger-soft:#4A2C24;
+      --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 20px rgba(0,0,0,.35);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#14181D; --surface:#1B2029; --surface-2:#232B36;
+    --border:#2E3742; --border-strong:#3C4753;
+    --text:#E9E7E0; --text-muted:#9AA3AD; --text-faint:#6E7680;
+    --accent:#6FA8DB; --accent-soft:#223A52; --accent-strong:#8FC0EA;
+    --danger:#E08A73; --danger-soft:#4A2C24;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 20px rgba(0,0,0,.35);
+  }
+
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  [hidden]{ display:none !important; }
+  body{
+    background:var(--bg); color:var(--text);
+    font-family:"IBM Plex Sans",system-ui,-apple-system,sans-serif;
+    font-size:13px; line-height:1.4;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2{font-family:"Archivo",system-ui,sans-serif; text-wrap:balance; margin:0;}
+  ::selection{background:var(--accent-soft);}
+  button{font-family:inherit;}
+  :focus-visible{outline:2px solid var(--accent); outline-offset:1px;}
+
+  .app{ max-width:100%; padding:20px 24px 32px; display:flex; flex-direction:column; gap:16px; }
+
+  .toolbar{ display:flex; flex-wrap:wrap; align-items:flex-end; justify-content:space-between; gap:16px 24px; }
+  .toolbar h1{ font-size:22px; font-weight:800; letter-spacing:-0.01em; }
+  .toolbar .sub{ font-size:12px; color:var(--text-muted); margin-top:4px; }
+  .toolbar-actions{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+
+  .btn{
+    display:inline-flex; align-items:center; gap:6px;
+    padding:8px 14px; border-radius:8px; border:1px solid var(--border-strong);
+    background:var(--surface); color:var(--text); font-size:13px; font-weight:600;
+    cursor:pointer; box-shadow:var(--shadow); white-space:nowrap;
+  }
+  .btn:hover{ border-color:var(--accent); }
+  .btn.primary{ background:var(--accent); border-color:var(--accent); color:#fff; }
+  .btn.primary:hover{ background:var(--accent-strong); border-color:var(--accent-strong); }
+  .btn.danger{ background:var(--danger); border-color:var(--danger); color:#fff; }
+  .btn.danger:hover{ background:var(--danger); border-color:var(--danger); filter:brightness(1.1); }
+  .btn:disabled{ opacity:.5; cursor:not-allowed; }
+  .import-input{ display:none; }
+
+  .sync-status{ display:flex; align-items:center; gap:7px; font-size:12px; color:var(--text-muted); font-family:"IBM Plex Mono",monospace; padding:7px 12px; border:1px solid var(--border); border-radius:100px; background:var(--surface); white-space:nowrap; }
+  .sync-dot{ width:8px; height:8px; border-radius:50%; flex:none; background:var(--text-faint); }
+  .sync-status.state-synced{ border-color:#3E9B5C; color:var(--text); }
+  .sync-status.state-synced .sync-dot{ background:#3E9B5C; }
+  .sync-status.state-syncing .sync-dot{ background:#D6A72E; animation:sync-pulse 1s ease-in-out infinite; }
+  .sync-status.state-local{ color:var(--text-muted); }
+  .sync-status.state-local .sync-dot{ background:var(--text-faint); }
+  .sync-status.state-error{ border-color:var(--danger); color:var(--danger); }
+  .sync-status.state-error .sync-dot{ background:var(--danger); }
+  .sync-status.state-connecting .sync-dot{ background:var(--accent); animation:sync-pulse 1s ease-in-out infinite; }
+  @keyframes sync-pulse{ 0%,100%{ opacity:1; } 50%{ opacity:.3; } }
+
+  .board-wrap{ border:1px solid var(--border); border-radius:10px; box-shadow:var(--shadow); background:var(--surface); overflow:hidden; }
+  .board-scroll{ overflow:auto; max-height:calc(100vh - 170px); min-height:260px; }
+  .board{ display:grid; position:relative; width:max-content; }
+  .board .row-head{ display:none; }
+
+  .cell{ border-right:1px solid var(--border); border-bottom:1px solid var(--border); display:flex; align-items:center; padding:0 8px; background:var(--surface); min-width:0; }
+  .meta-head{ position:sticky; top:0; z-index:9; background:var(--surface-2); font-size:10.5px; font-weight:600; text-transform:uppercase; letter-spacing:.04em; color:var(--text-muted); border-bottom:1px solid var(--border-strong); }
+
+  .field{ width:100%; border:1px solid transparent; background:transparent; color:var(--text); font-family:inherit; font-size:12.5px; padding:6px 4px; border-radius:6px; min-width:0; }
+  input.field{ text-overflow:ellipsis; }
+  .field:hover{ background:var(--surface-2); }
+  .field:focus{ background:var(--surface); border-color:var(--accent); outline:none; }
+  textarea.field{ resize:none; font-family:inherit; line-height:1.3; height:44px; }
+  textarea.field.autosize-field{ height:auto; min-height:44px; overflow:hidden; }
+  select.field{ font-size:12px; font-weight:600; padding:5px 4px; cursor:pointer; }
+
+  .date-btn{ width:100%; height:100%; border:1px solid transparent; background:transparent; color:var(--text); font-family:"IBM Plex Mono",monospace; font-size:11.5px; padding:6px 4px; border-radius:6px; text-align:left; cursor:pointer; }
+  .date-btn:hover{ background:var(--surface-2); }
+  .date-btn.active, .date-btn:focus-visible{ background:var(--surface); box-shadow:inset 0 0 0 1px var(--accent); outline:none; }
+  .date-btn.placeholder{ color:var(--text-faint); }
+
+  .date-popup{ position:fixed; z-index:220; width:236px; background:var(--surface); border:1px solid var(--border-strong); border-radius:10px; box-shadow:var(--shadow); padding:10px; font-size:12.5px; }
+  .date-popup[hidden]{ display:none; }
+  .date-popup-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; }
+  .date-popup-nav{ background:none; border:none; color:var(--text-muted); font-size:15px; line-height:1; cursor:pointer; padding:4px 8px; border-radius:6px; }
+  .date-popup-nav:hover{ background:var(--surface-2); color:var(--text); }
+  .date-popup-label{ font-weight:700; font-size:12.5px; }
+  .date-popup-dow{ display:grid; grid-template-columns:repeat(7,1fr); text-align:center; font-size:10px; color:var(--text-faint); text-transform:uppercase; letter-spacing:.03em; margin-bottom:2px; }
+  .date-popup-days{ display:grid; grid-template-columns:repeat(7,1fr); gap:2px; }
+  .date-popup-day{ background:none; border:none; color:var(--text); font-family:inherit; font-size:12px; padding:6px 0; border-radius:6px; cursor:pointer; }
+  .date-popup-day:hover{ background:var(--surface-2); }
+  .date-popup-day.muted{ color:var(--text-faint); }
+  .date-popup-day.today{ box-shadow:inset 0 0 0 1px var(--accent); }
+  .date-popup-day.selected{ background:var(--accent); color:#fff; font-weight:700; }
+  .date-popup-foot{ display:flex; justify-content:space-between; margin-top:8px; padding-top:8px; border-top:1px solid var(--border); }
+  .date-popup-link{ background:none; border:none; color:var(--accent); font-family:inherit; font-size:11.5px; font-weight:600; cursor:pointer; padding:2px 4px; }
+  .date-popup-link:hover{ text-decoration:underline; }
+
+  .del-btn{ width:22px; height:22px; border-radius:6px; border:1px solid transparent; background:transparent; color:var(--text-faint); cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:13px; }
+  .del-btn:hover{ background:var(--danger-soft); color:var(--danger); border-color:var(--danger); }
+
+  .wc-idx{ position:relative; width:40px; justify-content:center; padding:0; }
+  .wc-no{ width:56px; }
+  .wc-jobno{ width:86px; }
+  .wc-projectname{ width:190px; }
+  .wc-deliverydate{ width:116px; }
+  .wc-delivered{ width:88px; }
+  .wc-description{ width:170px; }
+  .wc-itemqty{ width:76px; }
+  .wc-scope{ width:260px; }
+  .wc-etacoating{ width:190px; }
+  .wc-etaframe{ width:190px; }
+  .wc-etashutter{ width:190px; }
+
+  .empty-state{ padding:40px 20px; text-align:center; color:var(--text-muted); font-size:13px; }
+
+  .toast{ position:fixed; bottom:20px; left:50%; transform:translateX(-50%); background:var(--text); color:var(--bg); padding:10px 16px; border-radius:8px; font-size:13px; box-shadow:var(--shadow); display:flex; gap:14px; align-items:center; z-index:100; opacity:0; pointer-events:none; transition:opacity .2s ease; }
+  .toast.show{ opacity:1; pointer-events:auto; }
+  .toast a{ color:var(--accent-strong); font-weight:600; cursor:pointer; text-decoration:underline; }
+
+  .confirm-modal-backdrop{ position:fixed; inset:0; background:rgba(20,24,29,.5); display:flex; align-items:center; justify-content:center; z-index:210; padding:24px; }
+  .confirm-modal-backdrop[hidden]{ display:none; }
+  .confirm-modal-card{ background:var(--surface); border-radius:12px; box-shadow:var(--shadow); width:min(380px, 100%); padding:20px; }
+  .confirm-modal-card h2{ font-size:15px; font-weight:800; margin-bottom:8px; }
+  .confirm-modal-card p{ font-size:13px; color:var(--text-muted); line-height:1.45; }
+  .confirm-modal-actions{ display:flex; justify-content:flex-end; gap:8px; margin-top:18px; }
+
+  .app-footer{ text-align:center; font-size:11px; color:var(--text-faint); padding:8px 0 4px; }
+
+  @media (prefers-reduced-motion: reduce){ .toast{ transition:none; } }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <div class="toolbar">
+    <div>
+      <h1>Eurolux WA Production Tracker</h1>
+      <div class="sub">Factory view — this page shows and edits only this tracker.</div>
+    </div>
+    <div class="toolbar-actions">
+      <div class="sync-status" id="sync-status" title="Whether your changes are shared with the office or saved on just this device">
+        <span class="sync-dot"></span><span id="sync-label"></span>
+      </div>
+      <button class="btn" id="add-btn" type="button">+ Add row</button>
+      <button class="btn" id="import-btn" type="button">Import Excel / CSV</button>
+      <input class="import-input" id="import-input" type="file" accept=".xlsx,.xls,.csv">
+    </div>
+  </div>
+
+  <div class="board-wrap">
+    <div class="board-scroll" id="board-scroll">
+      <div class="board wa-board" id="wa-board"></div>
+    </div>
+  </div>
+
+  <div class="app-footer">Eurolux Doors and Windows — WA Production Tracker</div>
+</div>
+
+<div class="toast" id="toast"></div>
+<div class="date-popup" id="date-popup" hidden></div>
+
+<div class="confirm-modal-backdrop" id="confirm-modal-backdrop" hidden>
+  <div class="confirm-modal-card" role="alertdialog" aria-modal="true" aria-labelledby="confirm-modal-title" aria-describedby="confirm-modal-body">
+    <h2 id="confirm-modal-title">Delete this row?</h2>
+    <p id="confirm-modal-body"></p>
+    <div class="confirm-modal-actions">
+      <button type="button" class="btn" id="confirm-modal-cancel">Cancel</button>
+      <button type="button" class="btn danger" id="confirm-modal-delete">Delete</button>
+    </div>
+  </div>
+</div>
+
+<!-- Shared backend (Firestore) — the SAME document the main planner uses,
+     so edits here show up there and vice versa. This page only ever reads
+     and writes the "waRows" field of that document (see doSave() below);
+     it never touches "projects", "customTeams" or "bannerDismissed", so it
+     can't affect the project schedule even though it's the same doc. Safe
+     to load even when not configured — falls back to this-device-only
+     storage automatically, same as the main planner. -->
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+<script src="./firebase-config.js"></script>
+
+<!-- Excel / CSV import -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+<!-- WA production tracker's shared data model + rendering (window.WA) —
+     the same file InstallPlanner.html uses for its "WA Tracker" tab, so
+     rows render identically in both places. -->
+<script src="./wa-shared.js"></script>
+
+<script>
+(function(){
+  "use strict";
+
+  var boardEl = document.getElementById("wa-board");
+  var state = { waRows: [] };
+  var saveTimer = null;
+  var lastSnapshotForUndo = null;
+
+  // ---- date helpers (same as InstallPlanner.html's — kept local rather
+  // than shared, since this is the only page besides InstallPlanner.html
+  // that needs a full calendar widget). ----
+  function pad2(n){ return (n<10?"0":"")+n; }
+  function iso(y,m,d){ return y+"-"+pad2(m)+"-"+pad2(d); }
+  function daysInMonth(y,m){ return new Date(Date.UTC(y,m,0)).getUTCDate(); }
+  function weekdayOf(y,m,d){ return new Date(Date.UTC(y,m-1,d)).getUTCDay(); }
+  function monthName(m){ return ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][m-1]; }
+  function addMonths(y,m,n){ var total = (m-1)+n; var ny = y + Math.floor(total/12); var nm = (total%12+12)%12 + 1; return {y:ny, m:nm}; }
+
+  function findRow(id){ return state.waRows.find(function(r){ return r.id===id; }); }
+
+  function autosizeTextarea(el){
+    el.style.height = "auto";
+    el.style.height = el.scrollHeight + "px";
+  }
+  function autosizeAllTextareas(container){
+    var els = container.querySelectorAll("textarea.autosize-field");
+    for (var i=0;i<els.length;i++) autosizeTextarea(els[i]);
+  }
+
+  function render(){
+    var rows = state.waRows || [];
+    var totalCols = WA.META_LABELS.length;
+    boardEl.style.gridTemplateColumns = WA.gridTemplateColumns();
+
+    var html = WA.metaHeaderHTML();
+    if (rows.length === 0){
+      boardEl.style.gridTemplateRows = "42px 64px";
+      html += '<div class="cell empty-state" style="grid-column:1 / span '+totalCols+'; grid-row:2; justify-content:center;">'+
+        'No rows yet. Click “+ Add row” or use “Import Excel / CSV” to bring in a list.</div>';
+    } else {
+      boardEl.style.gridTemplateRows = "42px " + "repeat("+rows.length+", minmax(64px, auto))";
+      rows.forEach(function(row, idx){ html += WA.rowHTML(row, idx); });
+    }
+    boardEl.innerHTML = html;
+    autosizeAllTextareas(boardEl);
+  }
+
+  // ---- persistence: reads/writes ONLY the "waRows" field of the shared
+  // doc/local-storage blob — see the note above the script includes. ----
+  var STORAGE_KEY = "installPlanner.v1";
+  var backendMode = "local";
+  var fsDocRef = null;
+  var applyingRemoteUpdate = false;
+
+  function firebaseConfigLooksReal(cfg){
+    return !!(cfg && cfg.apiKey && cfg.projectId &&
+      String(cfg.apiKey).indexOf("YOUR_") !== 0 && String(cfg.projectId).indexOf("YOUR_") !== 0);
+  }
+
+  function loadLocalWaRows(){
+    try{
+      var raw = localStorage.getItem(STORAGE_KEY);
+      if (raw){
+        var data = JSON.parse(raw);
+        if (data && Array.isArray(data.waRows)){
+          state.waRows = data.waRows.map(WA.normalizeRow);
+          return;
+        }
+      }
+    } catch(e){ /* corrupt or inaccessible storage */ }
+    state.waRows = JSON.parse(JSON.stringify(WA.SEED_ROWS));
+  }
+
+  var SYNC_STATES = {
+    connecting: { cls:"state-connecting", label:"Connecting…" },
+    editing:    { cls:"state-syncing",    label:"Editing…" },
+    syncing:    { cls:"state-syncing",    label:"Syncing…" },
+    synced:     { cls:"state-synced",     label:"Synced with office" },
+    "sync-error": { cls:"state-error",    label:"Sync failed — will retry" },
+    "conn-lost":  { cls:"state-error",    label:"Connection lost — editing locally" },
+    "local-saved": { cls:"state-local",   label:"Saved on this device only" },
+    "local-error": { cls:"state-error",   label:"Couldn't save — storage full or blocked" }
+  };
+  function setSaveStatus(stateKey){
+    var def = SYNC_STATES[stateKey] || { cls:"", label:String(stateKey||"") };
+    var badge = document.getElementById("sync-status");
+    var label = document.getElementById("sync-label");
+    if (!badge || !label) return;
+    badge.className = "sync-status " + def.cls;
+    label.textContent = def.label;
+  }
+
+  function scheduleSave(){
+    setSaveStatus("editing");
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(doSave, 600);
+  }
+
+  function doSave(){
+    clearTimeout(saveTimer);
+    saveTimer = null;
+    if (applyingRemoteUpdate) return;
+    if (backendMode === "firestore" && fsDocRef){
+      // merge:true — touches ONLY the "waRows" key of the shared doc, never
+      // "projects"/"customTeams"/"bannerDismissed", so this page can never
+      // clobber the project schedule even though it's the same document.
+      fsDocRef.set({ waRows: state.waRows, updatedAt: firebase.firestore.FieldValue.serverTimestamp() }, { merge:true })
+        .then(function(){ setSaveStatus("synced"); })
+        .catch(function(){ setSaveStatus("sync-error"); });
+      return;
+    }
+    try{
+      var raw = localStorage.getItem(STORAGE_KEY);
+      var data = {};
+      try{ data = raw ? JSON.parse(raw) : {}; } catch(e){ data = {}; }
+      data.waRows = state.waRows;
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+      setSaveStatus("local-saved");
+    } catch(err){
+      setSaveStatus("local-error");
+    }
+  }
+
+  function connectFirestore(){
+    return new Promise(function(resolve){
+      var cfg = window.FIREBASE_CONFIG;
+      if (!firebaseConfigLooksReal(cfg) || typeof firebase === "undefined"){
+        resolve(false);
+        return;
+      }
+      try{
+        if (!firebase.apps || !firebase.apps.length) firebase.initializeApp(cfg);
+        var db = firebase.firestore();
+        fsDocRef = db.collection("installPlanner").doc("shared");
+        var settled = false;
+        fsDocRef.onSnapshot(function(snap){
+          applyingRemoteUpdate = true;
+          var hasPendingLocalEdit = !!saveTimer;
+          if (snap.exists){
+            var data = snap.data();
+            if (!hasPendingLocalEdit){
+              state.waRows = (data && Array.isArray(data.waRows)) ? data.waRows.map(WA.normalizeRow) : [];
+            }
+          } else if (!settled){
+            // No shared document yet at all — nobody, factory or office,
+            // has used the planner before. Seed it with empty project data
+            // (so the main planner degrades to "no projects yet" instead
+            // of crashing on a missing field) plus the real WA seed rows.
+            state.waRows = JSON.parse(JSON.stringify(WA.SEED_ROWS));
+            fsDocRef.set({ projects: [], bannerDismissed:false, customTeams: [], waRows: state.waRows });
+          }
+          applyingRemoteUpdate = false;
+          backendMode = "firestore";
+          if (!settled){ settled = true; resolve(true); }
+          else if (!hasPendingLocalEdit){ render(); setSaveStatus(snap.metadata.hasPendingWrites ? "syncing" : "synced"); }
+        }, function(){
+          if (!settled){ settled = true; resolve(false); }
+          else { setSaveStatus("conn-lost"); }
+        });
+        setTimeout(function(){ if (!settled){ settled = true; resolve(false); } }, 4000);
+      } catch(e){
+        resolve(false);
+      }
+    });
+  }
+
+  async function initBackend(){
+    var ok = await connectFirestore();
+    if (!ok){ backendMode = "local"; loadLocalWaRows(); }
+  }
+
+  // ---- toast ----
+  var toastTimer = null;
+  function showToast(msg, actionLabel, actionFn){
+    var el = document.getElementById("toast");
+    el.innerHTML = msg + (actionLabel ? ' <a id="toast-action">'+actionLabel+'</a>' : "");
+    el.classList.add("show");
+    if (actionLabel){
+      document.getElementById("toast-action").addEventListener("click", function(){
+        actionFn(); el.classList.remove("show");
+      });
+    }
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function(){ el.classList.remove("show"); }, 6000);
+  }
+  function undoLast(){
+    if (lastSnapshotForUndo){
+      state.waRows = lastSnapshotForUndo;
+      lastSnapshotForUndo = null;
+      render();
+      scheduleSave();
+    }
+  }
+
+  // ---- confirm-delete modal ----
+  var pendingDeleteId = null;
+  function openDeleteConfirm(id){
+    var row = findRow(id);
+    if (!row) return;
+    pendingDeleteId = id;
+    document.getElementById("confirm-modal-title").textContent = "Delete this row?";
+    document.getElementById("confirm-modal-body").textContent =
+      'Delete "'+(row.projectName || "Untitled row")+'" from the WA production tracker? This can be undone right after with the Undo button, but not once you leave or refresh the page.';
+    document.getElementById("confirm-modal-backdrop").hidden = false;
+  }
+  function closeConfirmModal(){
+    pendingDeleteId = null;
+    document.getElementById("confirm-modal-backdrop").hidden = true;
+  }
+  function performDelete(){
+    var id = pendingDeleteId;
+    closeConfirmModal();
+    if (!id) return;
+    var idx = state.waRows.findIndex(function(r){ return r.id===id; });
+    if (idx>-1){
+      lastSnapshotForUndo = JSON.parse(JSON.stringify(state.waRows));
+      state.waRows.splice(idx,1);
+      render();
+      scheduleSave();
+      showToast("Row deleted.", "Undo", undoLast);
+    }
+  }
+
+  // ---- field editing ----
+  document.addEventListener("input", function(e){
+    var t = e.target;
+    if (!t.matches("[data-wa-field]")) return;
+    var row = findRow(t.dataset.id);
+    if (!row) return;
+    row[t.dataset.waField] = t.value;
+    if (t.classList.contains("autosize-field")) autosizeTextarea(t);
+    scheduleSave();
+  });
+
+  // ---- date popup (delivery date) — same component as InstallPlanner.html ----
+  var datePopupEl = document.getElementById("date-popup");
+  var datePopupState = null;
+
+  function renderDatePopup(){
+    var st = datePopupState;
+    if (!st) return;
+    var current = st.currentIso;
+    var today = new Date();
+    var todayIso = iso(today.getFullYear(), today.getMonth()+1, today.getDate());
+    var firstDow = weekdayOf(st.y, st.m, 1);
+    var totalDays = daysInMonth(st.y, st.m);
+    var prevM = addMonths(st.y, st.m, -1);
+    var daysInPrev = daysInMonth(prevM.y, prevM.m);
+
+    var html = '<div class="date-popup-head">'+
+      '<button type="button" class="date-popup-nav" data-nav="-1" aria-label="Previous month">&#8249;</button>'+
+      '<span class="date-popup-label">'+monthName(st.m)+' '+st.y+'</span>'+
+      '<button type="button" class="date-popup-nav" data-nav="1" aria-label="Next month">&#8250;</button>'+
+      '</div>'+
+      '<div class="date-popup-dow">'+["S","M","T","W","T","F","S"].map(function(d){ return "<span>"+d+"</span>"; }).join("")+'</div>'+
+      '<div class="date-popup-days">';
+
+    for (var i=0; i<firstDow; i++){
+      var dnum = daysInPrev - firstDow + 1 + i;
+      html += '<button type="button" class="date-popup-day muted" data-day="'+iso(prevM.y, prevM.m, dnum)+'">'+dnum+'</button>';
+    }
+    for (var d=1; d<=totalDays; d++){
+      var dIso = iso(st.y, st.m, d);
+      var cls = "date-popup-day";
+      if (dIso === todayIso) cls += " today";
+      if (current && dIso === current) cls += " selected";
+      html += '<button type="button" class="'+cls+'" data-day="'+dIso+'">'+d+'</button>';
+    }
+    var used = firstDow + totalDays;
+    var trailing = (7 - (used % 7)) % 7;
+    var nextM = addMonths(st.y, st.m, 1);
+    for (var j=1; j<=trailing; j++){
+      html += '<button type="button" class="date-popup-day muted" data-day="'+iso(nextM.y, nextM.m, j)+'">'+j+'</button>';
+    }
+
+    html += '</div>'+
+      '<div class="date-popup-foot">'+
+      '<button type="button" class="date-popup-link" data-clear="1">Clear</button>'+
+      '<button type="button" class="date-popup-link" data-today="1">Today</button>'+
+      '</div>';
+
+    datePopupEl.innerHTML = html;
+  }
+
+  function positionDatePopup(btn){
+    var rect = btn.getBoundingClientRect();
+    var popW = datePopupEl.offsetWidth || 236;
+    var popH = datePopupEl.offsetHeight || 260;
+    var left = Math.min(rect.left, window.innerWidth - popW - 8);
+    left = Math.max(8, left);
+    var top = rect.bottom + 4;
+    if (top + popH > window.innerHeight - 8) top = rect.top - popH - 4;
+    if (top < 8) top = 8;
+    datePopupEl.style.left = left + "px";
+    datePopupEl.style.top = top + "px";
+  }
+
+  function openDatePopup(btn){
+    var id = btn.dataset.id, field = btn.dataset.waDateBtn;
+    var row = findRow(id);
+    if (!row) return;
+    if (datePopupState && datePopupState.anchor === btn){ closeDatePopup(); return; }
+    closeDatePopup();
+    var currentIso = row[field];
+    var base;
+    if (currentIso){ base = { y:+currentIso.slice(0,4), m:+currentIso.slice(5,7) }; }
+    else { var t = new Date(); base = { y:t.getFullYear(), m:t.getMonth()+1 }; }
+    datePopupState = { currentIso: currentIso||"", y:base.y, m:base.m, anchor:btn, onPick:function(isoVal){
+      row[field] = isoVal;
+      render();
+      scheduleSave();
+    }};
+    btn.classList.add("active");
+    renderDatePopup();
+    datePopupEl.hidden = false;
+    positionDatePopup(btn);
+  }
+  function closeDatePopup(){
+    if (!datePopupState) return;
+    if (datePopupState.anchor) datePopupState.anchor.classList.remove("active");
+    datePopupState = null;
+    datePopupEl.hidden = true;
+  }
+  function applyDatePick(isoVal){
+    var st = datePopupState;
+    if (!st) return;
+    var onPick = st.onPick;
+    closeDatePopup();
+    if (onPick) onPick(isoVal);
+  }
+
+  datePopupEl.addEventListener("click", function(e){
+    var navBtn = e.target.closest("[data-nav]");
+    if (navBtn){
+      var st = datePopupState;
+      if (!st) return;
+      var next = addMonths(st.y, st.m, +navBtn.dataset.nav);
+      st.y = next.y; st.m = next.m;
+      renderDatePopup();
+      if (st.anchor) positionDatePopup(st.anchor);
+      return;
+    }
+    var dayBtn = e.target.closest("[data-day]");
+    if (dayBtn){ applyDatePick(dayBtn.dataset.day); return; }
+    if (e.target.closest("[data-clear]")){ applyDatePick(""); return; }
+    if (e.target.closest("[data-today]")){
+      var st2 = datePopupState;
+      if (!st2) return;
+      var t2 = new Date();
+      st2.y = t2.getFullYear(); st2.m = t2.getMonth()+1;
+      renderDatePopup();
+      if (st2.anchor) positionDatePopup(st2.anchor);
+      return;
+    }
+  });
+
+  document.addEventListener("click", function(e){
+    var dateBtn = e.target.closest("[data-wa-date-btn]");
+    if (dateBtn){ openDatePopup(dateBtn); return; }
+    if (datePopupState){
+      var path = typeof e.composedPath === "function" ? e.composedPath() : [];
+      if (path.indexOf(datePopupEl) === -1) closeDatePopup();
+    }
+
+    var del = e.target.closest('[data-wa-action="delete"]');
+    if (del){ openDeleteConfirm(del.dataset.id); return; }
+
+    if (e.target.id === "confirm-modal-cancel" || e.target.id === "confirm-modal-backdrop"){
+      closeConfirmModal();
+      return;
+    }
+    if (e.target.id === "confirm-modal-delete"){
+      performDelete();
+      return;
+    }
+  });
+
+  document.addEventListener("keydown", function(e){
+    if (e.key === "Escape"){
+      if (datePopupState){ closeDatePopup(); return; }
+      var confirmBackdrop = document.getElementById("confirm-modal-backdrop");
+      if (confirmBackdrop && !confirmBackdrop.hidden){ closeConfirmModal(); }
+    }
+  });
+  window.addEventListener("scroll", function(){ if (datePopupState) closeDatePopup(); }, true);
+  window.addEventListener("resize", function(){ if (datePopupState) closeDatePopup(); });
+
+  // ---- add row ----
+  document.getElementById("add-btn").addEventListener("click", function(){
+    var newRow = WA.newRow();
+    state.waRows.push(newRow);
+    render();
+    scheduleSave();
+    var input = boardEl.querySelector('[data-wa-field="no"][data-id="'+newRow.id+'"]');
+    if (input){ input.focus(); document.getElementById("board-scroll").scrollTop = document.getElementById("board-scroll").scrollHeight; }
+  });
+
+  // ---- import ----
+  document.getElementById("import-btn").addEventListener("click", function(){
+    document.getElementById("import-input").click();
+  });
+  document.getElementById("import-input").addEventListener("change", function(e){
+    var file = e.target.files[0];
+    if (!file) return;
+    var reader = new FileReader();
+    reader.onload = function(evt){
+      try{
+        var data = new Uint8Array(evt.target.result);
+        var wb = XLSX.read(data, {type:"array", cellDates:true});
+        var sheet = wb.Sheets[wb.SheetNames[0]];
+        var rows = XLSX.utils.sheet_to_json(sheet, {header:1, defval:""});
+        var imported = WA.mapRows(rows);
+        if (imported.length===0){
+          showToast("No rows found to import.", null, null);
+          return;
+        }
+        lastSnapshotForUndo = JSON.parse(JSON.stringify(state.waRows));
+        state.waRows = state.waRows.concat(imported);
+        render();
+        scheduleSave();
+        showToast("Imported "+imported.length+" row"+(imported.length===1?"":"s")+" from "+file.name+".", "Undo", undoLast);
+      } catch(err){
+        showToast("Couldn't read that file. Try exporting as .xlsx or .csv.", null, null);
+      }
+      e.target.value = "";
+    };
+    reader.readAsArrayBuffer(file);
+  });
+
+  // ---- boot ----
+  async function init(){
+    setSaveStatus("connecting");
+    await initBackend();
+    setSaveStatus(backendMode === "firestore" ? "synced" : "local-saved");
+    render();
+  }
+  init();
+})();
+</script>
+</body>
+</html>
