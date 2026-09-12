@@ -454,6 +454,53 @@
     };
   }
 
+  // A lighter-weight version of the always-visible "shadow" horizontal
+  // scrollbar above, for boards that don't need resizable columns or
+  // row-height presets — e.g. the main Schedule tab's plain project list.
+  // Same sync/refresh behavior as createBoardControls(), just without the
+  // column-width/localStorage machinery that board doesn't use (it already
+  // has its own, separate column-resize + prefs system).
+  function createHScrollbar(opts){
+    function refresh(){
+      if (!opts.boardEl || !opts.hbarInnerEl || !opts.hscrollEl) return;
+      requestAnimationFrame(function(){
+        var w = opts.boardEl.scrollWidth;
+        opts.hbarInnerEl.style.width = w + "px";
+        if (opts.hbarEl && opts.hbarEl.scrollLeft !== opts.hscrollEl.scrollLeft){
+          opts.hbarEl.scrollLeft = opts.hscrollEl.scrollLeft;
+        }
+      });
+    }
+    function attachSync(){
+      if (!opts.hscrollEl || !opts.hbarEl) return;
+      var syncing = false;
+      opts.hscrollEl.addEventListener("scroll", function(){
+        if (syncing) return;
+        syncing = true;
+        opts.hbarEl.scrollLeft = opts.hscrollEl.scrollLeft;
+        syncing = false;
+      });
+      opts.hbarEl.addEventListener("scroll", function(){
+        if (syncing) return;
+        syncing = true;
+        opts.hscrollEl.scrollLeft = opts.hbarEl.scrollLeft;
+        syncing = false;
+      });
+      opts.hscrollEl.addEventListener("wheel", function(e){
+        if (e.deltaX !== 0 && Math.abs(e.deltaX) >= Math.abs(e.deltaY)){
+          opts.hscrollEl.scrollLeft += e.deltaX;
+          e.preventDefault();
+        }
+      }, { passive:false });
+      window.addEventListener("resize", refresh);
+    }
+    function init(){
+      attachSync();
+      refresh();
+    }
+    return { init: init, refresh: refresh };
+  }
+
   // ---- seed data: the real 38-row list from PROJECT UPDATE 11 09 26.xlsx,
   // used the first time either page ever loads with no shared doc yet. ----
 var SEED_ROWS = [
@@ -515,6 +562,7 @@ var SEED_ROWS = [
     exportXLSX: exportXLSX,
     exportPDF: exportPDF,
     createBoardControls: createBoardControls,
+    createHScrollbar: createHScrollbar,
     escText: escText,
     escAttr: escAttr,
     fmtDateDisplay: fmtDateDisplay,

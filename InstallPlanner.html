@@ -173,6 +173,14 @@
   /* ---- Board ---- */
   .board-wrap{ border:1px solid var(--border); border-radius:10px; box-shadow:var(--shadow); background:var(--surface); overflow:hidden; }
   .board-scroll{ overflow:auto; max-height:calc(100vh - 230px); min-height:260px; }
+  /* Schedule tab: same always-visible "shadow" scrollbar pinned above the
+     table as the WA tracker (see .wa-hbar below, reused here) — the plain
+     project list can run wider than the screen too (14 meta columns), so
+     this keeps a horizontal scrollbar reachable without scrolling all the
+     way down through every row first. Scoped to #schedule-view specifically
+     so the Team Allocation board and the Schedule grid modal (which still
+     use their own native bottom scrollbar) are unaffected. */
+  #schedule-view .board-scroll{ overflow-x:hidden; }
   .board{ display:grid; position:relative; width:max-content; }
   .board.compact{ --day:13px; }
   .board.compact .row-head.day .dow{ display:none; }
@@ -482,15 +490,16 @@
   .wa-col-handle:hover, .wa-col-handle.dragging{ background:var(--accent); opacity:.55; }
 
   /* The WA board's own native horizontal scrollbar is hidden in favor of
-     .wa-hbar below — a slim, always-visible "shadow" scrollbar pinned right
-     under the table (outside the vertically-scrolling .board-scroll), so
-     you never have to scroll all the way down through the rows just to
-     reach a horizontal scrollbar. Dragging it (or a trackpad swipe directly
-     over the table — see the wheel listener in createBoardControls()) pans
-     the real board via scrollLeft; .wa-hbar-inner is sized in JS to match
-     the board's full scrollWidth so the thumb's proportions are honest. */
+     .wa-hbar below — a slim, always-visible "shadow" scrollbar pinned above
+     the table (outside the vertically-scrolling .board-scroll, right under
+     the toolbar), so it's always on screen no matter how far down you've
+     scrolled through the rows — no need to scroll back down to reach a
+     bottom scrollbar. Dragging it (or a trackpad swipe directly over the
+     table — see the wheel listener in createBoardControls()) pans the real
+     board via scrollLeft; .wa-hbar-inner is sized in JS to match the
+     board's full scrollWidth so the thumb's proportions are honest. */
   .wa-board-wrap .board-scroll{ overflow-x:hidden; }
-  .wa-hbar{ overflow-x:auto; overflow-y:hidden; height:14px; border-top:1px solid var(--border); background:var(--surface-2); }
+  .wa-hbar{ overflow-x:auto; overflow-y:hidden; height:14px; border-bottom:1px solid var(--border); background:var(--surface-2); }
   .wa-hbar-inner{ height:1px; }
 
   /* ---- Main list (Schedule tab): meta columns only, no day grid — see
@@ -509,6 +518,14 @@
      disabled), while leaving "position:sticky" itself in place so .c-idx
      still anchors its absolutely-positioned delete button. */
   .board-list .cell{ left:auto; }
+
+  /* Hide/unhide Client column (toolbar toggle) — the grid track itself
+     collapses to 0 via --w-client (see applyColumnVars()), but the cell's
+     own padding/border would otherwise still paint a visible sliver even
+     at zero width, so both are zeroed here too. Applies in both the plain
+     list and the Schedule grid modal, and to the header cell as well,
+     since all three share the ".c-client" class. */
+  .client-hidden .c-client{ padding:0; border-right:0; overflow:hidden; }
 
   @media (max-width: 1100px){
     .dash-grid{ grid-template-columns:repeat(2,1fr); }
@@ -543,6 +560,7 @@
         <button class="tab-btn" id="tab-wa" type="button" role="tab" aria-selected="false">WA Tracker</button>
       </div>
       <button class="btn" id="reset-cols-btn" type="button" title="Reset column widths and the details panel back to defaults">Reset columns</button>
+      <button class="btn" id="toggle-client-btn" type="button" title="Show or hide the Client column">Hide Client</button>
       <button class="btn" id="import-btn" type="button">Import Excel / CSV</button>
       <input class="import-input" id="import-input" type="file" accept=".xlsx,.xls,.csv">
       <button class="btn" id="export-pdf-btn" type="button">Export PDF</button>
@@ -566,6 +584,7 @@
   </datalist>
 
   <div class="board-wrap" id="schedule-view">
+    <div class="wa-hbar" id="board-hbar" title="Drag to scroll across all columns"><div class="wa-hbar-inner" id="board-hbar-inner"></div></div>
     <div class="board-scroll" id="board-scroll">
       <div class="board" id="board"></div>
     </div>
@@ -610,10 +629,10 @@
       <button class="btn" id="wa-reset-cols-btn" type="button" title="Reset column widths and row height back to defaults">Reset columns</button>
     </div>
     <div class="board-wrap wa-board-wrap">
+      <div class="wa-hbar" id="wa-hbar" title="Drag to scroll across all columns"><div class="wa-hbar-inner" id="wa-hbar-inner"></div></div>
       <div class="board-scroll" id="wa-tracker-scroll">
         <div class="board wa-board" id="wa-tracker-board"></div>
       </div>
-      <div class="wa-hbar" id="wa-hbar" title="Drag to scroll across all columns"><div class="wa-hbar-inner" id="wa-hbar-inner"></div></div>
     </div>
   </div>
 
@@ -843,6 +862,7 @@
   var SCALED_COLS = ["client","scope","glassDelivery","glassDeliveryComments","frameDelivery","frameDeliveryComments","start","finish","pct","comments"];
   var colWidths = Object.assign({}, DEFAULT_COL_W);
   var detailScale = 1;
+  var clientHidden = false;
 
   function loadUIPrefs(){
     try{
@@ -851,11 +871,12 @@
         var data = JSON.parse(raw);
         if (data && data.colWidths) colWidths = Object.assign({}, DEFAULT_COL_W, data.colWidths);
         if (data && typeof data.detailScale === "number") detailScale = data.detailScale;
+        if (data && typeof data.clientHidden === "boolean") clientHidden = data.clientHidden;
       }
     } catch(e){ /* ignore corrupt/inaccessible prefs */ }
   }
   function saveUIPrefs(){
-    try{ localStorage.setItem(UI_PREFS_KEY, JSON.stringify({ colWidths:colWidths, detailScale:detailScale })); } catch(e){}
+    try{ localStorage.setItem(UI_PREFS_KEY, JSON.stringify({ colWidths:colWidths, detailScale:detailScale, clientHidden:clientHidden })); } catch(e){}
   }
   function applyColumnVars(){
     var root = document.documentElement.style;
@@ -863,7 +884,13 @@
     root.setProperty("--w-team", colWidths.team+"px");
     root.setProperty("--w-extrateams", colWidths.extraTeams+"px");
     root.setProperty("--w-bondingrequired", colWidths.bondingRequired+"px");
-    root.setProperty("--base-w-client", colWidths.client+"px");
+    // Hiding the Client column collapses its grid track to 0 by forcing
+    // --base-w-client to 0px here (--w-client is calc(base * scale), so
+    // this overrides the stored width without losing it — colWidths.client
+    // itself is left untouched so the saved width comes right back when
+    // unhidden). document.body's "client-hidden" class (see CSS) then
+    // zeroes the cell's own padding/border so no sliver remains visible.
+    root.setProperty("--base-w-client", (clientHidden ? 0 : colWidths.client)+"px");
     root.setProperty("--base-w-scope", colWidths.scope+"px");
     root.setProperty("--base-w-glassdelivery", colWidths.glassDelivery+"px");
     root.setProperty("--base-w-glassdeliverycomments", colWidths.glassDeliveryComments+"px");
@@ -874,12 +901,18 @@
     root.setProperty("--base-w-pct", colWidths.pct+"px");
     root.setProperty("--base-w-comments", colWidths.comments+"px");
     root.setProperty("--detail-scale", String(detailScale));
+    document.body.classList.toggle("client-hidden", clientHidden);
   }
   function resetColumnLayout(){
     colWidths = Object.assign({}, DEFAULT_COL_W);
     detailScale = 1;
     applyColumnVars();
     saveUIPrefs();
+    if (boardHScroll) boardHScroll.refresh();
+  }
+  function updateClientToggleBtnLabel(){
+    var btn = document.getElementById("toggle-client-btn");
+    if (btn) btn.textContent = clientHidden ? "Show Client" : "Hide Client";
   }
 
   function newProject(){
@@ -1604,6 +1637,8 @@
 
   // Main Schedule tab: meta columns only (no day grid — see item 5, moved to
   // the Schedule grid modal), with rows that auto-grow to fit Scope/Comments.
+  var boardHScroll = null;
+
   function renderMainList(){
     boardEl.classList.add("board-list");
     var totalCols = META_COL_COUNT;
@@ -1624,6 +1659,7 @@
     }
     boardEl.innerHTML = html;
     autosizeAllTextareas(boardEl);
+    if (boardHScroll) boardHScroll.refresh();
   }
 
   // Schedule grid modal: the full meta + day-by-day Gantt grid, exactly as
@@ -2784,6 +2820,15 @@
     showToast("Column widths reset to defaults.", null, null);
   });
 
+  document.getElementById("toggle-client-btn").addEventListener("click", function(){
+    clientHidden = !clientHidden;
+    applyColumnVars();
+    saveUIPrefs();
+    updateClientToggleBtnLabel();
+    if (boardHScroll) boardHScroll.refresh();
+    showToast(clientHidden ? "Client column hidden." : "Client column shown.", null, null);
+  });
+
   document.getElementById("sync-now-btn").addEventListener("click", syncNowClicked);
 
   // "Clear all" now lives in the Dashboard's Settings panel (rendered
@@ -2816,6 +2861,7 @@
           var dx = ev.clientX - startX;
           colWidths[col] = Math.max(min, Math.min(max, Math.round(startWidth + dx)));
           applyColumnVars();
+          if (boardHScroll) boardHScroll.refresh();
         }
         function onUp(){
           document.removeEventListener("pointermove", onMove);
@@ -3160,8 +3206,17 @@
 
     loadUIPrefs();
     applyColumnVars();
+    updateClientToggleBtnLabel();
     waControls.init();
     document.getElementById("wa-rowheight-select").value = waControls.getRowHeight();
+
+    boardHScroll = WA.createHScrollbar({
+      boardEl: boardEl,
+      hscrollEl: document.getElementById("board-scroll"),
+      hbarEl: document.getElementById("board-hbar"),
+      hbarInnerEl: document.getElementById("board-hbar-inner")
+    });
+    boardHScroll.init();
 
     setSaveStatus("connecting");
     await initBackend();
