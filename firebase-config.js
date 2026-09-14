@@ -1,11 +1,16 @@
-// Fill this in with your own Firebase project's web config to turn on shared,
-// everyone-sees-the-same-data sync. Until you do, the app works fine on its own —
-// it just saves to each device's local storage instead of a shared backend.
+// Eurolux Installation Planner — shared backend config (Firebase/Firestore).
 //
-// See README.md → "Shared backend setup" for the exact steps (free tier, ~5 minutes).
+// This project already has a real Firestore database provisioned, so these
+// values are the live project credentials — no setup needed, they just work.
 //
-// Get these values from: Firebase console → Project settings → General →
-// "Your apps" → Web app → SDK setup and configuration → Config.
+// If you ever need to point the app at a different Firebase project instead:
+//   1. Go to https://console.firebase.google.com/ and open (or create) a project.
+//   2. Project settings → General → "Your apps" → add a Web app (or use an
+//      existing one) → copy the firebaseConfig object it gives you.
+//   3. Paste the values below, replacing the ones already here.
+//   4. Enable Firestore: Build → Firestore Database → Create database.
+//   5. Set security rules appropriately for your use case (see README.md,
+//      "Shared backend setup", for a starting point).
 window.FIREBASE_CONFIG = {
   apiKey: "AIzaSyDovvWQERf2MAWVtu2zzT2ZcKqSRqnf87o",
   authDomain: "installplanner.firebaseapp.com",

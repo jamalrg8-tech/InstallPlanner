@@ -5,48 +5,60 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <title>Eurolux WA Production Tracker</title>
 <meta name="description" content="Factory view of the WA production tracker — glass/frame/coating fabrication status.">
-<meta name="theme-color" content="#2E5C8A">
+<meta name="theme-color" content="#000000">
 <link rel="icon" href="./icon-192.png" type="image/png">
 <link rel="apple-touch-icon" href="./icon-192.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="WA Tracker">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg:#F3F1EA;
+    --bg:#F7F7F7;
     --surface:#FFFFFF;
-    --surface-2:#EAE6DB;
-    --border:#DAD4C5;
-    --border-strong:#C4BCA8;
-    --text:#1C2129;
-    --text-muted:#636B74;
-    --text-faint:#8B9099;
-    --accent:#2E5C8A;
-    --accent-soft:#DCE7F2;
-    --accent-strong:#1F4468;
-    --danger:#A6432E;
-    --danger-soft:#F3DFD9;
-    --shadow:0 1px 2px rgba(28,33,41,.06), 0 6px 16px rgba(28,33,41,.06);
+    --surface-2:#F0F0F0;
+    --border:#E5E5E5;
+    --border-strong:#CCCCCC;
+    --text:#1A1A1A;
+    --text-muted:#555555;
+    --text-faint:#999999;
+    --accent:#000000;
+    --accent-soft:#F0F0F0;
+    --accent-strong:#333333;
+    --accent-ink:#FFFFFF;
+    --danger:#B91C1C;
+    --danger-soft:#FEE2E2;
+    --shadow:0 2px 8px rgba(0,0,0,.08);
+    --shadow-lg:0 6px 24px rgba(0,0,0,.12);
+    --radius:4px;
+    --nav-bg:#000000;
+    --nav-text:#FFFFFF;
+    --nav-border:rgba(255,255,255,.25);
+    --nav-hover:rgba(255,255,255,.12);
+    --nav-active:rgba(255,255,255,.16);
   }
   @media (prefers-color-scheme: dark){
     :root:not([data-theme="light"]){
-      --bg:#14181D; --surface:#1B2029; --surface-2:#232B36;
-      --border:#2E3742; --border-strong:#3C4753;
-      --text:#E9E7E0; --text-muted:#9AA3AD; --text-faint:#6E7680;
-      --accent:#6FA8DB; --accent-soft:#223A52; --accent-strong:#8FC0EA;
-      --danger:#E08A73; --danger-soft:#4A2C24;
+      --bg:#121212; --surface:#1C1C1C; --surface-2:#262626;
+      --border:#333333; --border-strong:#454545;
+      --text:#EDEDED; --text-muted:#AAAAAA; --text-faint:#777777;
+      --accent:#FFFFFF; --accent-soft:#2A2A2A; --accent-strong:#CCCCCC; --accent-ink:#000000;
+      --danger:#FF6B6B; --danger-soft:#4A2020;
       --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 20px rgba(0,0,0,.35);
+      --shadow-lg:0 6px 24px rgba(0,0,0,.5);
+      --nav-bg:#000000; --nav-text:#FFFFFF; --nav-border:rgba(255,255,255,.25); --nav-hover:rgba(255,255,255,.12); --nav-active:rgba(255,255,255,.16);
     }
   }
   :root[data-theme="dark"]{
-    --bg:#14181D; --surface:#1B2029; --surface-2:#232B36;
-    --border:#2E3742; --border-strong:#3C4753;
-    --text:#E9E7E0; --text-muted:#9AA3AD; --text-faint:#6E7680;
-    --accent:#6FA8DB; --accent-soft:#223A52; --accent-strong:#8FC0EA;
-    --danger:#E08A73; --danger-soft:#4A2C24;
+    --bg:#121212; --surface:#1C1C1C; --surface-2:#262626;
+    --border:#333333; --border-strong:#454545;
+    --text:#EDEDED; --text-muted:#AAAAAA; --text-faint:#777777;
+    --accent:#FFFFFF; --accent-soft:#2A2A2A; --accent-strong:#CCCCCC; --accent-ink:#000000;
+    --danger:#FF6B6B; --danger-soft:#4A2020;
     --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 20px rgba(0,0,0,.35);
+    --shadow-lg:0 6px 24px rgba(0,0,0,.5);
+    --nav-bg:#000000; --nav-text:#FFFFFF; --nav-border:rgba(255,255,255,.25); --nav-hover:rgba(255,255,255,.12); --nav-active:rgba(255,255,255,.16);
   }
 
   *{box-sizing:border-box;}
@@ -54,55 +66,96 @@
   [hidden]{ display:none !important; }
   body{
     background:var(--bg); color:var(--text);
-    font-family:"IBM Plex Sans",system-ui,-apple-system,sans-serif;
+    font-family:"Montserrat",system-ui,-apple-system,sans-serif;
     font-size:13px; line-height:1.4;
     -webkit-font-smoothing:antialiased;
   }
-  h1,h2{font-family:"Archivo",system-ui,sans-serif; text-wrap:balance; margin:0;}
+  h1{font-family:"Playfair Display",Georgia,serif; text-wrap:balance; margin:0;}
+  h2{font-family:"Montserrat",sans-serif; font-weight:700; text-wrap:balance; margin:0;}
   ::selection{background:var(--accent-soft);}
   button{font-family:inherit;}
+  input[type="checkbox"],input[type="radio"]{ accent-color:var(--accent); }
   :focus-visible{outline:2px solid var(--accent); outline-offset:1px;}
 
   .app{ max-width:100%; padding:20px 24px 32px; display:flex; flex-direction:column; gap:16px; }
 
-  .toolbar{ display:flex; flex-wrap:wrap; align-items:flex-end; justify-content:space-between; gap:16px 24px; }
-  .toolbar h1{ font-size:22px; font-weight:800; letter-spacing:-0.01em; }
-  .toolbar .sub{ font-size:12px; color:var(--text-muted); margin-top:4px; }
+  .toolbar{
+    display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:14px 24px;
+    background:var(--nav-bg); color:var(--nav-text);
+    padding:14px 20px; border-radius:6px; box-shadow:var(--shadow);
+  }
+  .toolbar h1{ font-size:19px; font-weight:700; letter-spacing:-0.01em; color:var(--nav-text); }
+  .toolbar .sub{ font-size:12px; color:rgba(255,255,255,.6); margin-top:4px; }
   .toolbar-actions{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
 
   .btn{
     display:inline-flex; align-items:center; gap:6px;
-    padding:8px 14px; border-radius:8px; border:1px solid var(--border-strong);
-    background:var(--surface); color:var(--text); font-size:13px; font-weight:600;
-    cursor:pointer; box-shadow:var(--shadow); white-space:nowrap;
+    padding:0.56rem 1.05rem; border-radius:var(--radius); border:1px solid var(--border-strong);
+    background:var(--surface); color:var(--text); font-size:0.78rem; font-weight:600;
+    cursor:pointer; box-shadow:none; white-space:nowrap;
   }
-  .btn:hover{ border-color:var(--accent); }
-  .btn.primary{ background:var(--accent); border-color:var(--accent); color:#fff; }
+  .btn:hover{ border-color:var(--text-muted); background:var(--surface-2); }
+  .btn.primary{ background:var(--accent); border-color:var(--accent); color:var(--accent-ink); }
   .btn.primary:hover{ background:var(--accent-strong); border-color:var(--accent-strong); }
   .btn.danger{ background:var(--danger); border-color:var(--danger); color:#fff; }
   .btn.danger:hover{ background:var(--danger); border-color:var(--danger); filter:brightness(1.1); }
   .btn:disabled{ opacity:.5; cursor:not-allowed; }
   .import-input{ display:none; }
 
-  .sync-status{ display:flex; align-items:center; gap:7px; font-size:12px; color:var(--text-muted); font-family:"IBM Plex Mono",monospace; padding:7px 12px; border:1px solid var(--border); border-radius:100px; background:var(--surface); white-space:nowrap; }
+  .toolbar .btn{ background:transparent; border:1px solid var(--nav-border); color:var(--nav-text); box-shadow:none; border-radius:999px; }
+  .toolbar .btn:hover{ background:var(--nav-hover); border-color:var(--nav-border); }
+  .toolbar .btn.primary{ background:#fff; border-color:#fff; color:#000; }
+  .toolbar .btn.primary:hover{ background:#e5e5e5; border-color:#e5e5e5; }
+
+  .sync-status{ display:flex; align-items:center; gap:7px; font-size:12px; color:var(--text-muted); font-family:"Montserrat",sans-serif; padding:7px 12px; border:1px solid var(--border); border-radius:100px; background:var(--surface); white-space:nowrap; }
   .sync-dot{ width:8px; height:8px; border-radius:50%; flex:none; background:var(--text-faint); }
-  .sync-status.state-synced{ border-color:#3E9B5C; color:var(--text); }
-  .sync-status.state-synced .sync-dot{ background:#3E9B5C; }
-  .sync-status.state-syncing .sync-dot{ background:#D6A72E; animation:sync-pulse 1s ease-in-out infinite; }
+  .sync-status.state-synced{ border-color:#15803D; color:var(--text); }
+  .sync-status.state-synced .sync-dot{ background:#15803D; }
+  .sync-status.state-syncing .sync-dot{ background:#B45309; animation:sync-pulse 1s ease-in-out infinite; }
   .sync-status.state-local{ color:var(--text-muted); }
   .sync-status.state-local .sync-dot{ background:var(--text-faint); }
   .sync-status.state-error{ border-color:var(--danger); color:var(--danger); }
   .sync-status.state-error .sync-dot{ background:var(--danger); }
   .sync-status.state-connecting .sync-dot{ background:var(--accent); animation:sync-pulse 1s ease-in-out infinite; }
+  .toolbar .sync-status{ background:transparent; border-color:var(--nav-border); color:rgba(255,255,255,.8); }
+  .toolbar .sync-status.state-local{ color:rgba(255,255,255,.55); }
+  .toolbar .sync-status.state-connecting .sync-dot{ background:#ffffff; }
   @keyframes sync-pulse{ 0%,100%{ opacity:1; } 50%{ opacity:.3; } }
 
-  .board-wrap{ border:1px solid var(--border); border-radius:10px; box-shadow:var(--shadow); background:var(--surface); overflow:hidden; }
+  /* ---- Search (filters rows by Project Name — see matchesSearch()) ---- */
+  .search-box{ position:relative; display:flex; align-items:center; }
+  .search-field{ width:230px; max-width:100%; padding:8px 30px 8px 12px; border-radius:var(--radius); border:1px solid var(--border-strong); background:var(--surface); color:var(--text); font-family:inherit; font-size:13px; box-shadow:none; }
+  .search-field:focus{ outline:none; border-color:var(--accent); }
+  .search-field::-webkit-search-cancel-button{ display:none; }
+  .search-clear{ position:absolute; right:6px; background:none; border:none; color:var(--text-faint); font-size:16px; line-height:1; cursor:pointer; padding:4px 6px; border-radius:4px; }
+  .search-clear:hover{ background:var(--surface-2); color:var(--text); }
+  .toolbar .search-field{ background:rgba(255,255,255,.08); border:1px solid var(--nav-border); color:#fff; border-radius:999px; }
+  .toolbar .search-field::placeholder{ color:rgba(255,255,255,.5); }
+  .toolbar .search-field:focus{ border-color:#fff; }
+  .toolbar .search-clear{ color:rgba(255,255,255,.7); }
+  .toolbar .search-clear:hover{ background:var(--nav-hover); color:#fff; }
+
+  /* ---- Group-by-project banded rows (see buildRenderPlan()/toggleGroup()
+     below) — a full-width divider row inserted before each cluster of rows
+     that share a Project Name, clickable to collapse/expand just that
+     group. Sticky right under the column header so, once you've scrolled
+     past a group's header, you can still see which project the rows
+     beneath it belong to; the next group's header simply takes over that
+     same sticky slot as it scrolls up. ---- */
+  .wa-group-row{ padding:0; background:var(--surface-2); border-bottom:1px solid var(--border-strong); position:sticky; top:56px; z-index:8; }
+  .wa-group-toggle{ width:100%; height:100%; display:flex; align-items:center; gap:10px; padding:0 14px; background:none; border:none; cursor:pointer; text-align:left; font-family:inherit; }
+  .wa-group-toggle:hover{ background:var(--border); }
+  .wa-group-chevron{ font-size:10px; color:var(--text-muted); width:12px; flex:none; text-align:center; }
+  .wa-group-name{ font-weight:700; font-size:12.5px; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .wa-group-count{ font-size:11px; color:var(--text-muted); font-weight:600; background:var(--surface); border:1px solid var(--border-strong); border-radius:100px; padding:1px 8px; flex:none; }
+
+  .board-wrap{ border:1px solid var(--border); border-radius:6px; box-shadow:var(--shadow); background:var(--surface); overflow:hidden; }
   .board-scroll{ overflow:auto; max-height:calc(100vh - 170px); min-height:260px; }
   .board{ display:grid; position:relative; width:max-content; }
   .board .row-head{ display:none; }
 
   .cell{ border-right:1px solid var(--border); border-bottom:1px solid var(--border); display:flex; align-items:center; padding:0 8px; background:var(--surface); min-width:0; }
-  .meta-head{ position:sticky; top:0; z-index:9; background:var(--surface-2); font-size:10.5px; font-weight:600; text-transform:uppercase; letter-spacing:.04em; color:var(--text-muted); border-bottom:1px solid var(--border-strong); }
+  .meta-head{ position:sticky; top:0; z-index:9; background:#000000; font-size:10.5px; font-weight:600; text-transform:uppercase; letter-spacing:.04em; color:#ffffff; border-bottom:1px solid #000000; }
 
   .field{ width:100%; border:1px solid transparent; background:transparent; color:var(--text); font-family:inherit; font-size:12.5px; padding:6px 4px; border-radius:6px; min-width:0; }
   input.field{ text-overflow:ellipsis; }
@@ -112,12 +165,12 @@
   textarea.field.autosize-field{ height:auto; min-height:44px; overflow:hidden; }
   select.field{ font-size:12px; font-weight:600; padding:5px 4px; cursor:pointer; }
 
-  .date-btn{ width:100%; height:100%; border:1px solid transparent; background:transparent; color:var(--text); font-family:"IBM Plex Mono",monospace; font-size:11.5px; padding:6px 4px; border-radius:6px; text-align:left; cursor:pointer; }
+  .date-btn{ width:100%; height:100%; border:1px solid transparent; background:transparent; color:var(--text); font-family:"Montserrat",sans-serif; font-size:11.5px; padding:6px 4px; border-radius:6px; text-align:left; cursor:pointer; }
   .date-btn:hover{ background:var(--surface-2); }
   .date-btn.active, .date-btn:focus-visible{ background:var(--surface); box-shadow:inset 0 0 0 1px var(--accent); outline:none; }
   .date-btn.placeholder{ color:var(--text-faint); }
 
-  .date-popup{ position:fixed; z-index:220; width:236px; background:var(--surface); border:1px solid var(--border-strong); border-radius:10px; box-shadow:var(--shadow); padding:10px; font-size:12.5px; }
+  .date-popup{ position:fixed; z-index:220; width:236px; background:var(--surface); border:1px solid var(--border-strong); border-radius:6px; box-shadow:var(--shadow); padding:10px; font-size:12.5px; }
   .date-popup[hidden]{ display:none; }
   .date-popup-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; }
   .date-popup-nav{ background:none; border:none; color:var(--text-muted); font-size:15px; line-height:1; cursor:pointer; padding:4px 8px; border-radius:6px; }
@@ -129,7 +182,7 @@
   .date-popup-day:hover{ background:var(--surface-2); }
   .date-popup-day.muted{ color:var(--text-faint); }
   .date-popup-day.today{ box-shadow:inset 0 0 0 1px var(--accent); }
-  .date-popup-day.selected{ background:var(--accent); color:#fff; font-weight:700; }
+  .date-popup-day.selected{ background:var(--accent); color:var(--accent-ink); font-weight:700; }
   .date-popup-foot{ display:flex; justify-content:space-between; margin-top:8px; padding-top:8px; border-top:1px solid var(--border); }
   .date-popup-link{ background:none; border:none; color:var(--accent); font-family:inherit; font-size:11.5px; font-weight:600; cursor:pointer; padding:2px 4px; }
   .date-popup-link:hover{ text-decoration:underline; }
@@ -157,7 +210,7 @@
      .meta-head already establishes position:sticky (above), which also
      serves as the containing block these absolutely-positioned handles need. */
   .wa-col-handle{ position:absolute; top:0; right:-3px; width:6px; height:100%; cursor:col-resize; z-index:10; background:transparent; }
-  .wa-col-handle:hover, .wa-col-handle.dragging{ background:var(--accent); opacity:.55; }
+  .wa-col-handle:hover, .wa-col-handle.dragging{ background:var(--text-faint); opacity:.7; }
 
   /* Always-reachable "shadow" horizontal scrollbar pinned above the table —
      see the matching comment in InstallPlanner.html. */
@@ -170,14 +223,14 @@
 
   .empty-state{ padding:40px 20px; text-align:center; color:var(--text-muted); font-size:13px; }
 
-  .toast{ position:fixed; bottom:20px; left:50%; transform:translateX(-50%); background:var(--text); color:var(--bg); padding:10px 16px; border-radius:8px; font-size:13px; box-shadow:var(--shadow); display:flex; gap:14px; align-items:center; z-index:100; opacity:0; pointer-events:none; transition:opacity .2s ease; }
+  .toast{ position:fixed; bottom:20px; left:50%; transform:translateX(-50%); background:var(--text); color:var(--bg); padding:10px 16px; border-radius:6px; font-size:13px; box-shadow:var(--shadow-lg); display:flex; gap:14px; align-items:center; z-index:100; opacity:0; pointer-events:none; transition:opacity .2s ease; }
   .toast.show{ opacity:1; pointer-events:auto; }
   .toast a{ color:var(--accent-strong); font-weight:600; cursor:pointer; text-decoration:underline; }
 
   .confirm-modal-backdrop{ position:fixed; inset:0; background:rgba(20,24,29,.5); display:flex; align-items:center; justify-content:center; z-index:210; padding:24px; }
   .confirm-modal-backdrop[hidden]{ display:none; }
-  .confirm-modal-card{ background:var(--surface); border-radius:12px; box-shadow:var(--shadow); width:min(380px, 100%); padding:20px; }
-  .confirm-modal-card h2{ font-size:15px; font-weight:800; margin-bottom:8px; }
+  .confirm-modal-card{ background:var(--surface); border-radius:8px; box-shadow:var(--shadow); width:min(380px, 100%); padding:20px; }
+  .confirm-modal-card h2{ font-size:15px; font-weight:700; margin-bottom:8px; }
   .confirm-modal-card p{ font-size:13px; color:var(--text-muted); line-height:1.45; }
   .confirm-modal-actions{ display:flex; justify-content:flex-end; gap:8px; margin-top:18px; }
 
@@ -195,6 +248,10 @@
       <div class="sub">Factory view — this page shows and edits only this tracker.</div>
     </div>
     <div class="toolbar-actions">
+      <div class="search-box">
+        <input type="search" class="search-field" id="search-input" placeholder="Search project name…" aria-label="Search rows by project name">
+        <button type="button" class="search-clear" id="search-clear-btn" hidden aria-label="Clear search">×</button>
+      </div>
       <div class="sync-status" id="sync-status" title="Whether your changes are shared with the office or saved on just this device">
         <span class="sync-dot"></span><span id="sync-label"></span>
       </div>
@@ -203,6 +260,7 @@
       <input class="import-input" id="import-input" type="file" accept=".xlsx,.xls,.csv">
       <button class="btn" id="export-xlsx-btn" type="button">Export Excel</button>
       <button class="btn" id="export-pdf-btn" type="button">Export PDF</button>
+      <button class="btn" id="group-toggle-btn" type="button" aria-pressed="false" title="Group rows that share the same Project Name">Group by project</button>
       <label class="wa-rowheight-label">Row height
         <select id="rowheight-select" class="field">
           <option value="compact">Compact</option>
@@ -238,15 +296,16 @@
   </div>
 </div>
 
-<!-- Shared backend (Firestore) — the SAME document the main planner uses,
-     so edits here show up there and vice versa. This page only ever reads
-     and writes the "waRows" field of that document (see doSave() below);
-     it never touches "projects", "customTeams" or "bannerDismissed", so it
-     can't affect the project schedule even though it's the same doc. Safe
-     to load even when not configured — falls back to this-device-only
-     storage automatically, same as the main planner. -->
-<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+<!-- Shared backend (Firebase/Firestore) — the SAME document the main planner
+     uses, so edits here show up there and vice versa. This page only ever
+     reads and writes the "waRows" field of that document (see doSave()
+     below); it never touches "projects", "customTeams" or
+     "bannerDismissed", so it can't affect the project schedule even though
+     it's the same document. Safe to load even when not configured — falls
+     back to this-device-only storage automatically, same as the main
+     planner. -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="./firebase-config.js"></script>
 
 <!-- Excel / CSV import and export -->
@@ -269,15 +328,104 @@
   var state = { waRows: [] };
   var saveTimer = null;
   // True from the instant a Firestore write is kicked off until it settles.
-  // Firestore's local cache echoes a write back through onSnapshot almost
-  // immediately (well before the network round-trip completes), and that
-  // echo can land in the gap right after doSave() clears saveTimer but
-  // before the write's promise resolves. Without this flag, that echo was
-  // treated as "no local edit pending" and triggered a full board re-render
-  // — rebuilding every input from scratch and stealing focus — which is
-  // what made typing feel like it kept getting interrupted.
+  // Firestore's local-cache echoes a write back through onSnapshot almost
+  // immediately, and that echo can land in the gap right after doSave()
+  // clears saveTimer but before the write settles. Without this flag, that
+  // echo was treated as "no local edit pending" and triggered a full board
+  // re-render — rebuilding every input from scratch and stealing focus —
+  // which is what made typing feel like it kept getting interrupted.
   var writeInFlight = false;
   var lastSnapshotForUndo = null;
+
+  // ---- search + group-by-project (this page's own view-only state — never
+  // saved to the shared backend, since it's just how THIS device is
+  // currently looking at the list, not part of the data itself). Search
+  // matches the same way the main planner's project-name search does: a
+  // case-insensitive substring match. Which groups are collapsed, and
+  // whether grouping is on at all, persist per-device in localStorage (same
+  // pattern as the column-width/row-height prefs below) so reopening the
+  // page keeps how you last left it. ----
+  var searchQuery = "";
+  var groupByProject = false;
+  var collapsedGroups = {}; // key: trimmed Project Name -> true if collapsed
+  var GROUP_PREFS_KEY = "installPlanner.waGroupPrefs.v1";
+
+  function loadGroupPrefs(){
+    try{
+      var raw = localStorage.getItem(GROUP_PREFS_KEY);
+      if (!raw) return;
+      var data = JSON.parse(raw);
+      if (data && typeof data.groupByProject === "boolean") groupByProject = data.groupByProject;
+      if (data && data.collapsed && typeof data.collapsed === "object") collapsedGroups = data.collapsed;
+    } catch(e){ /* corrupt or inaccessible storage — fall back to defaults */ }
+  }
+  function saveGroupPrefs(){
+    try{ localStorage.setItem(GROUP_PREFS_KEY, JSON.stringify({ groupByProject:groupByProject, collapsed:collapsedGroups })); } catch(e){}
+  }
+
+  function matchesSearch(row){
+    if (!searchQuery) return true;
+    return (row.projectName||"").toLowerCase().indexOf(searchQuery) > -1;
+  }
+
+  // Clusters the (already search-filtered) rows by Project Name, preserving
+  // each project's first-appearance order rather than re-sorting the list —
+  // so grouping just pulls a project's line-items together without
+  // reshuffling which project comes before which. Rows with a blank
+  // Project Name are grouped together under "(No project name)" rather
+  // than left ungrouped, so "Group by project" always produces one row per
+  // distinct name, blank included.
+  function buildRenderPlan(){
+    var rows = (state.waRows || []).filter(matchesSearch);
+    if (!groupByProject) return rows.map(function(row){ return { type:"row", row:row }; });
+
+    var groups = [];
+    var byKey = {};
+    rows.forEach(function(row){
+      var key = (row.projectName||"").trim();
+      if (!byKey[key]){
+        byKey[key] = { key:key, label: key || "(No project name)", rows:[] };
+        groups.push(byKey[key]);
+      }
+      byKey[key].rows.push(row);
+    });
+
+    var plan = [];
+    groups.forEach(function(g){
+      var collapsed = !!collapsedGroups[g.key];
+      plan.push({ type:"group", key:g.key, label:g.label, count:g.rows.length, collapsed:collapsed });
+      if (!collapsed) g.rows.forEach(function(row){ plan.push({ type:"row", row:row }); });
+    });
+    return plan;
+  }
+
+  function groupHeaderHTML(item, gridRow, totalCols){
+    return '<div class="cell wa-group-row" style="grid-column:1 / span '+totalCols+'; grid-row:'+gridRow+';">'+
+      '<button type="button" class="wa-group-toggle" data-wa-group-toggle="'+WA.escAttr(item.key)+'" aria-expanded="'+(item.collapsed?"false":"true")+'">'+
+        '<span class="wa-group-chevron">'+(item.collapsed?"▸":"▾")+'</span>'+
+        '<span class="wa-group-name">'+WA.escText(item.label)+'</span>'+
+        '<span class="wa-group-count">'+item.count+' item'+(item.count===1?"":"s")+'</span>'+
+      '</button></div>';
+  }
+
+  function toggleGroup(key){
+    collapsedGroups[key] = !collapsedGroups[key];
+    saveGroupPrefs();
+    render();
+  }
+
+  // Matches wa-shared.js's own HEADER_ROW_H (56px) — kept as a separate
+  // constant here since that one's private to wa-shared.js, and this page
+  // needs to build its own row-track list to give group-header rows a
+  // slimmer, fixed height instead of stretching to the data-row minimum.
+  var GROUP_ROW_H = 34;
+  function buildGridTemplateRows(plan){
+    if (!plan.length) return "56px 64px";
+    var tracks = plan.map(function(item){
+      return item.type === "group" ? GROUP_ROW_H+"px" : "minmax(var(--wa-row-min-height, 64px), auto)";
+    });
+    return "56px "+tracks.join(" ");
+  }
 
   // ---- date helpers (same as InstallPlanner.html's — kept local rather
   // than shared, since this is the only page besides InstallPlanner.html
@@ -330,17 +478,25 @@
 
   function render(){
     var focusInfo = captureFocusInfo();
-    var rows = state.waRows || [];
     var totalCols = WA.META_LABELS.length;
+    var plan = buildRenderPlan();
     boardEl.style.gridTemplateColumns = WA.gridTemplateColumns();
-    boardEl.style.gridTemplateRows = WA.gridTemplateRows(rows.length);
+    boardEl.style.gridTemplateRows = buildGridTemplateRows(plan);
 
     var html = WA.metaHeaderHTML();
-    if (rows.length === 0){
+    if ((state.waRows||[]).length === 0){
       html += '<div class="cell empty-state" style="grid-column:1 / span '+totalCols+'; grid-row:2; justify-content:center;">'+
         'No rows yet. Click “+ Add row” or use “Import Excel / CSV” to bring in a list.</div>';
+    } else if (plan.length === 0){
+      html += '<div class="cell empty-state" style="grid-column:1 / span '+totalCols+'; grid-row:2; justify-content:center;">'+
+        'No rows match “'+WA.escText(searchQuery)+'”.</div>';
     } else {
-      rows.forEach(function(row, idx){ html += WA.rowHTML(row, idx); });
+      var rowIndex = 0;
+      plan.forEach(function(item){
+        var gridRow = 2 + rowIndex;
+        html += item.type === "group" ? groupHeaderHTML(item, gridRow, totalCols) : WA.rowHTML(item.row, rowIndex);
+        rowIndex++;
+      });
     }
     boardEl.innerHTML = html;
     autosizeAllTextareas(boardEl);
@@ -368,6 +524,36 @@
     showToast("Column widths and row height reset.", null, null);
   });
 
+  // ---- search (filters rows by Project Name) ----
+  var searchInputEl = document.getElementById("search-input");
+  var searchClearBtn = document.getElementById("search-clear-btn");
+  function updateSearchClearVisibility(){ searchClearBtn.hidden = !searchInputEl.value; }
+  searchInputEl.addEventListener("input", function(){
+    searchQuery = String(searchInputEl.value||"").trim().toLowerCase();
+    updateSearchClearVisibility();
+    render();
+  });
+  searchClearBtn.addEventListener("click", function(){
+    searchInputEl.value = "";
+    searchQuery = "";
+    updateSearchClearVisibility();
+    searchInputEl.focus();
+    render();
+  });
+
+  // ---- group by project ----
+  var groupToggleBtn = document.getElementById("group-toggle-btn");
+  function updateGroupToggleBtn(){
+    groupToggleBtn.textContent = groupByProject ? "Ungroup" : "Group by project";
+    groupToggleBtn.setAttribute("aria-pressed", groupByProject ? "true" : "false");
+  }
+  groupToggleBtn.addEventListener("click", function(){
+    groupByProject = !groupByProject;
+    saveGroupPrefs();
+    updateGroupToggleBtn();
+    render();
+  });
+
   function waExportFilename(ext){
     var d = new Date();
     var iso8601 = d.getFullYear()+"-"+pad2(d.getMonth()+1)+"-"+pad2(d.getDate());
@@ -386,6 +572,8 @@
   // doc/local-storage blob — see the note above the script includes. ----
   var STORAGE_KEY = "installPlanner.v1";
   var backendMode = "local";
+  var FIREBASE_COLLECTION = "installPlanner";
+  var FIREBASE_DOC_ID = "shared";
   var fsDocRef = null;
   var applyingRemoteUpdate = false;
 
@@ -437,13 +625,17 @@
     clearTimeout(saveTimer);
     saveTimer = null;
     if (applyingRemoteUpdate) return;
-    if (backendMode === "firestore" && fsDocRef){
-      // merge:true — touches ONLY the "waRows" key of the shared doc, never
-      // "projects"/"customTeams"/"bannerDismissed", so this page can never
-      // clobber the project schedule even though it's the same document.
+    if (backendMode === "firebase" && fsDocRef){
+      // A merge write touching ONLY the "waRows" field of the shared
+      // document, never "projects"/"customTeams"/"bannerDismissed", so this
+      // page can never clobber the project schedule even though it's the
+      // same document.
       writeInFlight = true;
-      fsDocRef.set({ waRows: state.waRows, updatedAt: firebase.firestore.FieldValue.serverTimestamp() }, { merge:true })
-        .then(function(){ writeInFlight = false; setSaveStatus("synced"); })
+      fsDocRef.set({ waRows: state.waRows, updatedAt: firebase.firestore.FieldValue.serverTimestamp() }, { merge: true })
+        .then(function(){
+          writeInFlight = false;
+          setSaveStatus("synced");
+        })
         .catch(function(){ writeInFlight = false; setSaveStatus("sync-error"); });
       return;
     }
@@ -469,31 +661,41 @@
       try{
         if (!firebase.apps || !firebase.apps.length) firebase.initializeApp(cfg);
         var db = firebase.firestore();
-        fsDocRef = db.collection("installPlanner").doc("shared");
+        fsDocRef = db.collection(FIREBASE_COLLECTION).doc(FIREBASE_DOC_ID);
         var settled = false;
-        fsDocRef.onSnapshot(function(snap){
+
+        function applyDoc(data){
           applyingRemoteUpdate = true;
           var hasPendingLocalEdit = !!saveTimer || writeInFlight;
-          if (snap.exists){
-            var data = snap.data();
-            if (!hasPendingLocalEdit){
-              state.waRows = (data && Array.isArray(data.waRows)) ? data.waRows.map(WA.normalizeRow) : [];
-            }
-          } else if (!settled){
-            // No shared document yet at all — nobody, factory or office,
-            // has used the planner before. Seed it with empty project data
-            // (so the main planner degrades to "no projects yet" instead
-            // of crashing on a missing field) plus the real WA seed rows.
-            state.waRows = JSON.parse(JSON.stringify(WA.SEED_ROWS));
-            fsDocRef.set({ projects: [], bannerDismissed:false, customTeams: [], waRows: state.waRows });
+          if (data && !hasPendingLocalEdit){
+            state.waRows = Array.isArray(data.waRows) ? data.waRows.map(WA.normalizeRow) : [];
           }
           applyingRemoteUpdate = false;
-          backendMode = "firestore";
-          if (!settled){ settled = true; resolve(true); }
-          else if (!hasPendingLocalEdit){ render(); setSaveStatus(snap.metadata.hasPendingWrites ? "syncing" : "synced"); }
+          return hasPendingLocalEdit;
+        }
+
+        fsDocRef.onSnapshot(function(snap){
+          if (!settled){
+            if (snap.exists){
+              applyDoc(snap.data());
+            } else {
+              // No shared document yet at all — nobody, factory or office,
+              // has used the planner before. Seed it with empty project
+              // data (so the main planner degrades to "no projects yet"
+              // instead of crashing on a missing field) plus the real WA
+              // seed rows.
+              state.waRows = JSON.parse(JSON.stringify(WA.SEED_ROWS));
+              fsDocRef.set({ projects: [], bannerDismissed:false, customTeams: [], waRows: state.waRows }, { merge: true }).then(function(){});
+            }
+            backendMode = "firebase";
+            settled = true;
+            resolve(true);
+            return;
+          }
+          var hasPendingLocalEdit = applyDoc(snap.data());
+          if (!hasPendingLocalEdit){ render(); setSaveStatus("synced"); }
         }, function(){
           if (!settled){ settled = true; resolve(false); }
-          else { setSaveStatus("conn-lost"); }
         });
         setTimeout(function(){ if (!settled){ settled = true; resolve(false); } }, 4000);
       } catch(e){
@@ -693,6 +895,9 @@
   });
 
   document.addEventListener("click", function(e){
+    var groupToggle = e.target.closest("[data-wa-group-toggle]");
+    if (groupToggle){ toggleGroup(groupToggle.dataset.waGroupToggle); return; }
+
     var dateBtn = e.target.closest("[data-wa-date-btn]");
     if (dateBtn){ openDatePopup(dateBtn); return; }
     if (datePopupState){
@@ -769,9 +974,11 @@
   async function init(){
     waControls.init();
     document.getElementById("rowheight-select").value = waControls.getRowHeight();
+    loadGroupPrefs();
+    updateGroupToggleBtn();
     setSaveStatus("connecting");
     await initBackend();
-    setSaveStatus(backendMode === "firestore" ? "synced" : "local-saved");
+    setSaveStatus(backendMode === "firebase" ? "synced" : "local-saved");
     render();
   }
   init();

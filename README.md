@@ -12,7 +12,7 @@ No build step. Static files, deployable as-is to GitHub + Vercel.
 | `wa-tracker.html` | The standalone **factory link** — shows and edits only the WA production tracker, nothing else. See "Sharing the WA tracker with the factory" below. |
 | `wa-shared.js` | The WA tracker's data model and row/header rendering, shared by both pages above so they always agree on what a row looks like. |
 | `index.html` | Redirects `/` to `InstallPlanner.html` so the root URL works. |
-| `firebase-config.js` | Your shared-backend credentials go here (see below). Ships with placeholders. |
+| `firebase-config.js` | Your shared-backend credentials go here (see below). Ships already filled in with this project's Firebase config. |
 | `manifest.json`, `sw.js`, `icon-192.png`, `icon-512.png` | Make it an installable PWA (Add to Home Screen / Install App) with basic offline support. |
 
 ## What's in this version
@@ -22,6 +22,7 @@ No build step. Static files, deployable as-is to GitHub + Vercel.
 - **WA tracker: Export Excel / Export PDF** — buttons right in the WA Tracker toolbar (and on the factory link) export the current list of rows exactly as they stand — all 15 columns, dates in the same d/mm/yyyy format shown on screen — as either a downloadable `.xlsx` workbook or a landscape PDF table, for sending on to someone who doesn't use the planner at all.
 - **WA tracker: resizable columns, adjustable row height, and an always-visible scrollbar** — every WA column has a drag handle on its right edge (hover the header border, same as the main schedule's columns) so you can widen or narrow any of them, and a **Row height** dropdown (Compact / Comfortable / Expanded) in the toolbar sets how tightly rows pack together — shrinking a row only ever removes empty space, since every field still grows taller than that floor if its own text needs more room, so nothing is ever clipped or hidden. **Reset columns** puts both back to the defaults. With 15 columns the board is wider than most screens, so it scrolls sideways — there's a second, slim scrollbar pinned directly under the toolbar, right above the table, at all times (drag it, or two-finger swipe sideways anywhere over the table) so you can always get to any column no matter how far down the list you've scrolled — no need to scroll all the way back down to a bottom scrollbar. Like the main schedule's own column widths, these are a per-device preference (not synced) — resizing on the office computer doesn't change how it looks on the factory tablet.
 - **Client** field for each project. A **Hide Client** / **Show Client** button in the main toolbar (next to Reset columns) lets you collapse this column away entirely — useful if you'd rather not show client names on a shared screen — and back again with one click; the column disappears cleanly with no gap left behind, in both the plain Schedule list and the full grid view. This is a per-device preference (not synced), same as column widths.
+- **Factory link: search and "Group by project"** — the standalone `wa-tracker.html` page has its own search box in the toolbar that filters the list down to rows whose Project Name contains what you type (case-insensitive, updates as you type; the × clears it). **Group by project** clusters every row that shares the same Project Name under a single banded header showing how many line-items it has; click a group's header (or the ▾/▸ arrow) to collapse it down to just that header, or expand it back — click **Ungroup** to go back to the flat list. Both are just this device's current view, not saved data, but which groups you've collapsed (and whether grouping is on) is remembered per device the same way column widths are.
 - **Schedule tab: an always-visible scrollbar, same as the WA tracker's.** With 14 meta columns, the plain project list can run wider than the screen too, so it gets the same slim scrollbar pinned directly under the toolbar, right above the table, at all times — drag it, or two-finger swipe sideways anywhere over the table — so you can reach any column without scrolling down through the list first. It stays in sync as you resize columns, reset them, or hide/show Client. (The Team Allocation tab and the separate "Schedule grid" popup still use their own native scrollbar at the bottom, for now.)
 - **Glass Delivery Date field** — sits between Project Scope and Glass Delivery Comments, using the same calendar picker as the other dates. It's a free date field with no restriction — pick any date you like, in any order relative to Start.
 - **Glass Delivery Comments field** — a free-text field right next to Glass Delivery Date, for any notes about that delivery (supplier, ETA, special handling, etc.). Grows to fit whatever you type, same as the main Comments field.
@@ -52,49 +53,50 @@ No build step. Static files, deployable as-is to GitHub + Vercel.
 - **"Clear all" button, for starting over with a fresh import** — moved into the Dashboard tab's **Settings** panel (it used to sit in the main toolbar). It asks you to confirm (it names how many projects will be removed and reminds you this affects everyone sharing the planner, since the schedule is synced live), then empties the whole list in one go, with an Undo toast right after in case it was a mistake. See "Clearing everything and importing fresh" below for the full steps.
 - **Date filter, with any date range you like** — a "Date filter" button next to the search box opens a small panel with two ranges: "Starting between" and "Finishing between," each with its own From/To calendar picker (the same one used for a project's Start/Finish date, including Clear and Today shortcuts). Leave a side blank for an open-ended range (e.g. only "Finishing between → 30/09/2026" means "finishing on or before that date"), set only one range, or set both together — a project has to match every range you've set to appear. "Show results" opens a read-only report — Project Name, Assigned Team, Start Date, Finish Date, and Comments — for just the matching projects. Handy for anything from "what's due to finish next month?" to "what starts between the 10th and the 20th?".
 - **A visible sync status + "Sync now" button** — the toolbar now shows a clear badge ("Synced with team" with a green dot, or "Saved on this device only" with a grey dot) instead of small, easy-to-miss text, so it's obvious whether your data is shared. Syncing to the shared database is still fully automatic on every edit — the new **Sync now** button is there for reassurance and for retrying the connection (e.g. right after finishing the Firebase setup below) without reloading the page.
-- **Fixed: connecting Firestore for the first time no longer discards existing data** — if you'd already been using the app in local-only mode and then set up the shared backend, turning it on used to wipe your device's projects and reseed the three examples into the shared database. It now seeds the shared database from whatever's already on your device instead.
-- **Fixed: typing in Comments (or any field) could drop characters on a shared/synced planner** — with the shared backend on, a live update echoing back from Firestore could land while you were still typing and briefly overwrite the field with the last-saved (now stale) text, silently swallowing whatever you'd typed since. The app now recognizes when you have an edit still waiting to be saved and skips applying an incoming update until that save has gone out, so a live sync in progress can no longer interrupt or clobber what you're typing.
-- **Fixed: typing anywhere in the WA production tracker kept getting interrupted, especially with the shared backend on** — the moment your device's own save round-tripped back through Firestore (which can happen within a fraction of a second of you pausing to think), the app treated it as a fresh update and re-drew the whole board, silently kicking the field out of focus — you'd have to click back in to keep typing, which is what made it feel like it was "continuously trying to sync." Two fixes: the app now correctly recognizes its own save as still in flight (not just "waiting to send") right up until it's fully round-tripped, so it no longer treats it as an incoming change; and separately, any re-render that does need to happen while a field is focused (e.g. an update from a teammate editing at the same time) now restores focus and cursor position afterwards instead of dropping it. This applies to the WA Tracker tab, the standalone factory link, and every field in the main project schedule.
+- **Fixed: connecting the shared backend for the first time no longer discards existing data** — if you'd already been using the app in local-only mode and then set up shared sync, turning it on used to wipe your device's projects and reseed the three examples into the shared database. It now seeds the shared database from whatever's already on your device instead.
+- **Fixed: typing in Comments (or any field) could drop characters on a shared/synced planner** — with the shared backend on, a live update echoing back from it could land while you were still typing and briefly overwrite the field with the last-saved (now stale) text, silently swallowing whatever you'd typed since. The app now recognizes when you have an edit still waiting to be saved and skips applying an incoming update until that save has gone out, so a live sync in progress can no longer interrupt or clobber what you're typing.
+- **Fixed: typing anywhere in the WA production tracker kept getting interrupted, especially with the shared backend on** — the moment your device's own save round-tripped back through the shared backend (which can happen within a fraction of a second of you pausing to think), the app treated it as a fresh update and re-drew the whole board, silently kicking the field out of focus — you'd have to click back in to keep typing, which is what made it feel like it was "continuously trying to sync." Two fixes: the app now correctly recognizes its own save as still in flight (not just "waiting to send") right up until it's fully round-tripped, so it no longer treats it as an incoming change; and separately, any re-render that does need to happen while a field is focused (e.g. an update from a teammate editing at the same time) now restores focus and cursor position afterwards instead of dropping it. This applies to the WA Tracker tab, the standalone factory link, and every field in the main project schedule.
 - Footer credit: "Developed with love by Uncle Ed, Version 4.20".
 
 ## Shared backend setup (everyone sees the same data)
 
-The app now supports two modes, chosen automatically:
+The app supports two modes, chosen automatically:
 
-1. **Shared (recommended)** — powered by Firebase Firestore's free tier. Once configured, everyone who opens the app sees the same live project list, and edits sync to everyone in under a second.
-2. **Local-only (automatic fallback)** — if `firebase-config.js` is left with its placeholder values (or Firestore can't be reached), the app quietly falls back to saving in that one browser's local storage, exactly like before. Nothing breaks either way.
+1. **Shared (recommended)** — powered by [Firebase](https://firebase.google.com)'s Firestore (a hosted realtime document database, free tier is plenty for this). This project already has a Firestore database provisioned, and `firebase-config.js` ships with its real credentials, so shared mode works out of the box — everyone who opens the app sees the same live project list, and edits sync to everyone in under a second.
+2. **Local-only (automatic fallback)** — if `firebase-config.js` is left with placeholder values (or Firestore can't be reached), the app quietly falls back to saving in that one browser's local storage. Nothing breaks either way.
 
-### To turn on shared mode (~5 minutes, free)
+### To point the app at a different Firebase project (optional)
 
-1. Go to [console.firebase.google.com](https://console.firebase.google.com) and create a project (any name).
-2. In the project, go to **Build → Firestore Database → Create database**. Choose **Production mode** and any region close to you.
-3. Once created, go to the **Rules** tab and replace the contents with:
+You normally don't need to do this — `firebase-config.js` already has working credentials. Only follow these steps if you want to move to a fresh Firebase project of your own:
+
+1. Go to the [Firebase console](https://console.firebase.google.com/) and create a project (any name).
+2. In the project, go to **Build → Firestore Database → Create database** (start in production mode or test mode, either is fine to start).
+3. Go to **Project settings** (gear icon) → **General** → scroll to "Your apps" → add a **Web app** (or use an existing one) — it'll show you a `firebaseConfig` object.
+4. Paste those values into `firebase-config.js`, replacing what's there:
+   ```js
+   window.FIREBASE_CONFIG = {
+     apiKey: "...",
+     authDomain: "...",
+     projectId: "...",
+     storageBucket: "...",
+     messagingSenderId: "...",
+     appId: "..."
+   };
+   ```
+5. In **Firestore Database → Rules**, set rules appropriate for your use case. For a simple "anyone with the link can read/write" setup (matching how this app has always worked — there's no login system), you can use:
    ```
    rules_version = '2';
    service cloud.firestore {
      match /databases/{database}/documents {
-       match /installPlanner/shared {
+       match /installPlanner/{docId} {
          allow read, write: if true;
        }
      }
    }
    ```
-   This keeps the rest of your Firestore project locked down and only opens the one document the planner uses. It's intentionally simple for a small internal tool — anyone with your app's URL can read/write the schedule, but nothing else. If you want proper logins later, Firebase Authentication is a natural next step and I can help wire it up.
-4. Go to **Project settings** (gear icon) → **General** → scroll to "Your apps" → click the **Web** icon (`</>`) → register an app (any nickname, no need for Firebase Hosting).
-5. Copy the `firebaseConfig` object it shows you into `firebase-config.js`, replacing the placeholder values. It looks like:
-   ```js
-   window.FIREBASE_CONFIG = {
-     apiKey: "AIza...",
-     authDomain: "your-project.firebaseapp.com",
-     projectId: "your-project",
-     storageBucket: "your-project.appspot.com",
-     messagingSenderId: "123456789",
-     appId: "1:123456789:web:abcdef"
-   };
-   ```
-6. Commit and push — Vercel redeploys automatically, and the app now saves to Firestore instead of local storage. The status indicator near the top-right will read "Synced with team" once it's working.
+6. Commit and push — Vercel redeploys automatically, and the app now saves to your new Firestore project. The status indicator near the top-right will read "Synced with team" once it's working.
 
-These config values are meant to be public (they identify your project, not a secret key) — Firestore's Rules are what actually control access, which is why step 3 matters.
+These config values are meant to be public (they identify your project, not secret admin keys) — the Firestore security rules above are what actually control access, which is why step 5 matters. Note this app doesn't migrate old data automatically when you switch to a brand-new project — your existing shared data stays in the original Firebase project.
 
 ## Deploy to GitHub
 
@@ -121,7 +123,7 @@ Every push to `main` redeploys automatically.
 
 ## Updating the app later
 
-If `InstallPlanner.html`, `wa-tracker.html`, or `wa-shared.js` changes, bump `CACHE_NAME` in `sw.js` (e.g. `install-planner-v30`) so visitors' browsers pick up the new version instead of an old cached copy.
+If `InstallPlanner.html`, `wa-tracker.html`, or `wa-shared.js` changes, bump `CACHE_NAME` in `sw.js` (e.g. `install-planner-v31`) so visitors' browsers pick up the new version instead of an old cached copy.
 
 ## Importing your Excel sheet
 
@@ -141,7 +143,7 @@ If you want your factory to be able to see and update the WA production tracker 
 
 Anyone who opens that link sees **only** the WA production tracker — the same rows, in the same layout, with full ability to add rows, edit any field, delete rows, import a spreadsheet, and export the list to Excel or PDF. There are no tabs, no project schedule, no dashboard, no team allocation, and no way to navigate to any of them from that page — it's a separate, self-contained page, not a restricted view inside the main app.
 
-Under the hood, both pages read and write the *same* shared document in Firestore (when shared mode is set up — see above), but the factory page only ever touches the `waRows` part of it. Every save it makes is scoped to just that field, so it's not technically possible for someone using the factory link to see or overwrite your projects, teams, or dashboard settings, even by accident. If you haven't set up the shared backend, the factory link still works — it saves to that device's local storage instead, the same fallback the main app uses, which is fine for a single shared tablet in the factory but won't sync to your office copy.
+Under the hood, both pages read and write the *same* shared document in Firestore (when shared mode is set up — see above), but the factory page only ever touches the `waRows` field of it. Every save it makes is scoped to just that field, so it's not technically possible for someone using the factory link to see or overwrite your projects, teams, or dashboard settings, even by accident. If you haven't set up the shared backend, the factory link still works — it saves to that device's local storage instead, the same fallback the main app uses, which is fine for a single shared tablet in the factory but won't sync to your office copy.
 
 One thing worth knowing: because both pages can save at nearly the same moment, in the rare case where someone edits the main app and the factory page within the same second, whichever save lands last "wins" for anything outside the WA tracker (the factory page's save never includes those fields, so this really only matters between two edits to the main schedule happening at the same instant — it's the same eventual-consistency behavior the rest of the app already has, not something new introduced by the factory link).
 

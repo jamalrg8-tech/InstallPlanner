@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <title>Eurolux Doors and Windows, Installation Planner</title>
 <meta name="description" content="Installation planner with client, scope, dates, progress and team tracking.">
-<meta name="theme-color" content="#2E5C8A">
+<meta name="theme-color" content="#000000">
 <link rel="manifest" href="./manifest.json">
 <link rel="icon" href="./icon-192.png" type="image/png">
 <link rel="apple-touch-icon" href="./icon-192.png">
@@ -13,23 +13,31 @@
 <meta name="apple-mobile-web-app-title" content="Install Planner">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg:#F3F1EA;
+    --bg:#F7F7F7;
     --surface:#FFFFFF;
-    --surface-2:#EAE6DB;
-    --border:#DAD4C5;
-    --border-strong:#C4BCA8;
-    --text:#1C2129;
-    --text-muted:#636B74;
-    --text-faint:#8B9099;
-    --accent:#2E5C8A;
-    --accent-soft:#DCE7F2;
-    --accent-strong:#1F4468;
-    --danger:#A6432E;
-    --danger-soft:#F3DFD9;
-    --shadow:0 1px 2px rgba(28,33,41,.06), 0 6px 16px rgba(28,33,41,.06);
+    --surface-2:#F0F0F0;
+    --border:#E5E5E5;
+    --border-strong:#CCCCCC;
+    --text:#1A1A1A;
+    --text-muted:#555555;
+    --text-faint:#999999;
+    --accent:#000000;
+    --accent-soft:#F0F0F0;
+    --accent-strong:#333333;
+    --accent-ink:#FFFFFF;
+    --danger:#B91C1C;
+    --danger-soft:#FEE2E2;
+    --shadow:0 2px 8px rgba(0,0,0,.08);
+    --shadow-lg:0 6px 24px rgba(0,0,0,.12);
+    --radius:4px;
+    --nav-bg:#000000;
+    --nav-text:#FFFFFF;
+    --nav-border:rgba(255,255,255,.25);
+    --nav-hover:rgba(255,255,255,.12);
+    --nav-active:rgba(255,255,255,.16);
 
     --team-mark:#2E6F95;
     --team-alex:#2F8F72;
@@ -61,23 +69,27 @@
   }
   @media (prefers-color-scheme: dark){
     :root:not([data-theme="light"]){
-      --bg:#14181D; --surface:#1B2029; --surface-2:#232B36;
-      --border:#2E3742; --border-strong:#3C4753;
-      --text:#E9E7E0; --text-muted:#9AA3AD; --text-faint:#6E7680;
-      --accent:#6FA8DB; --accent-soft:#223A52; --accent-strong:#8FC0EA;
-      --danger:#E08A73; --danger-soft:#4A2C24;
+      --bg:#121212; --surface:#1C1C1C; --surface-2:#262626;
+      --border:#333333; --border-strong:#454545;
+      --text:#EDEDED; --text-muted:#AAAAAA; --text-faint:#777777;
+      --accent:#FFFFFF; --accent-soft:#2A2A2A; --accent-strong:#CCCCCC; --accent-ink:#000000;
+      --danger:#FF6B6B; --danger-soft:#4A2020;
       --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 20px rgba(0,0,0,.35);
+      --shadow-lg:0 6px 24px rgba(0,0,0,.5);
+      --nav-bg:#000000; --nav-text:#FFFFFF; --nav-border:rgba(255,255,255,.25); --nav-hover:rgba(255,255,255,.12); --nav-active:rgba(255,255,255,.16);
       --team-mark:#6FA8DB; --team-alex:#5FBB9B; --team-angelo:#E3AC55;
       --team-albert:#D4805C; --team-bert:#A488C7; --team-sammy:#8AAD5F; --team-none:#9AA3B4;
     }
   }
   :root[data-theme="dark"]{
-    --bg:#14181D; --surface:#1B2029; --surface-2:#232B36;
-    --border:#2E3742; --border-strong:#3C4753;
-    --text:#E9E7E0; --text-muted:#9AA3AD; --text-faint:#6E7680;
-    --accent:#6FA8DB; --accent-soft:#223A52; --accent-strong:#8FC0EA;
-    --danger:#E08A73; --danger-soft:#4A2C24;
+    --bg:#121212; --surface:#1C1C1C; --surface-2:#262626;
+    --border:#333333; --border-strong:#454545;
+    --text:#EDEDED; --text-muted:#AAAAAA; --text-faint:#777777;
+    --accent:#FFFFFF; --accent-soft:#2A2A2A; --accent-strong:#CCCCCC; --accent-ink:#000000;
+    --danger:#FF6B6B; --danger-soft:#4A2020;
     --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 20px rgba(0,0,0,.35);
+    --shadow-lg:0 6px 24px rgba(0,0,0,.5);
+    --nav-bg:#000000; --nav-text:#FFFFFF; --nav-border:rgba(255,255,255,.25); --nav-hover:rgba(255,255,255,.12); --nav-active:rgba(255,255,255,.16);
     --team-mark:#6FA8DB; --team-alex:#5FBB9B; --team-angelo:#E3AC55;
     --team-albert:#D4805C; --team-bert:#A488C7; --team-sammy:#8AAD5F; --team-none:#9AA3B4;
   }
@@ -87,72 +99,97 @@
   [hidden]{ display:none !important; }
   body{
     background:var(--bg); color:var(--text);
-    font-family:"IBM Plex Sans",system-ui,-apple-system,sans-serif;
+    font-family:"Montserrat",system-ui,-apple-system,sans-serif;
     font-size:13px; line-height:1.4;
     -webkit-font-smoothing:antialiased;
   }
-  h1,h2{font-family:"Archivo",system-ui,sans-serif; text-wrap:balance; margin:0;}
+  h1{font-family:"Playfair Display",Georgia,serif; text-wrap:balance; margin:0;}
+  h2{font-family:"Montserrat",sans-serif; font-weight:700; text-wrap:balance; margin:0;}
   ::selection{background:var(--accent-soft);}
   button{font-family:inherit;}
+  input[type="checkbox"],input[type="radio"]{ accent-color:var(--accent); }
   :focus-visible{outline:2px solid var(--accent); outline-offset:1px;}
 
   .app{ max-width:100%; padding:20px 24px 32px; display:flex; flex-direction:column; gap:16px; }
 
-  /* ---- Toolbar ---- */
-  .toolbar{ display:flex; flex-wrap:wrap; align-items:flex-end; justify-content:space-between; gap:16px 24px; }
-  .toolbar h1{ font-size:22px; font-weight:800; letter-spacing:-0.01em; }
-  .toolbar .range{ font-family:"IBM Plex Mono",monospace; font-size:12px; color:var(--text-muted); margin-top:4px; }
+  /* ---- Toolbar: styled after the black top nav bar used across Eurolux's
+     other in-house apps (Playfair Display brand title, pill-outline
+     controls, solid-white primary CTA). ---- */
+  .toolbar{
+    display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:14px 24px;
+    background:var(--nav-bg); color:var(--nav-text);
+    padding:14px 20px; border-radius:6px; box-shadow:var(--shadow);
+  }
+  .toolbar h1{ font-size:19px; font-weight:700; letter-spacing:-0.01em; color:var(--nav-text); }
+  .toolbar .range{ font-family:"Montserrat",sans-serif; font-size:12px; color:rgba(255,255,255,.6); margin-top:4px; }
   .toolbar-actions{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
-  .stat-row{ display:flex; gap:8px; align-items:center; flex-wrap:wrap; font-size:12px; color:var(--text-muted); font-family:"IBM Plex Mono",monospace; }
-  .stat-pill{ background:var(--surface); border:1px solid var(--border); border-radius:100px; padding:3px 10px; }
+  .stat-row{ display:flex; gap:8px; align-items:center; flex-wrap:wrap; font-size:12px; color:var(--text-muted); font-family:"Montserrat",sans-serif; }
+  .stat-pill{ background:var(--surface); border:none; border-radius:var(--radius); padding:5px 12px; box-shadow:var(--shadow); }
   .stat-pill.clickable{ cursor:pointer; }
-  .stat-pill.clickable:hover{ border-color:var(--accent); color:var(--text); }
-  .stat-pill.active{ background:var(--accent-soft); border-color:var(--accent); color:var(--accent-strong); font-weight:600; }
-  .filter-clear{ background:none; border:none; color:var(--accent); font-family:inherit; font-size:12px; font-weight:600; cursor:pointer; padding:3px 6px; text-decoration:underline; }
+  .stat-pill.clickable:hover{ box-shadow:var(--shadow-lg); color:var(--text); }
+  .stat-pill.active{ background:var(--accent); border:none; color:var(--accent-ink); font-weight:600; }
+  .filter-clear{ background:none; border:none; color:var(--text); font-family:inherit; font-size:12px; font-weight:600; cursor:pointer; padding:3px 6px; text-decoration:underline; }
 
-  .view-tabs{ display:flex; background:var(--surface-2); border:1px solid var(--border); border-radius:8px; padding:3px; gap:2px; }
-  .tab-btn{ border:none; background:transparent; color:var(--text-muted); font-family:inherit; font-size:12.5px; font-weight:600; padding:6px 12px; border-radius:6px; cursor:pointer; }
-  .tab-btn:hover{ color:var(--text); }
-  .tab-btn.active{ background:var(--surface); color:var(--text); box-shadow:var(--shadow); }
+  .view-tabs{ display:flex; background:transparent; border:1px solid var(--nav-border); border-radius:999px; padding:3px; gap:2px; }
+  .tab-btn{ border:none; background:transparent; color:rgba(255,255,255,.7); font-family:"Montserrat",sans-serif; font-size:12px; font-weight:600; padding:7px 14px; border-radius:999px; cursor:pointer; }
+  .tab-btn:hover{ color:#fff; background:var(--nav-hover); }
+  .tab-btn.active{ background:#fff; color:#000; box-shadow:none; }
 
   .btn{
     display:inline-flex; align-items:center; gap:6px;
-    padding:8px 14px; border-radius:8px; border:1px solid var(--border-strong);
-    background:var(--surface); color:var(--text); font-size:13px; font-weight:600;
-    cursor:pointer; box-shadow:var(--shadow); white-space:nowrap;
+    padding:0.56rem 1.05rem; border-radius:var(--radius); border:1px solid var(--border-strong);
+    background:var(--surface); color:var(--text); font-size:0.78rem; font-weight:600;
+    cursor:pointer; box-shadow:none; white-space:nowrap;
   }
-  .btn:hover{ border-color:var(--accent); }
-  .btn.primary{ background:var(--accent); border-color:var(--accent); color:#fff; }
+  .btn:hover{ border-color:var(--text-muted); background:var(--surface-2); }
+  .btn.primary{ background:var(--accent); border-color:var(--accent); color:var(--accent-ink); }
   .btn.primary:hover{ background:var(--accent-strong); border-color:var(--accent-strong); }
   .btn:disabled{ opacity:.5; cursor:not-allowed; }
-  .sync-status{ display:flex; align-items:center; gap:7px; font-size:12px; color:var(--text-muted); font-family:"IBM Plex Mono",monospace; padding:7px 12px; border:1px solid var(--border); border-radius:100px; background:var(--surface); white-space:nowrap; }
+
+  /* Buttons, search box, and the sync badge as they sit inside the black
+     toolbar specifically — pill-outline "ghost" treatment so they read
+     against the dark bar, same pattern as .nav-btn. */
+  .toolbar .btn{ background:transparent; border:1px solid var(--nav-border); color:var(--nav-text); box-shadow:none; border-radius:999px; }
+  .toolbar .btn:hover{ background:var(--nav-hover); border-color:var(--nav-border); }
+  .toolbar .btn.primary{ background:#fff; border-color:#fff; color:#000; }
+  .toolbar .btn.primary:hover{ background:#e5e5e5; border-color:#e5e5e5; }
+
+  .sync-status{ display:flex; align-items:center; gap:7px; font-size:12px; color:var(--text-muted); font-family:"Montserrat",sans-serif; padding:7px 12px; border:1px solid var(--border); border-radius:100px; background:var(--surface); white-space:nowrap; }
   .sync-dot{ width:8px; height:8px; border-radius:50%; flex:none; background:var(--text-faint); }
-  .sync-status.state-synced{ border-color:#3E9B5C; color:var(--text); }
-  .sync-status.state-synced .sync-dot{ background:#3E9B5C; }
-  .sync-status.state-syncing .sync-dot{ background:#D6A72E; animation:sync-pulse 1s ease-in-out infinite; }
+  .sync-status.state-synced{ border-color:#15803D; color:var(--text); }
+  .sync-status.state-synced .sync-dot{ background:#15803D; }
+  .sync-status.state-syncing .sync-dot{ background:#B45309; animation:sync-pulse 1s ease-in-out infinite; }
   .sync-status.state-local{ color:var(--text-muted); }
   .sync-status.state-local .sync-dot{ background:var(--text-faint); }
   .sync-status.state-error{ border-color:var(--danger); color:var(--danger); }
   .sync-status.state-error .sync-dot{ background:var(--danger); }
   .sync-status.state-connecting .sync-dot{ background:var(--accent); animation:sync-pulse 1s ease-in-out infinite; }
+  .toolbar .sync-status{ background:transparent; border-color:var(--nav-border); color:rgba(255,255,255,.8); }
+  .toolbar .sync-status.state-local{ color:rgba(255,255,255,.55); }
+  .toolbar .sync-status.state-connecting .sync-dot{ background:#ffffff; }
   @keyframes sync-pulse{ 0%,100%{ opacity:1; } 50%{ opacity:.3; } }
 
   .search-box{ position:relative; display:flex; align-items:center; }
-  .search-field{ width:230px; max-width:100%; padding:8px 30px 8px 12px; border-radius:8px; border:1px solid var(--border-strong); background:var(--surface); color:var(--text); font-family:inherit; font-size:13px; box-shadow:var(--shadow); }
+  .search-field{ width:230px; max-width:100%; padding:8px 30px 8px 12px; border-radius:var(--radius); border:1px solid var(--border-strong); background:var(--surface); color:var(--text); font-family:inherit; font-size:13px; box-shadow:none; }
   .search-field:focus{ outline:none; border-color:var(--accent); }
   .search-field::-webkit-search-cancel-button{ display:none; }
   .search-clear{ position:absolute; right:6px; background:none; border:none; color:var(--text-faint); font-size:16px; line-height:1; cursor:pointer; padding:4px 6px; border-radius:4px; }
   .search-clear:hover{ background:var(--surface-2); color:var(--text); }
+  .toolbar .search-field{ background:rgba(255,255,255,.08); border:1px solid var(--nav-border); color:#fff; border-radius:999px; }
+  .toolbar .search-field::placeholder{ color:rgba(255,255,255,.5); }
+  .toolbar .search-field:focus{ border-color:#fff; }
+  .toolbar .search-clear{ color:rgba(255,255,255,.7); }
+  .toolbar .search-clear:hover{ background:var(--nav-hover); color:#fff; }
 
   /* ---- Legend ---- */
-  .legend{ display:flex; flex-wrap:wrap; gap:8px 16px; padding:10px 14px; background:var(--surface); border:1px solid var(--border); border-radius:10px; box-shadow:var(--shadow); }
-  .legend-item{ display:flex; align-items:center; gap:6px; font-size:12px; color:var(--text-muted); background:none; border:1px solid transparent; border-radius:6px; padding:3px 6px; font-family:inherit; cursor:pointer; }
+  .legend{ display:flex; flex-wrap:wrap; gap:8px 16px; padding:10px 14px; background:var(--surface); border:none; border-radius:6px; box-shadow:var(--shadow); }
+  .legend-item{ display:flex; align-items:center; gap:6px; font-size:12px; color:var(--text-muted); background:none; border:1px solid transparent; border-radius:4px; padding:3px 6px; font-family:inherit; cursor:pointer; }
   .legend-item:hover{ background:var(--surface-2); }
   .legend-item.active{ border-color:var(--accent); background:var(--accent-soft); color:var(--text); font-weight:600; }
   .legend-dot{ width:10px; height:10px; border-radius:3px; flex:none; }
 
   /* ---- Banner ---- */
-  .banner{ display:flex; align-items:center; justify-content:space-between; gap:12px; background:var(--accent-soft); border:1px solid var(--accent); color:var(--text); padding:10px 14px; border-radius:10px; font-size:12.5px; }
+  .banner{ display:flex; align-items:center; justify-content:space-between; gap:12px; background:var(--surface); border:1px solid var(--border-strong); color:var(--text); padding:10px 14px; border-radius:6px; font-size:12.5px; box-shadow:var(--shadow); }
   .banner button{ background:none; border:none; color:var(--text-muted); font-size:16px; cursor:pointer; line-height:1; padding:2px 4px; }
   .banner[hidden]{ display:none; }
 
@@ -166,12 +203,12 @@
   .conflict-row{ display:block; margin-bottom:6px; }
   .conflict-row:last-child{ margin-bottom:0; }
 
-  .toast{ position:fixed; bottom:20px; left:50%; transform:translateX(-50%); background:var(--text); color:var(--bg); padding:10px 16px; border-radius:8px; font-size:13px; box-shadow:var(--shadow); display:flex; gap:14px; align-items:center; z-index:100; opacity:0; pointer-events:none; transition:opacity .2s ease; }
+  .toast{ position:fixed; bottom:20px; left:50%; transform:translateX(-50%); background:var(--text); color:var(--bg); padding:10px 16px; border-radius:6px; font-size:13px; box-shadow:var(--shadow-lg); display:flex; gap:14px; align-items:center; z-index:100; opacity:0; pointer-events:none; transition:opacity .2s ease; }
   .toast.show{ opacity:1; pointer-events:auto; }
   .toast a{ color:var(--accent-strong); font-weight:600; cursor:pointer; text-decoration:underline; }
 
   /* ---- Board ---- */
-  .board-wrap{ border:1px solid var(--border); border-radius:10px; box-shadow:var(--shadow); background:var(--surface); overflow:hidden; }
+  .board-wrap{ border:1px solid var(--border); border-radius:6px; box-shadow:var(--shadow); background:var(--surface); overflow:hidden; }
   .board-scroll{ overflow:auto; max-height:calc(100vh - 230px); min-height:260px; }
   /* Schedule tab: same always-visible "shadow" scrollbar pinned above the
      table as the WA tracker (see .wa-hbar below, reused here) — the plain
@@ -213,17 +250,17 @@
   /* .meta-head already establishes position:sticky below, which also serves as the
      containing block for these absolutely-positioned resize handles. */
   .col-handle{ position:absolute; top:0; right:-3px; width:6px; height:100%; cursor:col-resize; z-index:10; background:transparent; }
-  .col-handle:hover, .col-handle.dragging{ background:var(--accent); opacity:.55; }
+  .col-handle:hover, .col-handle.dragging{ background:var(--text-faint); opacity:.7; }
 
   .row-head{ position:sticky; top:0; z-index:6; }
-  .row-head.month{ top:0; z-index:7; font-family:"IBM Plex Mono",monospace; font-weight:600; font-size:11.5px; letter-spacing:.02em; color:var(--text-muted); background:var(--surface-2); justify-content:flex-start; padding-left:10px; border-bottom:1px solid var(--border-strong); }
-  .row-head.day{ top:30px; z-index:6; flex-direction:column; align-items:center; justify-content:center; gap:1px; font-family:"IBM Plex Mono",monospace; font-size:10.5px; color:var(--text-muted); padding:2px 0; background:var(--surface); }
-  .row-head.day.weekend{ background:var(--surface-2); }
-  .row-head.day .dow{ font-size:8.5px; letter-spacing:.03em; color:var(--text-faint); text-transform:uppercase; }
-  .row-head.day .num{ font-weight:600; color:var(--text); font-variant-numeric:tabular-nums; }
-  .row-head.day.today{ box-shadow: inset 0 0 0 1.5px var(--accent); }
+  .row-head.month{ top:0; z-index:7; font-family:"Montserrat",sans-serif; font-weight:600; font-size:11.5px; letter-spacing:.02em; color:rgba(255,255,255,.7); background:#000000; justify-content:flex-start; padding-left:10px; border-bottom:1px solid #000000; }
+  .row-head.day{ top:30px; z-index:6; flex-direction:column; align-items:center; justify-content:center; gap:1px; font-family:"Montserrat",sans-serif; font-size:10.5px; color:rgba(255,255,255,.7); padding:2px 0; background:#1a1a1a; }
+  .row-head.day.weekend{ background:#000000; }
+  .row-head.day .dow{ font-size:8.5px; letter-spacing:.03em; color:rgba(255,255,255,.5); text-transform:uppercase; }
+  .row-head.day .num{ font-weight:600; color:#ffffff; font-variant-numeric:tabular-nums; }
+  .row-head.day.today{ box-shadow: inset 0 0 0 1.5px #ffffff; }
 
-  .meta-head{ position:sticky; top:0; z-index:9; background:var(--surface-2); font-size:10.5px; font-weight:600; text-transform:uppercase; letter-spacing:.04em; color:var(--text-muted); border-bottom:1px solid var(--border-strong); }
+  .meta-head{ position:sticky; top:0; z-index:9; background:#000000; font-size:10.5px; font-weight:600; text-transform:uppercase; letter-spacing:.04em; color:#ffffff; border-bottom:1px solid #000000; }
 
   .day-cell{ padding:0; border-right:1px solid var(--border); background:var(--surface); position:relative; }
   .day-cell.weekend{ background:var(--surface-2); }
@@ -248,7 +285,7 @@
   /* Scope & Comments in the main list auto-grow to fit their full text (see
      autosizeTextarea()) instead of clipping/scrolling inside a fixed box. */
   textarea.field.autosize-field{ height:auto; min-height:44px; overflow:hidden; }
-  input[type="number"].field{ font-family:"IBM Plex Mono",monospace; }
+  input[type="number"].field{ font-family:"Montserrat",sans-serif; }
   select.field{ font-size:12px; font-weight:600; padding:5px 4px; cursor:pointer; }
 
   /* Start/Finish date cells: a plain button showing our own d/mm/yyyy format
@@ -258,12 +295,12 @@
      columns). Clicking the button opens our own calendar dropdown, built
      entirely in-page (see .date-popup), so both the format and the picker
      behavior are identical and reliable in every browser. */
-  .date-btn{ width:100%; height:100%; border:1px solid transparent; background:transparent; color:var(--text); font-family:"IBM Plex Mono",monospace; font-size:11.5px; padding:6px 4px; border-radius:6px; text-align:left; cursor:pointer; }
+  .date-btn{ width:100%; height:100%; border:1px solid transparent; background:transparent; color:var(--text); font-family:"Montserrat",sans-serif; font-size:11.5px; padding:6px 4px; border-radius:6px; text-align:left; cursor:pointer; }
   .date-btn:hover{ background:var(--surface-2); }
   .date-btn.active, .date-btn:focus-visible{ background:var(--surface); box-shadow:inset 0 0 0 1px var(--accent); outline:none; }
   .date-btn.placeholder{ color:var(--text-faint); }
 
-  .date-popup{ position:fixed; z-index:220; width:236px; background:var(--surface); border:1px solid var(--border-strong); border-radius:10px; box-shadow:var(--shadow); padding:10px; font-size:12.5px; }
+  .date-popup{ position:fixed; z-index:220; width:236px; background:var(--surface); border:1px solid var(--border-strong); border-radius:6px; box-shadow:var(--shadow); padding:10px; font-size:12.5px; }
   .date-popup[hidden]{ display:none; }
   .date-popup-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; }
   .date-popup-nav{ background:none; border:none; color:var(--text-muted); font-size:15px; line-height:1; cursor:pointer; padding:4px 8px; border-radius:6px; }
@@ -275,7 +312,7 @@
   .date-popup-day:hover{ background:var(--surface-2); }
   .date-popup-day.muted{ color:var(--text-faint); }
   .date-popup-day.today{ box-shadow:inset 0 0 0 1px var(--accent); }
-  .date-popup-day.selected{ background:var(--accent); color:#fff; font-weight:700; }
+  .date-popup-day.selected{ background:var(--accent); color:var(--accent-ink); font-weight:700; }
   .date-popup-foot{ display:flex; justify-content:space-between; margin-top:8px; padding-top:8px; border-top:1px solid var(--border); }
   .date-popup-link{ background:none; border:none; color:var(--accent); font-family:inherit; font-size:11.5px; font-weight:600; cursor:pointer; padding:2px 4px; }
   .date-popup-link:hover{ text-decoration:underline; }
@@ -290,7 +327,7 @@
   .teams-btn.active, .teams-btn:focus-visible{ background:var(--surface); box-shadow:inset 0 0 0 1px var(--accent); outline:none; }
   .teams-btn .placeholder-text{ color:var(--text-faint); font-size:12px; }
   .teams-chip{ font-size:10.5px; font-weight:600; padding:2px 6px; border-radius:10px; background:var(--surface-2); color:var(--text); white-space:nowrap; }
-  .teams-popup{ position:fixed; z-index:220; width:200px; background:var(--surface); border:1px solid var(--border-strong); border-radius:10px; box-shadow:var(--shadow); padding:10px; font-size:12.5px; }
+  .teams-popup{ position:fixed; z-index:220; width:200px; background:var(--surface); border:1px solid var(--border-strong); border-radius:6px; box-shadow:var(--shadow); padding:10px; font-size:12.5px; }
   .teams-popup[hidden]{ display:none; }
   .teams-popup-head{ font-weight:700; font-size:11px; text-transform:uppercase; letter-spacing:.03em; color:var(--text-muted); margin-bottom:8px; }
   .teams-popup-list{ display:flex; flex-direction:column; gap:2px; max-height:220px; overflow:auto; }
@@ -301,12 +338,12 @@
   .teams-popup-foot{ display:flex; justify-content:flex-end; margin-top:8px; padding-top:8px; border-top:1px solid var(--border); }
 
   /* ---- Date filter popup: search for projects by start/finish month ---- */
-  .datefilter-popup{ position:fixed; z-index:215; width:310px; background:var(--surface); border:1px solid var(--border-strong); border-radius:10px; box-shadow:var(--shadow); padding:14px; font-size:12.5px; }
+  .datefilter-popup{ position:fixed; z-index:215; width:310px; background:var(--surface); border:1px solid var(--border-strong); border-radius:6px; box-shadow:var(--shadow); padding:14px; font-size:12.5px; }
   .datefilter-popup[hidden]{ display:none; }
   .datefilter-section{ margin-bottom:12px; }
   .datefilter-section label{ display:block; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.03em; color:var(--text-muted); margin-bottom:5px; }
   .datefilter-range{ display:flex; align-items:center; gap:6px; }
-  .filter-date-btn{ flex:1; min-width:0; border:1px solid var(--border-strong); background:var(--surface); color:var(--text); font-family:"IBM Plex Mono",monospace; font-size:12px; padding:7px 8px; border-radius:7px; text-align:left; cursor:pointer; }
+  .filter-date-btn{ flex:1; min-width:0; border:1px solid var(--border-strong); background:var(--surface); color:var(--text); font-family:"Montserrat",sans-serif; font-size:12px; padding:7px 8px; border-radius:7px; text-align:left; cursor:pointer; }
   .filter-date-btn:hover{ background:var(--surface-2); }
   .filter-date-btn.active, .filter-date-btn:focus-visible{ outline:none; box-shadow:inset 0 0 0 1px var(--accent); }
   .filter-date-btn.placeholder{ color:var(--text-faint); }
@@ -329,13 +366,13 @@
      a glance how many projects are in the list — the last number IS the
      count), and swaps to the delete "✕" button on hover/focus so deleting
      still only takes one click. */
-  .row-num{ font-family:"IBM Plex Mono",monospace; font-size:11.5px; font-weight:600; color:var(--text-faint); transition:opacity .1s ease; }
+  .row-num{ font-family:"Montserrat",sans-serif; font-size:11.5px; font-weight:600; color:var(--text-faint); transition:opacity .1s ease; }
   .c-idx:hover .row-num, .c-idx:focus-within .row-num{ opacity:0; }
   .del-btn{ position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:22px; height:22px; border-radius:6px; border:1px solid transparent; background:transparent; color:var(--text-faint); cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:13px; opacity:0; pointer-events:none; transition:opacity .1s ease; }
   .del-btn:hover{ background:var(--danger-soft); color:var(--danger); border-color:var(--danger); }
   .c-idx:hover .del-btn, .c-idx .del-btn:focus-visible{ opacity:1; pointer-events:auto; }
 
-  .pct-text{ font-family:"IBM Plex Mono",monospace; }
+  .pct-text{ font-family:"Montserrat",sans-serif; }
 
   .empty-state{ padding:40px 20px; text-align:center; color:var(--text-muted); font-size:13px; }
 
@@ -346,19 +383,19 @@
   /* ---- Dashboard ---- */
   .dashboard{ display:flex; flex-direction:column; gap:16px; }
   .dash-grid{ display:grid; grid-template-columns:repeat(4, 1fr); gap:12px; }
-  .kpi-card{ background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:14px 16px; box-shadow:var(--shadow); display:flex; flex-direction:column; gap:4px; }
+  .kpi-card{ background:var(--surface); border:1px solid var(--border); border-radius:6px; padding:14px 16px; box-shadow:var(--shadow); display:flex; flex-direction:column; gap:4px; }
   .kpi-label{ font-size:11px; text-transform:uppercase; letter-spacing:.04em; color:var(--text-muted); font-weight:600; }
-  .kpi-value{ font-family:"Archivo",sans-serif; font-size:24px; font-weight:800; color:var(--text); }
-  .kpi-sub{ font-size:11px; color:var(--text-faint); font-family:"IBM Plex Mono",monospace; }
+  .kpi-value{ font-family:"Playfair Display",Georgia,serif; font-size:26px; font-weight:700; color:var(--text); }
+  .kpi-sub{ font-size:11px; color:var(--text-faint); font-family:"Montserrat",sans-serif; }
 
   .dash-panels{ display:grid; grid-template-columns:1.1fr 1fr; gap:12px; align-items:start; }
-  .panel{ background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:16px 18px; box-shadow:var(--shadow); }
-  .panel h2{ font-size:13px; font-weight:700; margin-bottom:12px; }
+  .panel{ background:var(--surface); border:1px solid var(--border); border-radius:6px; padding:16px 18px; box-shadow:var(--shadow); }
+  .panel h2{ font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; color:var(--text-muted); margin:0 0 12px; padding-bottom:10px; border-bottom:1px solid var(--border); }
   .bar-row{ display:grid; grid-template-columns:90px 1fr 74px; align-items:center; gap:10px; font-size:12px; margin-bottom:8px; }
   .bar-row .bar-label{ color:var(--text-muted); font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
   .bar-track{ height:14px; background:var(--surface-2); border-radius:4px; overflow:hidden; display:block; }
   .bar-fill{ display:block; height:100%; border-radius:4px; }
-  .bar-row .bar-value{ font-family:"IBM Plex Mono",monospace; color:var(--text-muted); text-align:right; white-space:nowrap; }
+  .bar-row .bar-value{ font-family:"Montserrat",sans-serif; color:var(--text-muted); text-align:right; white-space:nowrap; }
 
   .status-donut-wrap{ display:flex; align-items:center; gap:20px; }
   .status-legend{ display:flex; flex-direction:column; gap:8px; font-size:12px; }
@@ -369,13 +406,13 @@
   .upcoming-table td{ padding:7px 8px 7px 0; border-bottom:1px solid var(--border); vertical-align:top; }
   .upcoming-table tr:last-child td{ border-bottom:none; }
   .tag-overdue{ color:var(--danger); font-weight:600; }
-  .tag-soon{ color:var(--accent); font-weight:600; }
+  .tag-soon{ color:#B45309; font-weight:600; }
   .dash-empty{ color:var(--text-muted); font-size:13px; padding:24px; text-align:center; }
 
   /* ---- Team allocation (3-month Gantt) view ---- */
   .alloc-toolbar{ display:flex; align-items:center; gap:10px; margin-bottom:10px; }
-  .alloc-range{ font-family:"IBM Plex Mono",monospace; font-size:12.5px; font-weight:600; color:var(--text); min-width:170px; text-align:center; }
-  .alloc-meta-head{ position:sticky; left:0; top:0; z-index:9; background:var(--surface-2); font-size:10.5px; font-weight:600; text-transform:uppercase; letter-spacing:.04em; color:var(--text-muted); border-bottom:1px solid var(--border-strong); width:var(--w-alloc-team); }
+  .alloc-range{ font-family:"Montserrat",sans-serif; font-size:12.5px; font-weight:600; color:var(--text); min-width:170px; text-align:center; }
+  .alloc-meta-head{ position:sticky; left:0; top:0; z-index:9; background:#000000; font-size:10.5px; font-weight:600; text-transform:uppercase; letter-spacing:.04em; color:#ffffff; border-bottom:1px solid #000000; width:var(--w-alloc-team); }
   .alloc-team-label{ position:sticky; left:0; z-index:4; width:var(--w-alloc-team); background:var(--surface); font-weight:700; font-size:12.5px; display:flex; align-items:center; gap:8px; border-right:2px solid var(--border-strong); box-shadow:2px 0 4px rgba(0,0,0,.05); }
   .alloc-day-cell{ padding:0; border-right:1px solid var(--border); border-bottom:1px solid var(--border); background:var(--surface); }
   .alloc-day-cell.weekend{ background:var(--surface-2); }
@@ -404,9 +441,9 @@
   /* ---- Report modal (read-only project report) ---- */
   .report-modal-backdrop{ position:fixed; inset:0; background:rgba(20,24,29,.5); display:flex; align-items:center; justify-content:center; z-index:200; padding:24px; }
   .report-modal-backdrop[hidden]{ display:none; }
-  .report-modal-card{ background:var(--surface); border-radius:12px; box-shadow:var(--shadow); width:min(1150px, 100%); max-height:min(84vh,900px); display:flex; flex-direction:column; overflow:hidden; }
+  .report-modal-card{ background:var(--surface); border-radius:8px; box-shadow:var(--shadow); width:min(1150px, 100%); max-height:min(84vh,900px); display:flex; flex-direction:column; overflow:hidden; }
   .report-modal-header{ display:flex; align-items:center; justify-content:space-between; gap:12px; padding:16px 20px; border-bottom:1px solid var(--border); flex:none; }
-  .report-modal-header h2{ font-size:16px; font-weight:800; }
+  .report-modal-header h2{ font-size:16px; font-weight:700; }
   .report-modal-close{ background:none; border:none; color:var(--text-muted); font-size:20px; cursor:pointer; line-height:1; padding:4px 8px; border-radius:6px; }
   .report-modal-close:hover{ background:var(--surface-2); color:var(--text); }
   .report-modal-sub{ padding:10px 20px 0; font-size:12px; color:var(--text-muted); flex:none; }
@@ -421,8 +458,8 @@
   /* ---- Delete-confirmation modal ---- */
   .confirm-modal-backdrop{ position:fixed; inset:0; background:rgba(20,24,29,.5); display:flex; align-items:center; justify-content:center; z-index:210; padding:24px; }
   .confirm-modal-backdrop[hidden]{ display:none; }
-  .confirm-modal-card{ background:var(--surface); border-radius:12px; box-shadow:var(--shadow); width:min(380px, 100%); padding:20px; }
-  .confirm-modal-card h2{ font-size:15px; font-weight:800; margin-bottom:8px; }
+  .confirm-modal-card{ background:var(--surface); border-radius:8px; box-shadow:var(--shadow); width:min(380px, 100%); padding:20px; }
+  .confirm-modal-card h2{ font-size:15px; font-weight:700; margin-bottom:8px; }
   .confirm-modal-card p{ font-size:13px; color:var(--text-muted); line-height:1.45; }
   .confirm-modal-actions{ display:flex; justify-content:flex-end; gap:8px; margin-top:18px; }
   .btn.danger{ background:var(--danger); border-color:var(--danger); color:#fff; }
@@ -432,9 +469,9 @@
      page and opened on demand from the Dashboard ("View schedule grid"). ---- */
   .grid-modal-backdrop{ position:fixed; inset:0; background:rgba(20,24,29,.5); display:flex; align-items:center; justify-content:center; z-index:205; padding:16px; }
   .grid-modal-backdrop[hidden]{ display:none; }
-  .grid-modal-card{ background:var(--surface); border-radius:12px; box-shadow:var(--shadow); width:min(1600px, 100%); height:min(92vh, 1000px); display:flex; flex-direction:column; overflow:hidden; }
+  .grid-modal-card{ background:var(--surface); border-radius:8px; box-shadow:var(--shadow); width:min(1600px, 100%); height:min(92vh, 1000px); display:flex; flex-direction:column; overflow:hidden; }
   .grid-modal-header{ display:flex; align-items:center; justify-content:space-between; gap:12px; padding:14px 18px; border-bottom:1px solid var(--border); flex:none; }
-  .grid-modal-header h2{ font-size:15px; font-weight:800; }
+  .grid-modal-header h2{ font-size:15px; font-weight:700; }
   .grid-modal-actions{ display:flex; align-items:center; gap:8px; }
   .grid-modal-close{ background:none; border:none; color:var(--text-muted); font-size:20px; cursor:pointer; line-height:1; padding:4px 8px; border-radius:6px; }
   .grid-modal-close:hover{ background:var(--surface-2); color:var(--text); }
@@ -487,7 +524,7 @@
      already establishes position:sticky (below), which also serves as the
      containing block these absolutely-positioned handles need. */
   .wa-col-handle{ position:absolute; top:0; right:-3px; width:6px; height:100%; cursor:col-resize; z-index:10; background:transparent; }
-  .wa-col-handle:hover, .wa-col-handle.dragging{ background:var(--accent); opacity:.55; }
+  .wa-col-handle:hover, .wa-col-handle.dragging{ background:var(--text-faint); opacity:.7; }
 
   /* The WA board's own native horizontal scrollbar is hidden in favor of
      .wa-hbar below — a slim, always-visible "shadow" scrollbar pinned above
@@ -721,10 +758,11 @@
   </div>
 </div>
 
-<!-- Shared backend (Firestore). Safe to load even when not configured — the app
-     falls back to this-device-only storage automatically. See README "Shared backend setup". -->
-<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+<!-- Shared backend (Firebase/Firestore). Safe to load even when not configured
+     — the app falls back to this-device-only storage automatically. See
+     README "Shared backend setup". -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="./firebase-config.js"></script>
 
 <!-- PDF export -->
@@ -839,10 +877,10 @@
   var state = { projects: null, bannerDismissed:false, customTeams: [], waRows: [] };
   var saveTimer = null;
   // True from the instant a Firestore write is kicked off until it settles.
-  // Firestore's local cache echoes a write back through onSnapshot almost
-  // immediately (well before the network round-trip completes), and that
-  // echo can land in the gap right after doSave() clears saveTimer but
-  // before the write's promise resolves. Without this flag, that echo was
+  // Firestore's local-cache echoes a write back through onSnapshot almost
+  // immediately — well before the write's promise resolves against the
+  // server — and that echo can land in the gap right after doSave() clears
+  // saveTimer but before the write settles. Without this flag, that echo was
   // treated as "no local edit pending" and triggered a full board re-render
   // — rebuilding every input from scratch and stealing focus — which is
   // what made typing feel like it kept getting interrupted.
@@ -937,12 +975,14 @@
 
   // ---- persistence ----
   // Two modes, chosen automatically at startup:
-  //  1) Shared (Firestore): everyone who opens the app sees the same live data.
-  //     Requires firebase-config.json to be filled in — see README "Shared backend setup".
-  //  2) Local-only (localStorage): fallback when Firestore isn't configured or unreachable.
+  //  1) Shared (Firebase/Firestore): everyone who opens the app sees the same live data.
+  //     Requires firebase-config.js to be filled in — see README "Shared backend setup".
+  //  2) Local-only (localStorage): fallback when Firebase isn't configured or unreachable.
   //     Data then stays on that one device/browser only.
   var STORAGE_KEY = "installPlanner.v1";
-  var backendMode = "local"; // "firestore" | "local"
+  var backendMode = "local"; // "firebase" | "local"
+  var FIREBASE_COLLECTION = "installPlanner";
+  var FIREBASE_DOC_ID = "shared";
   var fsDocRef = null;
   var applyingRemoteUpdate = false;
 
@@ -997,7 +1037,7 @@
   }
 
   function scheduleSave(){
-    setSaveStatus(backendMode==="firestore" ? "editing" : "editing");
+    setSaveStatus("editing");
     clearTimeout(saveTimer);
     saveTimer = setTimeout(doSave, 600);
   }
@@ -1005,17 +1045,25 @@
   function doSave(){
     clearTimeout(saveTimer);
     // Null this out (not just clearTimeout) so code elsewhere — see the
-    // onSnapshot handler above — can check "is a local save still pending?"
+    // onSnapshot handler below — can check "is a local save still pending?"
     // with a simple !!saveTimer once this fires, instead of it staying
     // truthy forever after the first edit of the session.
     saveTimer = null;
     if (applyingRemoteUpdate) return; // don't echo back a change we just received
     var payload = { projects: state.projects, bannerDismissed: state.bannerDismissed, customTeams: state.customTeams||[], waRows: state.waRows||[] };
-    if (backendMode === "firestore" && fsDocRef){
-      var withStamp = Object.assign({}, payload, { updatedAt: firebase.firestore.FieldValue.serverTimestamp() });
+    if (backendMode === "firebase" && fsDocRef){
       writeInFlight = true;
-      fsDocRef.set(withStamp)
-        .then(function(){ writeInFlight = false; setSaveStatus("synced"); })
+      fsDocRef.set({
+        projects: payload.projects,
+        bannerDismissed: payload.bannerDismissed,
+        customTeams: payload.customTeams,
+        waRows: payload.waRows,
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+      }, { merge: true })
+        .then(function(){
+          writeInFlight = false;
+          setSaveStatus("synced");
+        })
         .catch(function(){ writeInFlight = false; setSaveStatus("sync-error"); });
       return;
     }
@@ -1041,49 +1089,63 @@
       try{
         if (!firebase.apps || !firebase.apps.length) firebase.initializeApp(cfg);
         var db = firebase.firestore();
-        fsDocRef = db.collection("installPlanner").doc("shared");
+        fsDocRef = db.collection(FIREBASE_COLLECTION).doc(FIREBASE_DOC_ID);
         var settled = false;
-        fsDocRef.onSnapshot(function(snap){
+
+        // Applies an incoming document — from onSnapshot's very first
+        // delivery (Firestore always fires once immediately with whatever
+        // it already has, cache or server), or any later change — to local
+        // state, guarded by hasPendingLocalEdit (see the note on
+        // writeInFlight above): if the user has unsaved local edits queued
+        // (saveTimer still running — e.g. they paused mid-sentence and
+        // scheduleSave()'s 600ms debounce hasn't fired doSave() yet), the
+        // incoming document can be an echo of an EARLIER save that predates
+        // keystrokes already sitting in state.projects. Applying it would
+        // silently overwrite — and re-render over — text the user already
+        // typed, which is exactly what made it feel like fields "kept
+        // updating" and dropped characters while typing. So while a local
+        // save is pending, skip applying the incoming document (and skip
+        // the re-render) entirely; our own pending save will push the newer
+        // data momentarily, and the next event after that (once saveTimer
+        // is idle again) applies normally.
+        function applyDoc(data){
           applyingRemoteUpdate = true;
-          // If the user has unsaved local edits queued (saveTimer is still
-          // running — e.g. they paused mid-sentence and scheduleSave()'s
-          // 600ms debounce hasn't fired doSave() yet), this snapshot can be
-          // an echo of an EARLIER save that predates keystrokes already
-          // sitting in state.projects. Applying it would silently overwrite
-          // — and re-render over — text the user already typed, which is
-          // exactly what made it feel like the Comments field "kept
-          // updating" and dropped characters while typing. So while a local
-          // save is pending, skip applying the remote snapshot (and skip the
-          // re-render) entirely; our own pending save will push the newer
-          // text momentarily, and the next snapshot after that (once
-          // saveTimer is idle again) applies normally.
           var hasPendingLocalEdit = !!saveTimer || writeInFlight;
-          if (snap.exists){
-            var data = snap.data();
-            if (data && Array.isArray(data.projects) && !hasPendingLocalEdit){
-              state.projects = data.projects.map(normalizeProject);
-              state.bannerDismissed = !!data.bannerDismissed;
-              state.customTeams = Array.isArray(data.customTeams) ? data.customTeams : [];
-              state.waRows = Array.isArray(data.waRows) ? data.waRows.map(WA.normalizeRow) : [];
-            }
-          } else if (!settled){
-            // No shared document yet — this is the first time anyone has
-            // opened the app since Firestore was turned on. Seed the shared
-            // doc from whatever's already on THIS device — real project data
-            // already entered always takes priority over the built-in
-            // examples — so nothing gets wiped out the moment sync turns on.
-            loadLocalState();
-            backendMode = "firestore";
-            doSave();
+          if (data && !hasPendingLocalEdit){
+            state.projects = Array.isArray(data.projects) ? data.projects.map(normalizeProject) : [];
+            state.bannerDismissed = !!data.bannerDismissed;
+            state.customTeams = Array.isArray(data.customTeams) ? data.customTeams : [];
+            state.waRows = Array.isArray(data.waRows) ? data.waRows.map(WA.normalizeRow) : [];
           }
           applyingRemoteUpdate = false;
-          backendMode = "firestore";
-          if (!settled){ settled = true; resolve(true); }
-          else if (!hasPendingLocalEdit){ render(); setSaveStatus(snap.metadata.hasPendingWrites ? "syncing" : "synced"); }
+          return hasPendingLocalEdit;
+        }
+
+        fsDocRef.onSnapshot(function(snap){
+          if (!settled){
+            if (snap.exists){
+              applyDoc(snap.data());
+              backendMode = "firebase";
+            } else {
+              // No shared document yet — this is the first time anyone has
+              // opened the app since Firebase was turned on. Seed it from
+              // whatever's already on THIS device — real project data
+              // already entered always takes priority over the built-in
+              // examples — so nothing gets wiped out the moment sync turns on.
+              loadLocalState();
+              backendMode = "firebase";
+              doSave();
+            }
+            settled = true;
+            resolve(true);
+            return;
+          }
+          var hasPendingLocalEdit = applyDoc(snap.data());
+          if (!hasPendingLocalEdit){ render(); setSaveStatus("synced"); }
         }, function(){
           if (!settled){ settled = true; resolve(false); }
-          else { setSaveStatus("conn-lost"); }
         });
+
         // Safety net: if Firestore never responds (offline, blocked, bad config), fall back.
         setTimeout(function(){ if (!settled){ settled = true; resolve(false); } }, 4000);
       } catch(e){
@@ -1105,7 +1167,7 @@
     var btn = document.getElementById("sync-now-btn");
     if (btn) btn.disabled = true;
     try{
-      if (backendMode !== "firestore"){
+      if (backendMode !== "firebase"){
         setSaveStatus("connecting");
         var ok = await connectFirestore();
         if (ok){
@@ -1114,7 +1176,7 @@
           showToast("Connected — this device's data is now synced with everyone.", null, null);
         } else {
           setSaveStatus("local-saved");
-          showToast("Still couldn't reach the shared database — check firebase-config.js and your Firestore rules.", null, null);
+          showToast("Still couldn't reach the shared database — check firebase-config.js and your Firestore security rules.", null, null);
         }
       } else {
         doSave();
@@ -3220,7 +3282,7 @@
 
     setSaveStatus("connecting");
     await initBackend();
-    setSaveStatus(backendMode === "firestore" ? "synced" : "local-saved");
+    setSaveStatus(backendMode === "firebase" ? "synced" : "local-saved");
     render();
   }
 
