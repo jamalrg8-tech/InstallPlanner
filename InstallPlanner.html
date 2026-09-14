@@ -30,6 +30,8 @@
     --accent-ink:#FFFFFF;
     --danger:#B91C1C;
     --danger-soft:#FEE2E2;
+    --success:#15803D;
+    --success-soft:#DCFCE7;
     --shadow:0 2px 8px rgba(0,0,0,.08);
     --shadow-lg:0 6px 24px rgba(0,0,0,.12);
     --radius:4px;
@@ -74,6 +76,7 @@
       --text:#EDEDED; --text-muted:#C4C4C4; --text-faint:#949494;
       --accent:#FFFFFF; --accent-soft:#2A2A2A; --accent-strong:#CCCCCC; --accent-ink:#000000;
       --danger:#FF6B6B; --danger-soft:#4A2020;
+      --success:#4ADE80; --success-soft:#173B26;
       --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 20px rgba(0,0,0,.35);
       --shadow-lg:0 6px 24px rgba(0,0,0,.5);
       --nav-bg:#000000; --nav-text:#FFFFFF; --nav-border:rgba(255,255,255,.25); --nav-hover:rgba(255,255,255,.12); --nav-active:rgba(255,255,255,.16);
@@ -87,6 +90,7 @@
     --text:#EDEDED; --text-muted:#C4C4C4; --text-faint:#949494;
     --accent:#FFFFFF; --accent-soft:#2A2A2A; --accent-strong:#CCCCCC; --accent-ink:#000000;
     --danger:#FF6B6B; --danger-soft:#4A2020;
+    --success:#4ADE80; --success-soft:#173B26;
     --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 20px rgba(0,0,0,.35);
     --shadow-lg:0 6px 24px rgba(0,0,0,.5);
     --nav-bg:#000000; --nav-text:#FFFFFF; --nav-border:rgba(255,255,255,.25); --nav-hover:rgba(255,255,255,.12); --nav-active:rgba(255,255,255,.16);
@@ -225,6 +229,13 @@
   .board.compact .day-fill{ top:10px; bottom:10px; }
 
   .cell{ border-right:1px solid var(--border); border-bottom:1px solid var(--border); display:flex; align-items:center; padding:0 8px; background:var(--surface); min-width:0; }
+  /* A delivered WA line-item's whole row goes green so it's obvious at a
+     glance while scanning the board -- set once here per the shared
+     row-delivered class wa-shared.js's rowHTML() adds to every cell, same as
+     the standalone factory link (wa-tracker.html). Only ever applied to WA
+     tracker cells (rowHTML is the only place that adds this class), so it
+     has no effect on the main project schedule's own cells. */
+  .cell.row-delivered{ background:var(--success-soft); }
 
   /* meta column sticky offsets */
   .c-idx{ position:sticky; left:0; z-index:3; width:var(--w-idx); justify-content:center; padding:0; }
@@ -2919,6 +2930,18 @@
     if (!row) return;
     var field = t.dataset.waField;
     row[field] = t.value;
+    if (field === "delivered"){
+      // Flip the whole row's green highlight right away, without a full
+      // render() -- same reasoning as the comment above this listener: no
+      // WA field edit triggers render() so typing never loses focus, so the
+      // "Delivered" dropdown patches every cell's class directly instead of
+      // waiting for the next full render to pick up the new delivered state.
+      var isDelivered = row.delivered === "Yes";
+      document.querySelectorAll('#wa-tracker-board [data-id="'+row.id+'"]').forEach(function(el){
+        var cell = el.closest(".cell");
+        if (cell) cell.classList.toggle("row-delivered", isDelivered);
+      });
+    }
     if (t.classList.contains("autosize-field")) autosizeTextarea(t);
     scheduleSave();
   });

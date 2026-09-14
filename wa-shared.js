@@ -150,53 +150,60 @@
   // desktop.
   function rowHTML(row, rowIndex){
     var gridRow = 2 + rowIndex; // single header row
+    // Delivered rows get a green tint across every cell so a fully-delivered
+    // line-item is obvious at a glance while scanning the board — same class
+    // on both host pages (InstallPlanner's WA Tracker tab and the standalone
+    // factory link) since they share this exact render function, and each
+    // page's own <style> block defines .row-delivered the same way (light
+    // and dark mode both covered there).
+    var deliveredCls = row.delivered === "Yes" ? " row-delivered" : "";
     var html = "";
-    html += '<div class="cell wc-idx" style="grid-column:1; grid-row:'+gridRow+';">'+
+    html += '<div class="cell wc-idx'+deliveredCls+'" style="grid-column:1; grid-row:'+gridRow+';">'+
       '<button class="del-btn" type="button" data-wa-action="delete" data-id="'+row.id+'" aria-label="Delete row" title="Delete row">✕</button></div>';
 
-    html += '<div class="cell wc-no" style="grid-column:2; grid-row:'+gridRow+';">'+
+    html += '<div class="cell wc-no'+deliveredCls+'" style="grid-column:2; grid-row:'+gridRow+';">'+
       '<input class="field" data-wa-field="no" data-id="'+row.id+'" value="'+escAttr(row.no)+'" aria-label="No."></div>';
 
-    html += '<div class="cell wc-jobno" style="grid-column:3; grid-row:'+gridRow+';">'+
+    html += '<div class="cell wc-jobno'+deliveredCls+'" style="grid-column:3; grid-row:'+gridRow+';">'+
       '<input class="field" data-wa-field="jobNo" data-id="'+row.id+'" value="'+escAttr(row.jobNo)+'" aria-label="Job number"></div>';
 
-    html += '<div class="cell wc-projectname" style="grid-column:4; grid-row:'+gridRow+';">'+
+    html += '<div class="cell wc-projectname'+deliveredCls+'" style="grid-column:4; grid-row:'+gridRow+';">'+
       '<textarea class="field autosize-field" data-wa-field="projectName" data-id="'+row.id+'" placeholder="Project name" aria-label="Project name">'+escText(row.projectName)+'</textarea></div>';
 
-    html += '<div class="cell wc-deliverydate" style="grid-column:5; grid-row:'+gridRow+';">'+
+    html += '<div class="cell wc-deliverydate'+deliveredCls+'" style="grid-column:5; grid-row:'+gridRow+';">'+
       '<button type="button" class="date-btn'+(row.deliveryDate?"":" placeholder")+'" data-wa-date-btn="deliveryDate" data-id="'+row.id+'" aria-label="Eurolux required delivery date">'+(fmtDateDisplay(row.deliveryDate)||"d/mm/yyyy")+'</button></div>';
 
-    html += '<div class="cell wc-framedeliverydate" style="grid-column:6; grid-row:'+gridRow+';">'+
+    html += '<div class="cell wc-framedeliverydate'+deliveredCls+'" style="grid-column:6; grid-row:'+gridRow+';">'+
       '<button type="button" class="date-btn'+(row.frameDeliveryDate?"":" placeholder")+'" data-wa-date-btn="frameDeliveryDate" data-id="'+row.id+'" aria-label="Frame delivery date">'+(fmtDateDisplay(row.frameDeliveryDate)||"d/mm/yyyy")+'</button></div>';
 
-    html += '<div class="cell wc-shutterdeliverydate" style="grid-column:7; grid-row:'+gridRow+';">'+
+    html += '<div class="cell wc-shutterdeliverydate'+deliveredCls+'" style="grid-column:7; grid-row:'+gridRow+';">'+
       '<button type="button" class="date-btn'+(row.shutterDeliveryDate?"":" placeholder")+'" data-wa-date-btn="shutterDeliveryDate" data-id="'+row.id+'" aria-label="Shutter delivery date">'+(fmtDateDisplay(row.shutterDeliveryDate)||"d/mm/yyyy")+'</button></div>';
 
-    html += '<div class="cell wc-delivered" style="grid-column:8; grid-row:'+gridRow+';">'+
+    html += '<div class="cell wc-delivered'+deliveredCls+'" style="grid-column:8; grid-row:'+gridRow+';">'+
       '<select class="field" data-wa-field="delivered" data-id="'+row.id+'" aria-label="Delivered">'+
       '<option value="No"'+(row.delivered!=="Yes"?" selected":"")+'>No</option>'+
       '<option value="Yes"'+(row.delivered==="Yes"?" selected":"")+'>Yes</option>'+
       '</select></div>';
 
-    html += '<div class="cell wc-description" style="grid-column:9; grid-row:'+gridRow+';">'+
+    html += '<div class="cell wc-description'+deliveredCls+'" style="grid-column:9; grid-row:'+gridRow+';">'+
       '<textarea class="field autosize-field" data-wa-field="description" data-id="'+row.id+'" placeholder="Description" aria-label="Description">'+escText(row.description)+'</textarea></div>';
 
-    html += '<div class="cell wc-itemqty" style="grid-column:10; grid-row:'+gridRow+';">'+
+    html += '<div class="cell wc-itemqty'+deliveredCls+'" style="grid-column:10; grid-row:'+gridRow+';">'+
       '<input class="field" data-wa-field="itemQty" data-id="'+row.id+'" value="'+escAttr(row.itemQty)+'" aria-label="Item quantity"></div>';
 
-    html += '<div class="cell wc-scope" style="grid-column:11; grid-row:'+gridRow+';">'+
+    html += '<div class="cell wc-scope'+deliveredCls+'" style="grid-column:11; grid-row:'+gridRow+';">'+
       '<textarea class="field autosize-field" data-wa-field="scope" data-id="'+row.id+'" placeholder="Scope" aria-label="Scope">'+escText(row.scope)+'</textarea></div>';
 
-    html += '<div class="cell wc-etacoating" style="grid-column:12; grid-row:'+gridRow+';">'+
+    html += '<div class="cell wc-etacoating'+deliveredCls+'" style="grid-column:12; grid-row:'+gridRow+';">'+
       '<textarea class="field autosize-field" data-wa-field="etaCoating" data-id="'+row.id+'" placeholder="ETA coating" aria-label="ETA coating">'+escText(row.etaCoating)+'</textarea></div>';
 
-    html += '<div class="cell wc-etaframe" style="grid-column:13; grid-row:'+gridRow+';">'+
+    html += '<div class="cell wc-etaframe'+deliveredCls+'" style="grid-column:13; grid-row:'+gridRow+';">'+
       '<textarea class="field autosize-field" data-wa-field="etaFabFrame" data-id="'+row.id+'" placeholder="ETA fabrication frame" aria-label="ETA fabrication frame">'+escText(row.etaFabFrame)+'</textarea></div>';
 
-    html += '<div class="cell wc-etashutter" style="grid-column:14; grid-row:'+gridRow+';">'+
+    html += '<div class="cell wc-etashutter'+deliveredCls+'" style="grid-column:14; grid-row:'+gridRow+';">'+
       '<textarea class="field autosize-field" data-wa-field="etaFabShutter" data-id="'+row.id+'" placeholder="ETA fabrication shutter" aria-label="ETA fabrication shutter">'+escText(row.etaFabShutter)+'</textarea></div>';
 
-    html += '<div class="cell wc-remarks" style="grid-column:15; grid-row:'+gridRow+';">'+
+    html += '<div class="cell wc-remarks'+deliveredCls+'" style="grid-column:15; grid-row:'+gridRow+';">'+
       '<textarea class="field autosize-field" data-wa-field="remarks" data-id="'+row.id+'" placeholder="Remarks" aria-label="Remarks">'+escText(row.remarks)+'</textarea></div>';
 
     return html;

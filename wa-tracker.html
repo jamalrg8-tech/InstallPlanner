@@ -29,6 +29,8 @@
     --accent-ink:#FFFFFF;
     --danger:#B91C1C;
     --danger-soft:#FEE2E2;
+    --success:#15803D;
+    --success-soft:#DCFCE7;
     --shadow:0 2px 8px rgba(0,0,0,.08);
     --shadow-lg:0 6px 24px rgba(0,0,0,.12);
     --radius:4px;
@@ -45,6 +47,7 @@
       --text:#EDEDED; --text-muted:#C4C4C4; --text-faint:#949494;
       --accent:#FFFFFF; --accent-soft:#2A2A2A; --accent-strong:#CCCCCC; --accent-ink:#000000;
       --danger:#FF6B6B; --danger-soft:#4A2020;
+      --success:#4ADE80; --success-soft:#173B26;
       --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 20px rgba(0,0,0,.35);
       --shadow-lg:0 6px 24px rgba(0,0,0,.5);
       --nav-bg:#000000; --nav-text:#FFFFFF; --nav-border:rgba(255,255,255,.25); --nav-hover:rgba(255,255,255,.12); --nav-active:rgba(255,255,255,.16);
@@ -56,6 +59,7 @@
     --text:#EDEDED; --text-muted:#C4C4C4; --text-faint:#949494;
     --accent:#FFFFFF; --accent-soft:#2A2A2A; --accent-strong:#CCCCCC; --accent-ink:#000000;
     --danger:#FF6B6B; --danger-soft:#4A2020;
+    --success:#4ADE80; --success-soft:#173B26;
     --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 20px rgba(0,0,0,.35);
     --shadow-lg:0 6px 24px rgba(0,0,0,.5);
     --nav-bg:#000000; --nav-text:#FFFFFF; --nav-border:rgba(255,255,255,.25); --nav-hover:rgba(255,255,255,.12); --nav-active:rgba(255,255,255,.16);
@@ -155,6 +159,10 @@
   .board .row-head{ display:none; }
 
   .cell{ border-right:1px solid var(--border); border-bottom:1px solid var(--border); display:flex; align-items:center; padding:0 8px; background:var(--surface); min-width:0; }
+  /* A delivered line-item's whole row goes green so it's obvious at a glance
+     while scanning the board -- set once here per the shared row-delivered
+     class wa-shared.js's rowHTML() adds to every cell, same as InstallPlanner.html. */
+  .cell.row-delivered{ background:var(--success-soft); }
   .meta-head{ position:sticky; top:0; z-index:9; background:#000000; font-size:10.5px; font-weight:600; text-transform:uppercase; letter-spacing:.04em; color:#ffffff; border-bottom:1px solid #000000; }
 
   .field{ width:100%; border:1px solid transparent; background:transparent; color:var(--text); font-family:inherit; font-size:12.5px; padding:6px 4px; border-radius:6px; min-width:0; }
@@ -768,7 +776,21 @@
     if (!t.matches("[data-wa-field]")) return;
     var row = findRow(t.dataset.id);
     if (!row) return;
-    row[t.dataset.waField] = t.value;
+    var field = t.dataset.waField;
+    row[field] = t.value;
+    if (field === "delivered"){
+      // Flip the whole row's green highlight right away. This board
+      // deliberately never calls render() on a field edit (see the comment
+      // above the equivalent handler in InstallPlanner.html) so typing never
+      // loses focus -- so the "Delivered" dropdown is a special case that
+      // patches every cell's class directly instead of waiting for the next
+      // full render to pick up the new delivered state.
+      var isDelivered = row.delivered === "Yes";
+      document.querySelectorAll('#wa-board [data-id="'+row.id+'"]').forEach(function(el){
+        var cell = el.closest(".cell");
+        if (cell) cell.classList.toggle("row-delivered", isDelivered);
+      });
+    }
     if (t.classList.contains("autosize-field")) autosizeTextarea(t);
     scheduleSave();
   });
