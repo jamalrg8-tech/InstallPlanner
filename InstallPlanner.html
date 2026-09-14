@@ -570,6 +570,8 @@
   .daily-task-team{ font-size:12px; font-weight:600; padding:6px 8px; border-radius:6px; border:1px solid var(--border-strong); background:var(--surface); color:var(--text); min-width:130px; }
   .daily-task-project{ flex:1; min-width:180px; font-family:"Playfair Display",Georgia,serif; font-weight:600; font-size:14px; border:1px solid transparent; background:transparent; color:var(--text); padding:6px 4px; border-radius:6px; }
   .daily-task-project:hover, .daily-task-project:focus{ border-color:var(--border-strong); background:var(--surface); }
+  .daily-task-row2{ display:flex; }
+  .daily-support-btn{ width:auto; min-height:0; min-width:0; padding:3px 6px; }
   .daily-task-desc{ width:100%; resize:none; border:1px solid transparent; background:transparent; color:var(--text); font-family:inherit; font-size:13px; line-height:1.4; padding:6px 4px; border-radius:6px; min-height:22px; }
   .daily-task-desc:hover, .daily-task-desc:focus{ border-color:var(--border-strong); background:var(--surface); }
   .daily-task-comments{ width:100%; resize:none; border:1px solid transparent; background:transparent; color:var(--text-muted); font-family:inherit; font-style:italic; font-size:12px; line-height:1.4; padding:6px 4px; border-radius:6px; min-height:20px; }
@@ -731,6 +733,7 @@
       </div>
       <button class="btn" id="daily-today-btn" type="button">Today</button>
       <button class="btn primary" id="daily-add-btn" type="button">+ Add task</button>
+      <button class="btn" id="daily-report-btn" type="button">View report</button>
       <button class="btn" id="daily-export-pdf-btn" type="button">Export PDF</button>
     </div>
     <datalist id="daily-project-list"></datalist>
@@ -746,6 +749,7 @@
 
 <div class="date-popup" id="date-popup" hidden></div>
 <div class="teams-popup" id="teams-popup" hidden></div>
+<div class="teams-popup" id="daily-support-popup" hidden></div>
 
 <div class="datefilter-popup" id="datefilter-popup" hidden>
   <div class="datefilter-section">
@@ -1037,15 +1041,21 @@
 
   function newDailyTask(dateIso){
     return { id:"dt"+Date.now().toString(36)+Math.random().toString(36).slice(2,7),
-      date: dateIso, team:"", projectName:"", task:"", comments:"" };
+      date: dateIso, team:"", supportTeams:[], projectName:"", task:"", comments:"" };
   }
   function normalizeDailyTask(t){
     if (t.date==null) t.date = "";
     if (t.team==null) t.team = "";
+    if (!Array.isArray(t.supportTeams)) t.supportTeams = [];
     if (t.projectName==null) t.projectName = "";
     if (t.task==null) t.task = "";
     if (t.comments==null) t.comments = "";
     return t;
+  }
+  function dedupeDailySupportTeams(t){
+    if (!Array.isArray(t.supportTeams) || !t.team) return;
+    var idx = t.supportTeams.indexOf(t.team);
+    if (idx !== -1) t.supportTeams.splice(idx, 1);
   }
 
   // WA production tracker's row shape/defaults (newWaRow/normalizeWaRow)
@@ -1714,9 +1724,13 @@
   function captureFocusInfo(){
     var active = document.activeElement;
     if (!active || !active.matches) return null;
-    // Covers both the main project board ([data-field]) and the WA tracker
-    // board ([data-wa-field]) — render() re-renders whichever is on screen,
-    // and either one can be mid-edit when that happens.
+    // Covers the main project board ([data-field]), the WA tracker board
+    // ([data-wa-field]), and the Daily Schedule board ([data-daily-field]) —
+    // render() re-renders whichever is on screen, and any of the three can
+    // be mid-edit when that happens. Missing one of these here is exactly
+    // what made typing in that board feel like the cursor kept jumping out:
+    // a legitimate Firestore echo (or any other render() call) would rebuild
+    // the board's HTML without knowing to restore focus into it afterward.
     if (active.matches("[data-field][data-id]")){
       return {
         attr: "data-field",
@@ -1735,6 +1749,15 @@
         selEnd: (typeof active.selectionEnd === "number") ? active.selectionEnd : null
       };
     }
+    if (active.matches("[data-daily-field][data-id]")){
+      return {
+        attr: "data-daily-field",
+        field: active.dataset.dailyField,
+        id: active.dataset.id,
+        selStart: (typeof active.selectionStart === "number") ? active.selectionStart : null,
+        selEnd: (typeof active.selectionEnd === "number") ? active.selectionEnd : null
+      };
+    }
     return null;
   }
   function restoreFocusInfo(info){
@@ -1742,6 +1765,8 @@
     requestAnimationFrame(function(){
       var selector = info.attr === "data-wa-field"
         ? '[data-wa-field="'+info.field+'"][data-id="'+info.id+'"]'
+        : info.attr === "data-daily-field"
+        ? '[data-daily-field="'+info.field+'"][data-id="'+info.id+'"]'
         : '[data-field="'+info.field+'"][data-id="'+info.id+'"]';
       var again = document.querySelector(selector);
       if (!again) return;
@@ -1984,14 +2009,23 @@
     return html;
   }
 
+  function dailySupportBtnInnerHTML(t){
+    var names = Array.isArray(t.supportTeams) ? t.supportTeams : [];
+    return names.length
+      ? names.map(function(n){ return '<span class="teams-chip" style="color:'+teamColorValue(n)+';">'+escText(n)+'</span>'; }).join("")
+      : '<span class="placeholder-text">+ Support teams</span>';
+  }
+
   function dailyTaskCardHTML(t){
-    var teamKnown = !!t.team;
     return '<div class="daily-task" data-id="'+t.id+'">'+
       '<button type="button" class="daily-task-del" data-daily-action="delete" data-id="'+t.id+'" aria-label="Delete task" title="Delete task">✕</button>'+
       '<div class="daily-task-main">'+
         '<div class="daily-task-row1">'+
-          '<select class="daily-task-team" data-daily-field="team" data-id="'+t.id+'" aria-label="Team" data-team="'+escAttr(t.team)+'">'+dailyTeamOptionsHTML(t.team)+'</select>'+
+          '<select class="daily-task-team" data-daily-field="team" data-id="'+t.id+'" aria-label="Main team" data-team="'+escAttr(t.team)+'">'+dailyTeamOptionsHTML(t.team)+'</select>'+
           '<input type="text" class="daily-task-project" list="daily-project-list" data-daily-field="projectName" data-id="'+t.id+'" value="'+escAttr(t.projectName)+'" placeholder="Project / location" aria-label="Project or location">'+
+        '</div>'+
+        '<div class="daily-task-row2">'+
+          '<button type="button" class="teams-btn daily-support-btn" data-daily-support-btn="1" data-id="'+t.id+'" aria-label="Support teams" title="Assign one or more support teams to help with this task">'+dailySupportBtnInnerHTML(t)+'</button>'+
         '</div>'+
         '<textarea class="daily-task-desc autosize-field" data-daily-field="task" data-id="'+t.id+'" placeholder="What needs to be done…" aria-label="Task">'+escText(t.task)+'</textarea>'+
         '<textarea class="daily-task-comments autosize-field" data-daily-field="comments" data-id="'+t.id+'" placeholder="Comments (optional)" aria-label="Comments">'+escText(t.comments)+'</textarea>'+
@@ -2033,31 +2067,26 @@
       return;
     }
 
-    // Group in a stable order: unassigned (no team picked yet) first so it's
-    // never missed, then known teams in the same order they appear
-    // everywhere else in the app (base six, then custom teams in the order
-    // they were added), then any team name that no longer exists in the
-    // roster (e.g. renamed/removed elsewhere) grouped at the end rather than
-    // silently dropped.
+    // Group order: unassigned (no team picked yet) always first so it's never
+    // missed, then teams ordered by the most recent task assigned to them --
+    // state.dailyTasks is newest-first (new tasks are unshifted in), so
+    // walking tasksToday in that same order and registering each team the
+    // first time it's seen puts whichever team you just touched at the top
+    // of the page, not buried wherever that team happens to fall in the
+    // roster. This is what makes "add a task" or "assign a team" always
+    // surface the change near the top instead of requiring a scroll.
     var byTeam = {};
+    var teamOrder = [];
     var unassigned = [];
     tasksToday.forEach(function(t){
       if (!t.team){ unassigned.push(t); return; }
-      if (!byTeam[t.team]) byTeam[t.team] = [];
+      if (!byTeam[t.team]){ byTeam[t.team] = []; teamOrder.push(t.team); }
       byTeam[t.team].push(t);
     });
-    var knownOrder = allTeamNames();
-    var handled = {};
     var html = "";
     if (unassigned.length) html += dailyGroupHTML("", unassigned);
-    knownOrder.forEach(function(name){
-      if (byTeam[name] && byTeam[name].length){
-        html += dailyGroupHTML(name, byTeam[name]);
-        handled[name] = true;
-      }
-    });
-    Object.keys(byTeam).sort().forEach(function(name){
-      if (!handled[name]) html += dailyGroupHTML(name, byTeam[name]);
+    teamOrder.forEach(function(name){
+      html += dailyGroupHTML(name, byTeam[name]);
     });
 
     dailyBoardEl.innerHTML = html;
@@ -2067,6 +2096,129 @@
   function shiftDailyDate(n){
     dailySelectedDate = addDaysISO(dailySelectedDate, n);
     renderDailyView();
+  }
+
+  // ---- Daily Schedule: support teams — same idea as the main schedule's
+  // "Helper teams" (see openExtraTeamsPopup() etc. below), applied to a
+  // task's main Team dropdown instead of a project's Assigned team. A task
+  // has one main team (who it's primarily for) plus any number of support
+  // teams helping out on it — a checklist popup, not a duplicate card in
+  // each support team's own group, so there's exactly one place to edit the
+  // task and no risk of the copies drifting apart. Own popup element/state,
+  // kept separate from the main schedule's teamsPopupState, so the two
+  // never interfere with each other. ----
+  var dailySupportPopupEl = document.getElementById("daily-support-popup");
+  var dailySupportPopupState = null; // { anchor, taskId } while open, else null
+
+  function renderDailySupportPopup(){
+    if (!dailySupportPopupState) return;
+    var t = findDailyTask(dailySupportPopupState.taskId);
+    if (!t){ closeDailySupportPopup(); return; }
+    var names = allTeamNames().filter(function(n){ return n !== t.team; });
+    var selected = Array.isArray(t.supportTeams) ? t.supportTeams : [];
+    var listHTML = names.length
+      ? names.map(function(n){
+          var checked = selected.indexOf(n) !== -1;
+          return '<label class="teams-popup-row"><input type="checkbox" data-daily-support-check="'+escAttr(n)+'"'+(checked?" checked":"")+'>'+
+            '<span style="color:'+teamColorValue(n)+';">'+escText(n)+'</span></label>';
+        }).join("")
+      : '<div class="teams-popup-empty">No other teams yet — pick a main team above first, or add one from any dropdown.</div>';
+    dailySupportPopupEl.innerHTML =
+      '<div class="teams-popup-head">Support teams</div>'+
+      '<div class="teams-popup-list">'+listHTML+'</div>'+
+      '<div class="teams-popup-foot"><button type="button" class="btn" id="daily-support-popup-done">Done</button></div>';
+  }
+  function openDailySupportPopup(btn){
+    if (dailySupportPopupState && dailySupportPopupState.anchor === btn){ closeDailySupportPopup(); return; }
+    closeDatePopup();
+    closeExtraTeamsPopup();
+    closeDailySupportPopup();
+    dailySupportPopupState = { anchor: btn, taskId: btn.dataset.id };
+    btn.classList.add("active");
+    renderDailySupportPopup();
+    dailySupportPopupEl.hidden = false;
+    positionDailySupportPopup(btn);
+  }
+  function closeDailySupportPopup(){
+    if (!dailySupportPopupState) return;
+    if (dailySupportPopupState.anchor) dailySupportPopupState.anchor.classList.remove("active");
+    dailySupportPopupState = null;
+    dailySupportPopupEl.hidden = true;
+  }
+  function positionDailySupportPopup(btn){
+    var rect = btn.getBoundingClientRect();
+    var popW = dailySupportPopupEl.offsetWidth || 200;
+    var popH = dailySupportPopupEl.offsetHeight || 220;
+    var left = Math.min(rect.left, window.innerWidth - popW - 8);
+    left = Math.max(8, left);
+    var top = rect.bottom + 4;
+    if (top + popH > window.innerHeight - 8) top = rect.top - popH - 4;
+    if (top < 8) top = 8;
+    dailySupportPopupEl.style.left = left + "px";
+    dailySupportPopupEl.style.top = top + "px";
+  }
+  function toggleDailySupportTeam(taskId, teamName, checked){
+    var t = findDailyTask(taskId);
+    if (!t) return;
+    if (!Array.isArray(t.supportTeams)) t.supportTeams = [];
+    var idx = t.supportTeams.indexOf(teamName);
+    if (checked && idx === -1) t.supportTeams.push(teamName);
+    else if (!checked && idx !== -1) t.supportTeams.splice(idx, 1);
+    // Repaint every matching trigger button (just this one card here, but
+    // matches the main schedule's own pattern) without a full render(), so
+    // the popup itself stays open while ticking multiple teams.
+    document.querySelectorAll('[data-daily-support-btn][data-id="'+taskId+'"]').forEach(function(b){ b.innerHTML = dailySupportBtnInnerHTML(t); });
+    scheduleSave();
+  }
+
+  // ---- Daily Schedule: read-only report, reusing the same modal shell as
+  // "View all projects" / dashboard click-throughs (#report-modal-*) — just
+  // with its own custom (non-tabular) body instead of REPORT_COLUMNS_FULL,
+  // since a task's shape doesn't match a project's. ----
+  function openDailyReport(){
+    var tasksToday = (state.dailyTasks||[]).filter(function(t){ return t.date === dailySelectedDate; });
+    document.getElementById("report-modal-title").textContent = "Daily Schedule";
+    document.getElementById("report-modal-sub").textContent = fmtDailyDateLabel(dailySelectedDate) + " — " + tasksToday.length + " task" + (tasksToday.length===1?"":"s");
+    var bodyEl = document.getElementById("report-modal-body");
+    if (!tasksToday.length){
+      bodyEl.innerHTML = '<div class="report-empty">No tasks scheduled for this day.</div>';
+      document.getElementById("report-modal-backdrop").hidden = false;
+      return;
+    }
+    var byTeam = {}; var unassigned = [];
+    tasksToday.forEach(function(t){
+      if (!t.team){ unassigned.push(t); return; }
+      if (!byTeam[t.team]) byTeam[t.team] = [];
+      byTeam[t.team].push(t);
+    });
+    var order = [];
+    if (unassigned.length) order.push({ name:"", tasks:unassigned });
+    var handled = {};
+    allTeamNames().forEach(function(name){
+      if (byTeam[name] && byTeam[name].length){ order.push({ name:name, tasks:byTeam[name] }); handled[name] = true; }
+    });
+    Object.keys(byTeam).sort().forEach(function(name){
+      if (!handled[name]) order.push({ name:name, tasks:byTeam[name] });
+    });
+    var html = order.map(function(g){
+      var label = g.name ? (g.name+"’s Team") : "No team assigned";
+      var dot = g.name ? teamColorValue(g.name) : "var(--text-faint)";
+      var items = g.tasks.map(function(t){
+        var support = (Array.isArray(t.supportTeams) && t.supportTeams.length) ? ' <span style="color:var(--text-muted); font-weight:400;">(with '+escText(t.supportTeams.join(", "))+')</span>' : "";
+        var comments = t.comments ? '<div style="color:var(--text-muted); font-size:12px; font-style:italic; margin-top:2px;">'+escText(t.comments)+'</div>' : "";
+        return '<li style="margin-bottom:8px;"><strong>'+escText(t.projectName||"Untitled")+'</strong>'+support+
+          (t.task ? ' — '+escText(t.task) : '')+comments+'</li>';
+      }).join("");
+      return '<div style="margin-bottom:18px;">'+
+        '<div style="display:flex; align-items:center; gap:8px; margin-bottom:6px;">'+
+          '<span style="width:11px; height:11px; border-radius:50%; background:'+dot+'; display:inline-block;"></span>'+
+          '<strong style="font-family:\'Playfair Display\',Georgia,serif; font-size:15px;">'+escText(label)+'</strong>'+
+        '</div>'+
+        '<ul style="margin:0; padding-left:20px;">'+items+'</ul>'+
+      '</div>';
+    }).join("");
+    bodyEl.innerHTML = html;
+    document.getElementById("report-modal-backdrop").hidden = false;
   }
 
   // Copies a link to wa-tracker.html — a separate, standalone page (see
@@ -2167,7 +2319,7 @@
   document.getElementById("daily-add-btn").addEventListener("click", function(){
     var t = newDailyTask(dailySelectedDate);
     if (!state.dailyTasks) state.dailyTasks = [];
-    state.dailyTasks.push(t);
+    state.dailyTasks.unshift(t); // newest first: lands in the unassigned group at the very top of the page
     renderDailyView();
     scheduleSave();
     var teamSel = document.querySelector('#daily-board [data-daily-field="team"][data-id="'+t.id+'"]');
@@ -2210,15 +2362,16 @@
       });
 
       var body = ordered.map(function(t){
-        return [ t.team || "(No team)", t.projectName || "—", t.task || "—", t.comments || "—" ];
+        var support = (Array.isArray(t.supportTeams) && t.supportTeams.length) ? t.supportTeams.join(", ") : "—";
+        return [ t.team || "(No team)", support, t.projectName || "—", t.task || "—", t.comments || "—" ];
       });
       doc.autoTable({
         startY: 72,
-        head: [["Team","Project / Location","Task","Comments"]],
+        head: [["Main Team","Support Teams","Project / Location","Task","Comments"]],
         body: body,
         styles:{ fontSize:9, cellPadding:5, overflow:"linebreak" },
         headStyles:{ fillColor:[46,92,138], textColor:255 },
-        columnStyles:{ 0:{cellWidth:110}, 1:{cellWidth:170} }
+        columnStyles:{ 0:{cellWidth:95}, 1:{cellWidth:95}, 2:{cellWidth:150} }
       });
 
       var finalY = (doc.lastAutoTable && doc.lastAutoTable.finalY) ? doc.lastAutoTable.finalY : 90;
@@ -2231,6 +2384,7 @@
     }
   }
   document.getElementById("daily-export-pdf-btn").addEventListener("click", exportDailyPDF);
+  document.getElementById("daily-report-btn").addEventListener("click", openDailyReport);
 
   // ---- Daily Schedule: field editing ----
   document.addEventListener("input", function(e){
@@ -2243,6 +2397,7 @@
       var newTeam = promptAddTeam();
       if (newTeam){
         task.team = newTeam;
+        dedupeDailySupportTeams(task);
         renderDailyView();
       } else {
         t.value = task.team || ""; // cancelled — revert, leave the task untouched
@@ -2253,6 +2408,11 @@
     task[field] = t.value;
     if (field === "team"){
       t.setAttribute("data-team", t.value);
+      // Keep the main team from also appearing as a support team — if it
+      // was tagged as support before being promoted to main, drop it from
+      // supportTeams so it isn't listed (or shown) twice, same idea as the
+      // main schedule's own primary-team/helper-teams handling.
+      dedupeDailySupportTeams(task);
       renderDailyView(); // move the card into its new team's group
     } else if (t.classList.contains("autosize-field")){
       autosizeTextarea(t);
@@ -2774,6 +2934,15 @@
     toggleExtraTeam(teamsPopupState.projectId, t.dataset.teamsCheck, t.checked);
   });
 
+  // ---- Daily Schedule: support teams checklist — same "change" event
+  // reasoning as the helper teams checklist above.
+  document.addEventListener("change", function(e){
+    var t = e.target;
+    if (!t.matches("[data-daily-support-check]")) return;
+    if (!dailySupportPopupState) return;
+    toggleDailySupportTeam(dailySupportPopupState.taskId, t.dataset.dailySupportCheck, t.checked);
+  });
+
   // ---- custom Start/Finish date picker ----
   // Native <input type="date"> was dropped entirely: its displayed format is
   // controlled by the browser/OS (so Safari and Chrome could disagree no
@@ -3134,6 +3303,14 @@
       if (teamsPath.indexOf(teamsPopupEl) === -1) closeExtraTeamsPopup();
     }
 
+    var dailySupportBtn = e.target.closest("[data-daily-support-btn]");
+    if (dailySupportBtn){ openDailySupportPopup(dailySupportBtn); return; }
+    if (dailySupportPopupState){
+      if (e.target.id === "daily-support-popup-done"){ closeDailySupportPopup(); return; }
+      var dailySupportPath = typeof e.composedPath === "function" ? e.composedPath() : [];
+      if (dailySupportPath.indexOf(dailySupportPopupEl) === -1) closeDailySupportPopup();
+    }
+
     var dateFilterBtn = e.target.closest("#date-filter-btn");
     if (dateFilterBtn){
       if (dateFilterPopupEl.hidden) openDateFilterPopup(dateFilterBtn);
@@ -3301,6 +3478,7 @@
     if (e.key === "Escape"){
       if (datePopupState){ closeDatePopup(); return; }
       if (teamsPopupState){ closeExtraTeamsPopup(); return; }
+      if (dailySupportPopupState){ closeDailySupportPopup(); return; }
       if (!dateFilterPopupEl.hidden){ closeDateFilterPopup(); return; }
       var confirmBackdrop = document.getElementById("confirm-modal-backdrop");
       if (confirmBackdrop && !confirmBackdrop.hidden){ closeConfirmModal(); return; }
