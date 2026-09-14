@@ -540,6 +540,42 @@
   .wa-hbar{ overflow-x:auto; overflow-y:hidden; height:14px; border-bottom:1px solid var(--border); background:var(--surface-2); }
   .wa-hbar-inner{ height:1px; }
 
+  /* ---- WA tab: "Group by project" banded headers (same as wa-tracker.html) ---- */
+  .wa-group-row{ padding:0; background:var(--surface-2); border-bottom:1px solid var(--border-strong); position:sticky; top:56px; z-index:8; }
+  .wa-group-toggle{ width:100%; height:100%; display:flex; align-items:center; gap:10px; padding:0 14px; background:none; border:none; cursor:pointer; text-align:left; font-family:inherit; }
+  .wa-group-toggle:hover{ background:var(--border); }
+  .wa-group-chevron{ font-size:10px; color:var(--text-muted); width:12px; flex:none; text-align:center; }
+  .wa-group-name{ font-weight:700; font-size:12.5px; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .wa-group-count{ font-size:11px; color:var(--text-muted); font-weight:600; background:var(--surface); border:1px solid var(--border-strong); border-radius:100px; padding:1px 8px; flex:none; }
+
+  /* ---- Daily Schedule tab ---- */
+  .daily-toolbar{ align-items:center; }
+  .daily-date-nav{ display:flex; align-items:center; gap:4px; }
+  .daily-date-btn{ font-family:"Playfair Display",Georgia,serif; font-weight:600; font-size:14.5px; padding:8px 14px; border:1px solid var(--border-strong); background:var(--surface); border-radius:var(--radius); min-width:210px; text-align:center; }
+  .daily-date-btn:hover{ background:var(--surface-2); }
+  .daily-board-wrap{ padding:16px; max-width:980px; margin:0 auto; }
+  .daily-empty{ padding:60px 20px; text-align:center; color:var(--text-muted); font-size:13.5px; }
+  .daily-group{ background:var(--surface); border:1px solid var(--border); border-radius:8px; margin-bottom:16px; box-shadow:var(--shadow); overflow:hidden; }
+  .daily-group.unassigned{ border-style:dashed; border-color:var(--border-strong); box-shadow:none; }
+  .daily-group-header{ display:flex; align-items:center; gap:10px; padding:12px 16px; border-bottom:1px solid var(--border); background:var(--surface-2); }
+  .daily-group-dot{ width:11px; height:11px; border-radius:50%; flex:none; }
+  .daily-group-name{ font-family:"Playfair Display",Georgia,serif; font-weight:700; font-size:15px; }
+  .daily-group-count{ margin-left:auto; font-size:11px; color:var(--text-muted); font-weight:600; background:var(--surface); border:1px solid var(--border-strong); border-radius:100px; padding:2px 9px; flex:none; }
+  .daily-task{ display:flex; gap:12px; padding:14px 16px; border-bottom:1px solid var(--border); position:relative; }
+  .daily-task:last-child{ border-bottom:none; }
+  .daily-task-del{ position:absolute; top:10px; right:10px; width:22px; height:22px; border-radius:6px; border:1px solid transparent; background:transparent; color:var(--text-faint); cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:13px; }
+  .daily-task-del:hover{ background:var(--surface-2); color:var(--danger); border-color:var(--border-strong); }
+  .daily-task-main{ flex:1; min-width:0; display:flex; flex-direction:column; gap:6px; padding-right:26px; }
+  .daily-task-row1{ display:flex; gap:8px; flex-wrap:wrap; }
+  .daily-task-team{ font-size:12px; font-weight:600; padding:6px 8px; border-radius:6px; border:1px solid var(--border-strong); background:var(--surface); color:var(--text); min-width:130px; }
+  .daily-task-project{ flex:1; min-width:180px; font-family:"Playfair Display",Georgia,serif; font-weight:600; font-size:14px; border:1px solid transparent; background:transparent; color:var(--text); padding:6px 4px; border-radius:6px; }
+  .daily-task-project:hover, .daily-task-project:focus{ border-color:var(--border-strong); background:var(--surface); }
+  .daily-task-desc{ width:100%; resize:none; border:1px solid transparent; background:transparent; color:var(--text); font-family:inherit; font-size:13px; line-height:1.4; padding:6px 4px; border-radius:6px; min-height:22px; }
+  .daily-task-desc:hover, .daily-task-desc:focus{ border-color:var(--border-strong); background:var(--surface); }
+  .daily-task-comments{ width:100%; resize:none; border:1px solid transparent; background:transparent; color:var(--text-muted); font-family:inherit; font-style:italic; font-size:12px; line-height:1.4; padding:6px 4px; border-radius:6px; min-height:20px; }
+  .daily-task-comments:hover, .daily-task-comments:focus{ border-color:var(--border-strong); background:var(--surface); color:var(--text); }
+  .daily-task-comments::placeholder, .daily-task-desc::placeholder, .daily-task-project::placeholder{ color:var(--text-faint); font-style:italic; }
+
   /* ---- Main list (Schedule tab): meta columns only, no day grid — see
      mainRowHTML()/renderMainList(). Rows auto-grow to fit Scope/Comments. ---- */
   .board-list .row-head{ display:none; }
@@ -596,6 +632,7 @@
         <button class="tab-btn" id="tab-allocation" type="button" role="tab" aria-selected="false">Team Allocation</button>
         <button class="tab-btn" id="tab-dashboard" type="button" role="tab" aria-selected="false">Dashboard</button>
         <button class="tab-btn" id="tab-wa" type="button" role="tab" aria-selected="false">WA Tracker</button>
+        <button class="tab-btn" id="tab-daily" type="button" role="tab" aria-selected="false">Daily Schedule</button>
       </div>
       <button class="btn" id="reset-cols-btn" type="button" title="Reset column widths and the details panel back to defaults">Reset columns</button>
       <button class="btn" id="toggle-client-btn" type="button" title="Show or hide the Client column">Hide Client</button>
@@ -651,12 +688,17 @@
        factory link". See renderWaView(). -->
   <div id="wa-view" hidden>
     <div class="wa-toolbar">
+      <div class="search-box">
+        <input type="search" class="search-field" id="wa-search-input" placeholder="Search project name…" aria-label="Search rows by project name">
+        <button type="button" class="search-clear" id="wa-search-clear-btn" hidden aria-label="Clear search">×</button>
+      </div>
       <button class="btn" id="wa-add-btn" type="button">+ Add row</button>
       <button class="btn" id="wa-import-btn" type="button">Import Excel / CSV</button>
       <input class="import-input" id="wa-import-input" type="file" accept=".xlsx,.xls,.csv">
       <button class="btn" id="wa-export-xlsx-btn" type="button">Export Excel</button>
       <button class="btn" id="wa-export-pdf-btn" type="button">Export PDF</button>
       <button class="btn" id="wa-share-btn" type="button" title="Copy a link to a factory-only view of just this tracker">Share factory link</button>
+      <button class="btn" id="wa-group-toggle-btn" type="button" aria-pressed="false" title="Group rows that share the same Project Name">Group by project</button>
       <label class="wa-rowheight-label">Row height
         <select id="wa-rowheight-select" class="field">
           <option value="compact">Compact</option>
@@ -671,6 +713,29 @@
       <div class="board-scroll" id="wa-tracker-scroll">
         <div class="board wa-board" id="wa-tracker-board"></div>
       </div>
+    </div>
+  </div>
+
+  <!-- Daily Schedule: who's assigned to do what, on a given day. Independent
+       data (state.dailyTasks) from the project schedule and the WA tracker,
+       but shares the same save/sync backend. Replaces sending a daily
+       WhatsApp message — the plan lives here instead, grouped by team the
+       same way that message was, and stays as a running history you can
+       page back through by date. -->
+  <div id="daily-view" hidden>
+    <div class="wa-toolbar daily-toolbar">
+      <div class="daily-date-nav">
+        <button class="btn" id="daily-prev-btn" type="button" aria-label="Previous day" title="Previous day">‹</button>
+        <button type="button" class="date-btn daily-date-btn" id="daily-date-btn"></button>
+        <button class="btn" id="daily-next-btn" type="button" aria-label="Next day" title="Next day">›</button>
+      </div>
+      <button class="btn" id="daily-today-btn" type="button">Today</button>
+      <button class="btn primary" id="daily-add-btn" type="button">+ Add task</button>
+      <button class="btn" id="daily-export-pdf-btn" type="button">Export PDF</button>
+    </div>
+    <datalist id="daily-project-list"></datalist>
+    <div class="daily-board-wrap">
+      <div class="daily-board" id="daily-board"></div>
     </div>
   </div>
 
@@ -875,7 +940,7 @@
   ];
 
 
-  var state = { projects: null, bannerDismissed:false, customTeams: [], waRows: [] };
+  var state = { projects: null, bannerDismissed:false, customTeams: [], waRows: [], dailyTasks: [] };
   var saveTimer = null;
   // True from the instant a Firestore write is kicked off until it settles.
   // Firestore's local-cache echoes a write back through onSnapshot almost
@@ -970,6 +1035,19 @@
     return p;
   }
 
+  function newDailyTask(dateIso){
+    return { id:"dt"+Date.now().toString(36)+Math.random().toString(36).slice(2,7),
+      date: dateIso, team:"", projectName:"", task:"", comments:"" };
+  }
+  function normalizeDailyTask(t){
+    if (t.date==null) t.date = "";
+    if (t.team==null) t.team = "";
+    if (t.projectName==null) t.projectName = "";
+    if (t.task==null) t.task = "";
+    if (t.comments==null) t.comments = "";
+    return t;
+  }
+
   // WA production tracker's row shape/defaults (newWaRow/normalizeWaRow)
   // now live in wa-shared.js as WA.newRow()/WA.normalizeRow(), shared with
   // the standalone factory page.
@@ -997,6 +1075,7 @@
     state.bannerDismissed = false;
     state.customTeams = [];
     state.waRows = JSON.parse(JSON.stringify(WA.SEED_ROWS));
+    state.dailyTasks = [];
   }
 
   function loadLocalState(){
@@ -1009,6 +1088,7 @@
           state.bannerDismissed = !!data.bannerDismissed;
           state.customTeams = Array.isArray(data.customTeams) ? data.customTeams : [];
           state.waRows = Array.isArray(data.waRows) ? data.waRows.map(WA.normalizeRow) : JSON.parse(JSON.stringify(WA.SEED_ROWS));
+          state.dailyTasks = Array.isArray(data.dailyTasks) ? data.dailyTasks.map(normalizeDailyTask) : [];
           return;
         }
       }
@@ -1051,7 +1131,7 @@
     // truthy forever after the first edit of the session.
     saveTimer = null;
     if (applyingRemoteUpdate) return; // don't echo back a change we just received
-    var payload = { projects: state.projects, bannerDismissed: state.bannerDismissed, customTeams: state.customTeams||[], waRows: state.waRows||[] };
+    var payload = { projects: state.projects, bannerDismissed: state.bannerDismissed, customTeams: state.customTeams||[], waRows: state.waRows||[], dailyTasks: state.dailyTasks||[] };
     if (backendMode === "firebase" && fsDocRef){
       writeInFlight = true;
       fsDocRef.set({
@@ -1059,6 +1139,7 @@
         bannerDismissed: payload.bannerDismissed,
         customTeams: payload.customTeams,
         waRows: payload.waRows,
+        dailyTasks: payload.dailyTasks,
         updatedAt: firebase.firestore.FieldValue.serverTimestamp()
       }, { merge: true })
         .then(function(){
@@ -1117,6 +1198,7 @@
             state.bannerDismissed = !!data.bannerDismissed;
             state.customTeams = Array.isArray(data.customTeams) ? data.customTeams : [];
             state.waRows = Array.isArray(data.waRows) ? data.waRows.map(WA.normalizeRow) : [];
+            state.dailyTasks = Array.isArray(data.dailyTasks) ? data.dailyTasks.map(normalizeDailyTask) : [];
           }
           applyingRemoteUpdate = false;
           return hasPendingLocalEdit;
@@ -1692,6 +1774,7 @@
     if (currentView === "dashboard") renderDashboard();
     if (currentView === "allocation") renderAllocation();
     if (currentView === "wa") renderWaView();
+    if (currentView === "daily") renderDailyView();
     var gridBackdrop = document.getElementById("grid-modal-backdrop");
     if (gridBackdrop && !gridBackdrop.hidden) renderGridModal();
 
@@ -1756,6 +1839,81 @@
     document.getElementById("grid-modal-backdrop").hidden = true;
   }
 
+  // ---- WA tab: search + group-by-project (same feature as the standalone
+  // factory page, wa-tracker.html — see that file's own copy of this code
+  // for the full explanation). This is this-device view-only state, never
+  // saved to the shared backend; it shares its localStorage key with the
+  // factory page's own copy so "Group by project" and which groups are
+  // collapsed stay consistent between the two, the same way column widths
+  // and row height already do via waControls' shared storageKey below. ----
+  var waSearchQuery = "";
+  var waGroupByProject = false;
+  var waCollapsedGroups = {}; // key: trimmed Project Name -> true if collapsed
+  var WA_GROUP_PREFS_KEY = "installPlanner.waGroupPrefs.v1";
+
+  function loadWaGroupPrefs(){
+    try{
+      var raw = localStorage.getItem(WA_GROUP_PREFS_KEY);
+      if (!raw) return;
+      var data = JSON.parse(raw);
+      if (data && typeof data.groupByProject === "boolean") waGroupByProject = data.groupByProject;
+      if (data && data.collapsed && typeof data.collapsed === "object") waCollapsedGroups = data.collapsed;
+    } catch(e){ /* corrupt or inaccessible storage — fall back to defaults */ }
+  }
+  function saveWaGroupPrefs(){
+    try{ localStorage.setItem(WA_GROUP_PREFS_KEY, JSON.stringify({ groupByProject:waGroupByProject, collapsed:waCollapsedGroups })); } catch(e){}
+  }
+  function waMatchesSearch(row){
+    if (!waSearchQuery) return true;
+    return (row.projectName||"").toLowerCase().indexOf(waSearchQuery) > -1;
+  }
+  function buildWaRenderPlan(){
+    var rows = (state.waRows || []).filter(waMatchesSearch);
+    if (!waGroupByProject) return rows.map(function(row){ return { type:"row", row:row }; });
+
+    var groups = [];
+    var byKey = {};
+    rows.forEach(function(row){
+      var key = (row.projectName||"").trim();
+      if (!byKey[key]){
+        byKey[key] = { key:key, label: key || "(No project name)", rows:[] };
+        groups.push(byKey[key]);
+      }
+      byKey[key].rows.push(row);
+    });
+
+    var plan = [];
+    groups.forEach(function(g){
+      var collapsed = !!waCollapsedGroups[g.key];
+      plan.push({ type:"group", key:g.key, label:g.label, count:g.rows.length, collapsed:collapsed });
+      if (!collapsed) g.rows.forEach(function(row){ plan.push({ type:"row", row:row }); });
+    });
+    return plan;
+  }
+  function waGroupHeaderHTML(item, gridRow, totalCols){
+    return '<div class="cell wa-group-row" style="grid-column:1 / span '+totalCols+'; grid-row:'+gridRow+';">'+
+      '<button type="button" class="wa-group-toggle" data-wa-group-toggle="'+WA.escAttr(item.key)+'" aria-expanded="'+(item.collapsed?"false":"true")+'">'+
+        '<span class="wa-group-chevron">'+(item.collapsed?"▸":"▾")+'</span>'+
+        '<span class="wa-group-name">'+WA.escText(item.label)+'</span>'+
+        '<span class="wa-group-count">'+item.count+' item'+(item.count===1?"":"s")+'</span>'+
+      '</button></div>';
+  }
+  function toggleWaGroup(key){
+    waCollapsedGroups[key] = !waCollapsedGroups[key];
+    saveWaGroupPrefs();
+    renderWaView();
+  }
+  // Matches wa-shared.js's own HEADER_ROW_H (56px) — kept local since that
+  // one's private to wa-shared.js, same as wa-tracker.html's own copy.
+  var WA_GROUP_ROW_H = 34;
+  function buildWaGridTemplateRows(plan){
+    if (!plan.length) return "56px 64px";
+    var tracks = plan.map(function(item){
+      return item.type === "group" ? WA_GROUP_ROW_H+"px" : "minmax(var(--wa-row-min-height, 64px), auto)";
+    });
+    return "56px "+tracks.join(" ");
+  }
+
   // WA production tracker: its own full-screen tab (like Schedule/Team
   // Allocation/Dashboard), not a popup — see switchView("wa"). Its board
   // (state.waRows) is independent of the project schedule but shares the
@@ -1765,21 +1923,150 @@
   function renderWaView(){
     var waBoardEl = document.getElementById("wa-tracker-board");
     if (!waBoardEl) return;
-    var rows = state.waRows || [];
     var totalCols = WA.META_LABELS.length;
+    var plan = buildWaRenderPlan();
     waBoardEl.style.gridTemplateColumns = WA.gridTemplateColumns();
-    waBoardEl.style.gridTemplateRows = WA.gridTemplateRows(rows.length);
+    waBoardEl.style.gridTemplateRows = buildWaGridTemplateRows(plan);
 
     var html = WA.metaHeaderHTML();
-    if (rows.length === 0){
+    if ((state.waRows||[]).length === 0){
       html += '<div class="cell empty-state" style="grid-column:1 / span '+totalCols+'; grid-row:2; justify-content:center;">'+
         'No rows yet. Click “+ Add row” or use “Import Excel / CSV” to bring in a list.</div>';
+    } else if (plan.length === 0){
+      html += '<div class="cell empty-state" style="grid-column:1 / span '+totalCols+'; grid-row:2; justify-content:center;">'+
+        'No rows match “'+WA.escText(waSearchQuery)+'”.</div>';
     } else {
-      rows.forEach(function(row, idx){ html += WA.rowHTML(row, idx); });
+      var rowIndex = 0;
+      plan.forEach(function(item){
+        var gridRow = 2 + rowIndex;
+        html += item.type === "group" ? waGroupHeaderHTML(item, gridRow, totalCols) : WA.rowHTML(item.row, rowIndex);
+        rowIndex++;
+      });
     }
     waBoardEl.innerHTML = html;
     autosizeAllTextareas(waBoardEl);
     if (waControls) waControls.refreshScrollbar();
+  }
+
+  // ---- Daily Schedule: who's assigned to do what, on a given day. Replaces
+  // sending a daily WhatsApp message to the team — the plan lives here
+  // instead. Data (state.dailyTasks) is a flat array of {id, date, team,
+  // projectName, task, comments}, each one line-item ("Mark's Team: Desert
+  // Leaf 6, Villa 10 — installation of frames and glass panels."). The view
+  // groups today's (or whichever day is selected) items by team, the same
+  // shape as that old message, and keeps every day's plan so you can page
+  // back through history with the date arrows. Independent data from the
+  // project schedule and WA tracker, but shares the same save/sync backend
+  // (see doSave()/connectFirestore() above). ----
+  var dailySelectedDate = TODAY_ISO;
+
+  function findDailyTask(id){ return (state.dailyTasks||[]).find(function(t){ return t.id===id; }); }
+
+  function addDaysISO(isoStr, n){
+    var y = +isoStr.slice(0,4), m = +isoStr.slice(5,7), d = +isoStr.slice(8,10);
+    var dt = new Date(Date.UTC(y, m-1, d));
+    dt.setUTCDate(dt.getUTCDate() + n);
+    return iso(dt.getUTCFullYear(), dt.getUTCMonth()+1, dt.getUTCDate());
+  }
+  var WEEKDAY_NAMES = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+  function fmtDailyDateLabel(isoStr){
+    var y = +isoStr.slice(0,4), m = +isoStr.slice(5,7), d = +isoStr.slice(8,10);
+    var dow = weekdayOf(y, m, d);
+    return WEEKDAY_NAMES[dow]+", "+monthName(m)+" "+d+", "+y;
+  }
+
+  function dailyTeamOptionsHTML(selected){
+    var html = '<option value=""'+(selected===""?" selected":"")+'>Pick a team…</option>';
+    allTeamNames().forEach(function(name){
+      html += '<option value="'+escAttr(name)+'"'+(name===selected?" selected":"")+'>'+escText(name)+'</option>';
+    });
+    html += '<option value="__add_new__">+ Add new team…</option>';
+    return html;
+  }
+
+  function dailyTaskCardHTML(t){
+    var teamKnown = !!t.team;
+    return '<div class="daily-task" data-id="'+t.id+'">'+
+      '<button type="button" class="daily-task-del" data-daily-action="delete" data-id="'+t.id+'" aria-label="Delete task" title="Delete task">✕</button>'+
+      '<div class="daily-task-main">'+
+        '<div class="daily-task-row1">'+
+          '<select class="daily-task-team" data-daily-field="team" data-id="'+t.id+'" aria-label="Team" data-team="'+escAttr(t.team)+'">'+dailyTeamOptionsHTML(t.team)+'</select>'+
+          '<input type="text" class="daily-task-project" list="daily-project-list" data-daily-field="projectName" data-id="'+t.id+'" value="'+escAttr(t.projectName)+'" placeholder="Project / location" aria-label="Project or location">'+
+        '</div>'+
+        '<textarea class="daily-task-desc autosize-field" data-daily-field="task" data-id="'+t.id+'" placeholder="What needs to be done…" aria-label="Task">'+escText(t.task)+'</textarea>'+
+        '<textarea class="daily-task-comments autosize-field" data-daily-field="comments" data-id="'+t.id+'" placeholder="Comments (optional)" aria-label="Comments">'+escText(t.comments)+'</textarea>'+
+      '</div></div>';
+  }
+
+  function dailyGroupHTML(teamName, tasks){
+    var isUnassigned = !teamName;
+    var dot = isUnassigned ? "var(--text-faint)" : teamColorValue(teamName);
+    var label = isUnassigned ? "New task — pick a team" : (teamName+"’s Team");
+    return '<div class="daily-group'+(isUnassigned?" unassigned":"")+'">'+
+      '<div class="daily-group-header">'+
+        '<span class="daily-group-dot" style="background:'+dot+';"></span>'+
+        '<span class="daily-group-name">'+escText(label)+'</span>'+
+        '<span class="daily-group-count">'+tasks.length+' task'+(tasks.length===1?"":"s")+'</span>'+
+      '</div>'+
+      tasks.map(dailyTaskCardHTML).join("")+
+    '</div>';
+  }
+
+  function renderDailyProjectList(){
+    var listEl = document.getElementById("daily-project-list");
+    if (!listEl) return;
+    var names = {};
+    (state.projects||[]).forEach(function(p){ if (p.name && p.name.trim()) names[p.name.trim()] = true; });
+    listEl.innerHTML = Object.keys(names).sort().map(function(n){ return '<option value="'+escAttr(n)+'">'; }).join("");
+  }
+
+  function renderDailyView(){
+    var dailyBoardEl = document.getElementById("daily-board");
+    if (!dailyBoardEl) return;
+    var dateBtn = document.getElementById("daily-date-btn");
+    if (dateBtn) dateBtn.textContent = fmtDailyDateLabel(dailySelectedDate) + (dailySelectedDate===TODAY_ISO ? " (Today)" : "");
+    renderDailyProjectList();
+
+    var tasksToday = (state.dailyTasks||[]).filter(function(t){ return t.date === dailySelectedDate; });
+    if (tasksToday.length === 0){
+      dailyBoardEl.innerHTML = '<div class="daily-empty">No tasks scheduled for '+escText(fmtDailyDateLabel(dailySelectedDate))+' yet. Click “+ Add task” to get started.</div>';
+      return;
+    }
+
+    // Group in a stable order: unassigned (no team picked yet) first so it's
+    // never missed, then known teams in the same order they appear
+    // everywhere else in the app (base six, then custom teams in the order
+    // they were added), then any team name that no longer exists in the
+    // roster (e.g. renamed/removed elsewhere) grouped at the end rather than
+    // silently dropped.
+    var byTeam = {};
+    var unassigned = [];
+    tasksToday.forEach(function(t){
+      if (!t.team){ unassigned.push(t); return; }
+      if (!byTeam[t.team]) byTeam[t.team] = [];
+      byTeam[t.team].push(t);
+    });
+    var knownOrder = allTeamNames();
+    var handled = {};
+    var html = "";
+    if (unassigned.length) html += dailyGroupHTML("", unassigned);
+    knownOrder.forEach(function(name){
+      if (byTeam[name] && byTeam[name].length){
+        html += dailyGroupHTML(name, byTeam[name]);
+        handled[name] = true;
+      }
+    });
+    Object.keys(byTeam).sort().forEach(function(name){
+      if (!handled[name]) html += dailyGroupHTML(name, byTeam[name]);
+    });
+
+    dailyBoardEl.innerHTML = html;
+    autosizeAllTextareas(dailyBoardEl);
+  }
+
+  function shiftDailyDate(n){
+    dailySelectedDate = addDaysISO(dailySelectedDate, n);
+    renderDailyView();
   }
 
   // Copies a link to wa-tracker.html — a separate, standalone page (see
@@ -1834,6 +2121,143 @@
     waControls.resetToDefaults();
     document.getElementById("wa-rowheight-select").value = waControls.getRowHeight();
     showToast("WA tracker column widths and row height reset.", null, null);
+  });
+
+  // ---- WA tab: search + group by project ----
+  var waSearchInputEl = document.getElementById("wa-search-input");
+  var waSearchClearBtn = document.getElementById("wa-search-clear-btn");
+  function updateWaSearchClearVisibility(){ waSearchClearBtn.hidden = !waSearchInputEl.value; }
+  waSearchInputEl.addEventListener("input", function(){
+    waSearchQuery = String(waSearchInputEl.value||"").trim().toLowerCase();
+    updateWaSearchClearVisibility();
+    renderWaView();
+  });
+  waSearchClearBtn.addEventListener("click", function(){
+    waSearchInputEl.value = "";
+    waSearchQuery = "";
+    updateWaSearchClearVisibility();
+    waSearchInputEl.focus();
+    renderWaView();
+  });
+  var waGroupToggleBtn = document.getElementById("wa-group-toggle-btn");
+  function updateWaGroupToggleBtn(){
+    waGroupToggleBtn.textContent = waGroupByProject ? "Ungroup" : "Group by project";
+    waGroupToggleBtn.setAttribute("aria-pressed", waGroupByProject ? "true" : "false");
+  }
+  waGroupToggleBtn.addEventListener("click", function(){
+    waGroupByProject = !waGroupByProject;
+    saveWaGroupPrefs();
+    updateWaGroupToggleBtn();
+    renderWaView();
+  });
+
+  // ---- Daily Schedule: toolbar (date navigation, add task, export) ----
+  document.getElementById("daily-prev-btn").addEventListener("click", function(){ shiftDailyDate(-1); });
+  document.getElementById("daily-next-btn").addEventListener("click", function(){ shiftDailyDate(1); });
+  document.getElementById("daily-today-btn").addEventListener("click", function(){
+    dailySelectedDate = TODAY_ISO;
+    renderDailyView();
+  });
+  document.getElementById("daily-date-btn").addEventListener("click", function(e){
+    openDatePopupGeneric(e.currentTarget, dailySelectedDate, function(isoVal){
+      if (isoVal) dailySelectedDate = isoVal;
+      renderDailyView();
+    });
+  });
+  document.getElementById("daily-add-btn").addEventListener("click", function(){
+    var t = newDailyTask(dailySelectedDate);
+    if (!state.dailyTasks) state.dailyTasks = [];
+    state.dailyTasks.push(t);
+    renderDailyView();
+    scheduleSave();
+    var teamSel = document.querySelector('#daily-board [data-daily-field="team"][data-id="'+t.id+'"]');
+    if (teamSel) teamSel.focus();
+  });
+  function dailyExportFilename(ext){
+    return "Eurolux-Daily-Schedule-"+dailySelectedDate+"."+ext;
+  }
+  function exportDailyPDF(){
+    if (!window.jspdf || !window.jspdf.jsPDF){
+      showToast("PDF export isn't available right now — check your connection and try again.", null, null);
+      return;
+    }
+    try{
+      var tasksToday = (state.dailyTasks||[]).filter(function(t){ return t.date === dailySelectedDate; });
+      var doc = new window.jspdf.jsPDF({ orientation:"landscape", unit:"pt", format:"a4" });
+      doc.setFont("helvetica","bold"); doc.setFontSize(15);
+      doc.setTextColor(46,92,138);
+      doc.text("Eurolux Doors and Windows — Daily Work Schedule", 40, 42);
+      doc.setTextColor(40,40,40);
+      doc.setFont("helvetica","normal"); doc.setFontSize(9.5);
+      doc.text(fmtDailyDateLabel(dailySelectedDate)+"  ·  Generated "+new Date().toLocaleString(), 40, 58);
+
+      // Same grouping/order as the on-screen view: unassigned first, then
+      // known teams in roster order, then any leftover team name.
+      var byTeam = {}; var unassigned = [];
+      tasksToday.forEach(function(t){
+        if (!t.team){ unassigned.push(t); return; }
+        if (!byTeam[t.team]) byTeam[t.team] = [];
+        byTeam[t.team].push(t);
+      });
+      var ordered = [];
+      if (unassigned.length) ordered = ordered.concat(unassigned);
+      var handled = {};
+      allTeamNames().forEach(function(name){
+        if (byTeam[name] && byTeam[name].length){ ordered = ordered.concat(byTeam[name]); handled[name] = true; }
+      });
+      Object.keys(byTeam).sort().forEach(function(name){
+        if (!handled[name]) ordered = ordered.concat(byTeam[name]);
+      });
+
+      var body = ordered.map(function(t){
+        return [ t.team || "(No team)", t.projectName || "—", t.task || "—", t.comments || "—" ];
+      });
+      doc.autoTable({
+        startY: 72,
+        head: [["Team","Project / Location","Task","Comments"]],
+        body: body,
+        styles:{ fontSize:9, cellPadding:5, overflow:"linebreak" },
+        headStyles:{ fillColor:[46,92,138], textColor:255 },
+        columnStyles:{ 0:{cellWidth:110}, 1:{cellWidth:170} }
+      });
+
+      var finalY = (doc.lastAutoTable && doc.lastAutoTable.finalY) ? doc.lastAutoTable.finalY : 90;
+      doc.setFont("helvetica","bold"); doc.setFontSize(10);
+      doc.text(ordered.length+" task"+(ordered.length===1?"":"s"), 40, finalY+22);
+
+      doc.save(dailyExportFilename("pdf"));
+    } catch(err){
+      showToast("Couldn't generate the PDF. Try again, or check your connection.", null, null);
+    }
+  }
+  document.getElementById("daily-export-pdf-btn").addEventListener("click", exportDailyPDF);
+
+  // ---- Daily Schedule: field editing ----
+  document.addEventListener("input", function(e){
+    var t = e.target;
+    if (!t.matches("[data-daily-field]")) return;
+    var task = findDailyTask(t.dataset.id);
+    if (!task) return;
+    var field = t.dataset.dailyField;
+    if (field === "team" && t.value === "__add_new__"){
+      var newTeam = promptAddTeam();
+      if (newTeam){
+        task.team = newTeam;
+        renderDailyView();
+      } else {
+        t.value = task.team || ""; // cancelled — revert, leave the task untouched
+      }
+      scheduleSave();
+      return;
+    }
+    task[field] = t.value;
+    if (field === "team"){
+      t.setAttribute("data-team", t.value);
+      renderDailyView(); // move the card into its new team's group
+    } else if (t.classList.contains("autosize-field")){
+      autosizeTextarea(t);
+    }
+    scheduleSave();
   });
 
   // ---- dashboard ----
@@ -1966,6 +2390,17 @@
       "Delete"
     );
   }
+  function openDeleteDailyConfirm(id){
+    var t = findDailyTask(id);
+    if (!t) return;
+    pendingConfirm = { type:"delete-daily-task", id:id };
+    var whoLabel = t.team ? (" for "+t.team+"’s Team") : "";
+    openConfirmModal(
+      "Delete this task?",
+      'Delete "'+(t.projectName || "Untitled task")+'"'+whoLabel+' from the daily schedule? This can be undone right after with the Undo button, but not once you leave or refresh the page.',
+      "Delete"
+    );
+  }
   function openClearAllConfirm(){
     if (!state.projects.length){
       showToast("There are no projects to clear.", null, null);
@@ -2000,6 +2435,15 @@
         render();
         scheduleSave();
         showToast("Row deleted.", "Undo", undoLast);
+      }
+    } else if (action.type === "delete-daily-task"){
+      var dailyIdx = (state.dailyTasks||[]).findIndex(function(t){return t.id===action.id;});
+      if (dailyIdx>-1){
+        lastSnapshotForUndo = cloneState();
+        state.dailyTasks.splice(dailyIdx,1);
+        render();
+        scheduleSave();
+        showToast("Task deleted.", "Undo", undoLast);
       }
     } else if (action.type === "clear-all"){
       lastSnapshotForUndo = cloneState();
@@ -2731,6 +3175,16 @@
       openDeleteWaConfirm(delWa.dataset.id);
       return;
     }
+    var waGroupToggle = e.target.closest("[data-wa-group-toggle]");
+    if (waGroupToggle){
+      toggleWaGroup(waGroupToggle.dataset.waGroupToggle);
+      return;
+    }
+    var delDaily = e.target.closest('[data-daily-action="delete"]');
+    if (delDaily){
+      openDeleteDailyConfirm(delDaily.dataset.id);
+      return;
+    }
     if (e.target.id === "confirm-modal-cancel" || e.target.id === "confirm-modal-backdrop"){
       closeConfirmModal();
       return;
@@ -2976,6 +3430,7 @@
     document.getElementById("allocation-view").hidden = (view !== "allocation");
     document.getElementById("dashboard-view").hidden = (view !== "dashboard");
     document.getElementById("wa-view").hidden = (view !== "wa");
+    document.getElementById("daily-view").hidden = (view !== "daily");
     document.getElementById("tab-schedule").classList.toggle("active", view==="schedule");
     document.getElementById("tab-schedule").setAttribute("aria-selected", view==="schedule");
     document.getElementById("tab-allocation").classList.toggle("active", view==="allocation");
@@ -2984,9 +3439,12 @@
     document.getElementById("tab-dashboard").setAttribute("aria-selected", view==="dashboard");
     document.getElementById("tab-wa").classList.toggle("active", view==="wa");
     document.getElementById("tab-wa").setAttribute("aria-selected", view==="wa");
+    document.getElementById("tab-daily").classList.toggle("active", view==="daily");
+    document.getElementById("tab-daily").setAttribute("aria-selected", view==="daily");
     if (view === "dashboard") renderDashboard();
     if (view === "allocation") renderAllocation();
     if (view === "wa") renderWaView();
+    if (view === "daily") renderDailyView();
     // Textareas that auto-grow to fit Scope/Comments can't measure their
     // real height while the Schedule tab is hidden (display:none collapses
     // layout, so scrollHeight reads as 0) — e.g. importing or clearing
@@ -2997,6 +3455,7 @@
   document.getElementById("tab-allocation").addEventListener("click", function(){ switchView("allocation"); });
   document.getElementById("tab-dashboard").addEventListener("click", function(){ switchView("dashboard"); });
   document.getElementById("tab-wa").addEventListener("click", function(){ switchView("wa"); });
+  document.getElementById("tab-daily").addEventListener("click", function(){ switchView("daily"); });
 
   document.getElementById("add-btn").addEventListener("click", function(){
     var p = newProject();
@@ -3272,6 +3731,8 @@
     updateClientToggleBtnLabel();
     waControls.init();
     document.getElementById("wa-rowheight-select").value = waControls.getRowHeight();
+    loadWaGroupPrefs();
+    updateWaGroupToggleBtn();
 
     boardHScroll = WA.createHScrollbar({
       boardEl: boardEl,
