@@ -508,14 +508,29 @@
   .wa-rowheight-label{ display:flex; align-items:center; gap:6px; font-size:12.5px; color:var(--text-muted); white-space:nowrap; }
   .wa-rowheight-label select{ width:auto; padding:6px 8px; }
   .wa-board .row-head{ display:none; }
+  /* Live clock (top-left of the WA Tracker tab's own toolbar) + last-updated
+     stamp (pinned to that toolbar's top-right corner) — same idea and same
+     wording as the standalone factory link's header, so the two screens
+     read the same way even though this one sits inside a shared, multi-tab
+     app toolbar rather than its own page header. */
+  #wa-view .wa-toolbar{ position:relative; padding-right:150px; }
+  .wa-live-clock{ font-size:12px; color:var(--text-muted); white-space:nowrap; font-variant-numeric:tabular-nums; }
+  .wa-last-updated{
+    position:absolute; top:3px; right:4px;
+    font-size:11px; color:var(--text-faint); white-space:nowrap;
+  }
+  @media (max-width:640px){
+    #wa-view .wa-toolbar{ padding-right:0; }
+    .wa-last-updated{ position:static; }
+  }
 
   .wc-idx{ position:relative; width:var(--wa-w-idx, 40px); justify-content:center; padding:0; }
   .wc-no{ width:var(--wa-w-no, 56px); }
   .wc-jobno{ width:var(--wa-w-jobno, 86px); }
   .wc-projectname{ width:var(--wa-w-projectname, 190px); }
+  .wc-lporef{ width:var(--wa-w-lporef, 100px); }
+  .wc-ralcolour{ width:var(--wa-w-ralcolour, 110px); }
   .wc-deliverydate{ width:var(--wa-w-deliverydate, 150px); }
-  .wc-framedeliverydate{ width:var(--wa-w-framedeliverydate, 130px); }
-  .wc-shutterdeliverydate{ width:var(--wa-w-shutterdeliverydate, 130px); }
   .wc-delivered{ width:var(--wa-w-delivered, 88px); }
   .wc-description{ width:var(--wa-w-description, 170px); }
   .wc-itemqty{ width:var(--wa-w-itemqty, 76px); }
@@ -701,6 +716,8 @@
        factory link". See renderWaView(). -->
   <div id="wa-view" hidden>
     <div class="wa-toolbar">
+      <div class="wa-live-clock" id="wa-live-clock" aria-live="off"></div>
+      <div class="wa-last-updated" id="wa-last-updated" title="When this tracker was last changed, by anyone">Last updated: —</div>
       <div class="search-box">
         <input type="search" class="search-field" id="wa-search-input" placeholder="Search project name…" aria-label="Search rows by project name">
         <button type="button" class="search-clear" id="wa-search-clear-btn" hidden aria-label="Clear search">×</button>
@@ -1091,6 +1108,36 @@
       String(cfg.apiKey).indexOf("YOUR_") !== 0 && String(cfg.projectId).indexOf("YOUR_") !== 0);
   }
 
+  // ---- WA Tracker tab: live clock (top-left of its toolbar) + last-updated
+  // stamp (top-right) — see the matching CSS/markup comment near #wa-view.
+  // "Last updated" tracks the shared doc's own write time (whoever last
+  // saved, on any device/tab, not just WA row edits), same signal the
+  // standalone factory link (wa-tracker.html) shows in its own header.
+  function fmtClock(d){
+    return d.toLocaleString(undefined, { weekday:"short", day:"numeric", month:"short", year:"numeric", hour:"2-digit", minute:"2-digit", second:"2-digit" });
+  }
+  function fmtLastUpdated(d){
+    return d.toLocaleString(undefined, { day:"numeric", month:"short", year:"numeric", hour:"2-digit", minute:"2-digit" });
+  }
+  function tickClock(){
+    var el = document.getElementById("wa-live-clock");
+    if (el) el.textContent = fmtClock(new Date());
+  }
+  var lastUpdatedAt = null;
+  function renderLastUpdated(){
+    var el = document.getElementById("wa-last-updated");
+    if (!el) return;
+    el.textContent = "Last updated: " + (lastUpdatedAt ? fmtLastUpdated(lastUpdatedAt) : "—");
+  }
+  function markUpdated(ts){
+    var d = null;
+    if (ts instanceof Date && !isNaN(ts)) d = ts;
+    else if (ts && typeof ts.toDate === "function") d = ts.toDate();
+    else if (typeof ts === "string" && ts){ var parsed = new Date(ts); if (!isNaN(parsed)) d = parsed; }
+    lastUpdatedAt = d || new Date();
+    renderLastUpdated();
+  }
+
   function seedExamples(){
     state.projects = JSON.parse(JSON.stringify(EXAMPLE_PROJECTS));
     state.bannerDismissed = false;
@@ -1110,6 +1157,7 @@
           state.customTeams = Array.isArray(data.customTeams) ? data.customTeams : [];
           state.waRows = Array.isArray(data.waRows) ? data.waRows.map(WA.normalizeRow) : JSON.parse(JSON.stringify(WA.SEED_ROWS));
           state.dailyTasks = Array.isArray(data.dailyTasks) ? data.dailyTasks.map(normalizeDailyTask) : [];
+          if (data.updatedAt) markUpdated(data.updatedAt);
           return;
         }
       }
@@ -1166,13 +1214,18 @@
         .then(function(){
           writeInFlight = false;
           setSaveStatus("synced");
+          // Optimistic — the snapshot echo moments later overwrites this
+          // with the real server timestamp (see applyDoc()).
+          markUpdated(new Date());
         })
         .catch(function(){ writeInFlight = false; setSaveStatus("sync-error"); });
       return;
     }
     try{
+      payload.updatedAt = new Date().toISOString();
       localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
       setSaveStatus("local-saved");
+      markUpdated(new Date());
     } catch(err){
       setSaveStatus("local-error");
     }
@@ -1220,6 +1273,7 @@
             state.customTeams = Array.isArray(data.customTeams) ? data.customTeams : [];
             state.waRows = Array.isArray(data.waRows) ? data.waRows.map(WA.normalizeRow) : [];
             state.dailyTasks = Array.isArray(data.dailyTasks) ? data.dailyTasks.map(normalizeDailyTask) : [];
+            if (data.updatedAt) markUpdated(data.updatedAt);
           }
           applyingRemoteUpdate = false;
           return hasPendingLocalEdit;
@@ -3947,6 +4001,9 @@
     await initBackend();
     setSaveStatus(backendMode === "firebase" ? "synced" : "local-saved");
     render();
+    tickClock();
+    setInterval(tickClock, 1000);
+    renderLastUpdated();
   }
 
   init();

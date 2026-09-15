@@ -52,7 +52,7 @@
 
   function newRow(){
     return { id:"wa"+Date.now().toString(36)+Math.random().toString(36).slice(2,7),
-      no:"", jobNo:"", projectName:"", deliveryDate:"", frameDeliveryDate:"", shutterDeliveryDate:"",
+      no:"", jobNo:"", projectName:"", lpoRef:"", ralColour:"", deliveryDate:"",
       delivered:"No", description:"", itemQty:"", scope:"", etaCoating:"", etaFabFrame:"", etaFabShutter:"",
       remarks:"" };
   }
@@ -61,9 +61,9 @@
     if (row.no==null) row.no = "";
     if (row.jobNo==null) row.jobNo = "";
     if (row.projectName==null) row.projectName = "";
+    if (row.lpoRef==null) row.lpoRef = "";
+    if (row.ralColour==null) row.ralColour = "";
     if (row.deliveryDate==null) row.deliveryDate = "";
-    if (row.frameDeliveryDate==null) row.frameDeliveryDate = "";
-    if (row.shutterDeliveryDate==null) row.shutterDeliveryDate = "";
     if (row.delivered!=="Yes") row.delivered = "No";
     if (row.description==null) row.description = "";
     if (row.itemQty==null) row.itemQty = "";
@@ -89,9 +89,9 @@
     {cls:"wc-no", txt:"No.", key:"no"},
     {cls:"wc-jobno", txt:"Job #", key:"jobNo"},
     {cls:"wc-projectname", txt:"Project Name", key:"projectName"},
+    {cls:"wc-lporef", txt:"LPO Ref.", key:"lpoRef"},
+    {cls:"wc-ralcolour", txt:"RAL Colour", key:"ralColour"},
     {cls:"wc-deliverydate", txt:"Eurolux Required Delivery Date", key:"deliveryDate"},
-    {cls:"wc-framedeliverydate", txt:"Frame Delivery Date", key:"frameDeliveryDate"},
-    {cls:"wc-shutterdeliverydate", txt:"Shutter Delivery Date", key:"shutterDeliveryDate"},
     {cls:"wc-delivered", txt:"Delivered", key:"delivered"},
     {cls:"wc-description", txt:"Description", key:"description"},
     {cls:"wc-itemqty", txt:"Item Qty", key:"itemQty"},
@@ -105,9 +105,9 @@
   // Default/min/max widths, keyed by field key (the idx column is fixed at
   // 40px and isn't resizable — see metaHeaderHTML(), which skips a handle
   // for the one column with key:null).
-  var DEFAULT_COL_W = { no:56, jobNo:86, projectName:190, deliveryDate:150, frameDeliveryDate:130, shutterDeliveryDate:130, delivered:88, description:170, itemQty:76, scope:220, etaCoating:170, etaFabFrame:170, etaFabShutter:170, remarks:200 };
-  var COL_MIN_W = { no:40, jobNo:50, projectName:100, deliveryDate:90, frameDeliveryDate:90, shutterDeliveryDate:90, delivered:60, description:60, itemQty:50, scope:60, etaCoating:60, etaFabFrame:60, etaFabShutter:60, remarks:60 };
-  var COL_MAX_W = { no:120, jobNo:160, projectName:420, deliveryDate:260, frameDeliveryDate:260, shutterDeliveryDate:260, delivered:140, description:420, itemQty:140, scope:420, etaCoating:420, etaFabFrame:420, etaFabShutter:420, remarks:420 };
+  var DEFAULT_COL_W = { no:56, jobNo:86, projectName:190, lpoRef:100, ralColour:110, deliveryDate:150, delivered:88, description:170, itemQty:76, scope:220, etaCoating:170, etaFabFrame:170, etaFabShutter:170, remarks:200 };
+  var COL_MIN_W = { no:40, jobNo:50, projectName:100, lpoRef:60, ralColour:60, deliveryDate:90, delivered:60, description:60, itemQty:50, scope:60, etaCoating:60, etaFabFrame:60, etaFabShutter:60, remarks:60 };
+  var COL_MAX_W = { no:120, jobNo:160, projectName:420, lpoRef:220, ralColour:220, deliveryDate:260, delivered:140, description:420, itemQty:140, scope:420, etaCoating:420, etaFabFrame:420, etaFabShutter:420, remarks:420 };
 
   // Row-height presets — a floor only (rows still grow taller than this to
   // fit longer content via minmax(..., auto) in gridTemplateRows()), so
@@ -170,14 +170,14 @@
     html += '<div class="cell wc-projectname'+deliveredCls+'" style="grid-column:4; grid-row:'+gridRow+';">'+
       '<textarea class="field autosize-field" data-wa-field="projectName" data-id="'+row.id+'" placeholder="Project name" aria-label="Project name">'+escText(row.projectName)+'</textarea></div>';
 
-    html += '<div class="cell wc-deliverydate'+deliveredCls+'" style="grid-column:5; grid-row:'+gridRow+';">'+
+    html += '<div class="cell wc-lporef'+deliveredCls+'" style="grid-column:5; grid-row:'+gridRow+';">'+
+      '<input class="field" data-wa-field="lpoRef" data-id="'+row.id+'" value="'+escAttr(row.lpoRef)+'" aria-label="LPO reference"></div>';
+
+    html += '<div class="cell wc-ralcolour'+deliveredCls+'" style="grid-column:6; grid-row:'+gridRow+';">'+
+      '<input class="field" data-wa-field="ralColour" data-id="'+row.id+'" value="'+escAttr(row.ralColour)+'" aria-label="RAL colour"></div>';
+
+    html += '<div class="cell wc-deliverydate'+deliveredCls+'" style="grid-column:7; grid-row:'+gridRow+';">'+
       '<button type="button" class="date-btn'+(row.deliveryDate?"":" placeholder")+'" data-wa-date-btn="deliveryDate" data-id="'+row.id+'" aria-label="Eurolux required delivery date">'+(fmtDateDisplay(row.deliveryDate)||"d/mm/yyyy")+'</button></div>';
-
-    html += '<div class="cell wc-framedeliverydate'+deliveredCls+'" style="grid-column:6; grid-row:'+gridRow+';">'+
-      '<button type="button" class="date-btn'+(row.frameDeliveryDate?"":" placeholder")+'" data-wa-date-btn="frameDeliveryDate" data-id="'+row.id+'" aria-label="Frame delivery date">'+(fmtDateDisplay(row.frameDeliveryDate)||"d/mm/yyyy")+'</button></div>';
-
-    html += '<div class="cell wc-shutterdeliverydate'+deliveredCls+'" style="grid-column:7; grid-row:'+gridRow+';">'+
-      '<button type="button" class="date-btn'+(row.shutterDeliveryDate?"":" placeholder")+'" data-wa-date-btn="shutterDeliveryDate" data-id="'+row.id+'" aria-label="Shutter delivery date">'+(fmtDateDisplay(row.shutterDeliveryDate)||"d/mm/yyyy")+'</button></div>';
 
     html += '<div class="cell wc-delivered'+deliveredCls+'" style="grid-column:8; grid-row:'+gridRow+';">'+
       '<select class="field" data-wa-field="delivered" data-id="'+row.id+'" aria-label="Delivered">'+
@@ -214,9 +214,9 @@
     no: ["no","number","#"],
     jobNo: ["job","jobno","jobnumber","job#"],
     projectName: ["projectname","project","name"],
+    lpoRef: ["lporef","lpo","lponumber","lpono","lporeference"],
+    ralColour: ["ralcolour","ralcolor","ral","colour","color"],
     deliveryDate: ["euroluxrequireddeliverydate","deliverydaterequestedbyeurolux","deliverydate","requesteddeliverydate","delivery"],
-    frameDeliveryDate: ["framedeliverydate","framedelivery"],
-    shutterDeliveryDate: ["shutterdeliverydate","shutterdelivery"],
     description: ["description","desc"],
     itemQty: ["itemqty","qty","quantity","itemquantity"],
     scope: ["scope"],
@@ -255,9 +255,9 @@
         no:String(get("no")||"").trim(),
         jobNo:String(get("jobNo")||"").trim(),
         projectName:projectName,
+        lpoRef:String(get("lpoRef")||"").trim(),
+        ralColour:String(get("ralColour")||"").trim(),
         deliveryDate:importDeliveryDate,
-        frameDeliveryDate:parseDateFlexible(get("frameDeliveryDate")),
-        shutterDeliveryDate:parseDateFlexible(get("shutterDeliveryDate")),
         delivered:delivered,
         description:String(get("description")||"").trim(),
         itemQty:String(get("itemQty")||"").trim(),
@@ -276,7 +276,7 @@
   // builds the shared column layout once rather than duplicating it. ----
   function sheetData(rows){
     var cols = META_LABELS.filter(function(l){ return l.key; });
-    var dateKeys = { deliveryDate:1, frameDeliveryDate:1, shutterDeliveryDate:1 };
+    var dateKeys = { deliveryDate:1 };
     var headers = cols.map(function(l){ return l.txt; });
     var data = rows.map(function(row){
       return cols.map(function(l){
@@ -511,44 +511,44 @@
   // ---- seed data: the real 38-row list from PROJECT UPDATE 11 09 26.xlsx,
   // used the first time either page ever loads with no shared doc yet. ----
 var SEED_ROWS = [
-    { id:'wa1', no:'1', jobNo:'1348', projectName:'RASHA 85, ARABIAN RANCHES 2', deliveryDate:'2026-09-15', delivered:'No', description:'White Aluminum - Schuco', itemQty:'4', scope:'ASE 54 PD ME SLIDING DOOR', etaCoating:'RECEIVED', etaFabFrame:'FRAME WILL BE READY\n17-09-2026', etaFabShutter:'WILL UPDATE THE COMPLETION DATE\n(SUBJECT TO MATERIAL AVAILABILITY AND GLASS DELIVERY)', frameDeliveryDate:'', shutterDeliveryDate:'', remarks:'' },
-    { id:'wa2', no:'1', jobNo:'1348', projectName:'RASHA 85, ARABIAN RANCHES 2', deliveryDate:'2026-09-30', delivered:'No', description:'White Aluminum - Schuco', itemQty:'3', scope:'AWS 65 BOTTOM HUNG WINDOW WITH FIXED PANEL ABOVE', etaCoating:'MATERIAL NOT SEND, WAITING FOR BALANCE MATERIAL TO RECEIVE', etaFabFrame:'', etaFabShutter:'', frameDeliveryDate:'', shutterDeliveryDate:'', remarks:'' },
-    { id:'wa3', no:'1', jobNo:'1348', projectName:'RASHA 85, ARABIAN RANCHES 2', deliveryDate:'2026-09-30', delivered:'No', description:'White Aluminum - Schuco', itemQty:'6', scope:'AWS 65 SIDE HUNG WINDOW', etaCoating:'MATERIAL NOT SEND, WAITING FOR BALANCE MATERIAL TO RECEIVE', etaFabFrame:'', etaFabShutter:'', frameDeliveryDate:'', shutterDeliveryDate:'', remarks:'' },
-    { id:'wa4', no:'2', jobNo:'1350', projectName:'MEADOWS 9 , Villa 15', deliveryDate:'2026-09-22', delivered:'No', description:'White Aluminum - Schuco', itemQty:'5', scope:'ASE 54 PD', etaCoating:'MATERIAL LIST NOT RECEIVED', etaFabFrame:'', etaFabShutter:'', frameDeliveryDate:'', shutterDeliveryDate:'', remarks:'' },
-    { id:'wa5', no:'2', jobNo:'1350', projectName:'MEADOWS 9 , Villa 15', deliveryDate:'2026-09-22', delivered:'No', description:'White Aluminum - Schuco', itemQty:'7', scope:'ASE 54 PD', etaCoating:'WILL RECEIVE FROM COATING\n21-09-2026', etaFabFrame:'FRAME WILL BE READY\n05-10-2026', etaFabShutter:'WILL UPDATE THE COMPLETION DATE\n(SUBJECT TO MATERIAL AVAILABILITY AND GLASS DELIVERY)', frameDeliveryDate:'', shutterDeliveryDate:'', remarks:'' },
-    { id:'wa6', no:'2', jobNo:'1350', projectName:'MEADOWS 9 , Villa 15', deliveryDate:'2026-09-22', delivered:'No', description:'White Aluminum - Schuco', itemQty:'3', scope:'ADS 65 HD Signle Door ( 2 doors with SANDWICH PANEL SHEET )', etaCoating:'WILL RECEIVE FROM COATING\n21-09-2026', etaFabFrame:'FRAME AND SHUTTER WILL BE READY\n01-10-2026', etaFabShutter:'FRAME AND SHUTTER WILL BE READY\n01-10-2026', frameDeliveryDate:'', shutterDeliveryDate:'', remarks:'' },
-    { id:'wa7', no:'2', jobNo:'1350', projectName:'MEADOWS 9 , Villa 15', deliveryDate:'2026-09-22', delivered:'No', description:'White Aluminum - Schuco', itemQty:'6', scope:'AWS 65 Top hanged', etaCoating:'WILL RECEIVE FROM COATING\n21-09-2026', etaFabFrame:'FRAME AND SHUTTER WILL BE READY\n01-10-2026', etaFabShutter:'FRAME AND SHUTTER WILL BE READY\n01-10-2026', frameDeliveryDate:'', shutterDeliveryDate:'', remarks:'' },
-    { id:'wa8', no:'2', jobNo:'1350', projectName:'MEADOWS 9 , Villa 15', deliveryDate:'2026-09-22', delivered:'No', description:'White Aluminum - Schuco', itemQty:'3', scope:'AWS Fix Glass', etaCoating:'WILL RECEIVE FROM COATING\n21-09-2026', etaFabFrame:'FRAME AND SHUTTER WILL BE READY\n01-10-2026', etaFabShutter:'FRAME AND SHUTTER WILL BE READY\n01-10-2026', frameDeliveryDate:'', shutterDeliveryDate:'', remarks:'' },
-    { id:'wa9', no:'3', jobNo:'1361', projectName:'C35, Jumeirah Park', deliveryDate:'2026-09-23', delivered:'No', description:'White Aluminum - Schuco & EFP', itemQty:'1', scope:'EFP - Curved Curtainwall Unit + Glass Fixed Flat Bars', etaCoating:'WILL RECEIVE FROM COATING\n15-09-2026', etaFabFrame:'TEMPLATE WILL BE READY ON 17-09-2026', etaFabShutter:'', frameDeliveryDate:'', shutterDeliveryDate:'', remarks:'' },
-    { id:'wa10', no:'3', jobNo:'1361', projectName:'C35, Jumeirah Park', deliveryDate:'2026-09-23', delivered:'No', description:'White Aluminum - Schuco & EFP', itemQty:'1', scope:'EFP - Curtainwall Unit (BOTTOM OF SLIDING ASE 54)', etaCoating:'', etaFabFrame:'WILL BE READY ON 12-09-2026', etaFabShutter:'', frameDeliveryDate:'', shutterDeliveryDate:'', remarks:'' },
-    { id:'wa11', no:'3', jobNo:'1361', projectName:'C35, Jumeirah Park', deliveryDate:'2026-09-23', delivered:'No', description:'White Aluminum - Schuco & EFP', itemQty:'1', scope:'EFP - Curtainwall Unit', etaCoating:'', etaFabFrame:'WILL BE READY ON 12-09-2026', etaFabShutter:'', frameDeliveryDate:'', shutterDeliveryDate:'', remarks:'' },
-    { id:'wa12', no:'3', jobNo:'1361', projectName:'C35, Jumeirah Park', deliveryDate:'2026-09-23', delivered:'No', description:'White Aluminum - Schuco & EFP', itemQty:'1', scope:'Main Entrace Door – Schuco ( without smart lock)', etaCoating:'INTERNAL AND EXTERNAL HAVE DIFFERENT COLOUR, WILL UPDATE ON 14-09-2026', etaFabFrame:'INTERNAL AND EXTERNAL HAVE DIFFERENT COLOUR, WILL UPDATE ON 14-09-2026', etaFabShutter:'INTERNAL AND EXTERNAL HAVE DIFFERENT COLOUR, WILL UPDATE ON 14-09-2026', frameDeliveryDate:'', shutterDeliveryDate:'', remarks:'' },
-    { id:'wa13', no:'3', jobNo:'1361', projectName:'C35, Jumeirah Park', deliveryDate:'2026-09-23', delivered:'No', description:'White Aluminum - Schuco & EFP', itemQty:'1', scope:'ASE 54 Sliding ( 3 track) + combined with EFP curtainwall unit+ Glass Fixed Flat Bars (Ref: Drawing)', etaCoating:'', etaFabFrame:'FRAMES READY', etaFabShutter:'SHUTTER WILL BE READY\n12-09-2026\nREQUIRE 01 DAY FOR BONDING AFTER GLASS RECEIVE', frameDeliveryDate:'', shutterDeliveryDate:'', remarks:'' },
-    { id:'wa14', no:'3', jobNo:'1361', projectName:'C35, Jumeirah Park', deliveryDate:'2026-09-23', delivered:'No', description:'White Aluminum - Schuco & EFP', itemQty:'1', scope:'ASE 54 PD Sliding Window', etaCoating:'', etaFabFrame:'FRAMES READY', etaFabShutter:'SHUTTER WILL BE READY\n12-09-2026\nREQUIRE 01 DAY FOR BONDING AFTER GLASS RECEIVE', frameDeliveryDate:'', shutterDeliveryDate:'', remarks:'' },
-    { id:'wa15', no:'3', jobNo:'1361', projectName:'C35, Jumeirah Park', deliveryDate:'2026-09-23', delivered:'No', description:'White Aluminum - Schuco & EFP', itemQty:'2', scope:'ASE 70 PD ME POCKET SLIDING DOOR', etaCoating:'15-09-2026', etaFabFrame:'23-09-2026', etaFabShutter:'WILL UPDATE  (SUBJECT TO GLASS RECEIVE)', frameDeliveryDate:'', shutterDeliveryDate:'', remarks:'' },
-    { id:'wa16', no:'4', jobNo:'1369', projectName:'VILLA 80, STREET 3,  ESMERALDA , VICTORY HEIGHT', deliveryDate:'2026-09-23', delivered:'No', description:'White Aluminum - Schuco & EFP', itemQty:'2', scope:'EFP Arched Fixed unit', etaCoating:'WILL BE RECEIVED FROM COATING 19-09-2026', etaFabFrame:'TEMPLATE WILL BE READY ON 20-09-2026', etaFabShutter:'', frameDeliveryDate:'', shutterDeliveryDate:'', remarks:'' },
-    { id:'wa17', no:'4', jobNo:'1369', projectName:'VILLA 80, STREET 3,  ESMERALDA , VICTORY HEIGHT', deliveryDate:'', delivered:'Yes', description:'White Aluminum - Schuco & EFP', itemQty:'3', scope:'EFP Rectangle Fixed Unit', etaCoating:'', etaFabFrame:'', etaFabShutter:'DELIVERED', frameDeliveryDate:'', shutterDeliveryDate:'', remarks:'' },
-    { id:'wa18', no:'4', jobNo:'1369', projectName:'VILLA 80, STREET 3,  ESMERALDA , VICTORY HEIGHT', deliveryDate:'', delivered:'Yes', description:'White Aluminum - Schuco & EFP', itemQty:'4', scope:'EFP 65 HD Single Door (Open outside- R.Hs-1.No + LHs-3.Nos)', etaCoating:'', etaFabFrame:'', etaFabShutter:'DELIVERED', frameDeliveryDate:'', shutterDeliveryDate:'', remarks:'' },
-    { id:'wa19', no:'4', jobNo:'1369', projectName:'VILLA 80, STREET 3,  ESMERALDA , VICTORY HEIGHT', deliveryDate:'', delivered:'Yes', description:'White Aluminum - Schuco & EFP', itemQty:'2', scope:'EFP TOP HUNG WINDOW', etaCoating:'', etaFabFrame:'', etaFabShutter:'DELIVERED', frameDeliveryDate:'', shutterDeliveryDate:'', remarks:'' },
-    { id:'wa20', no:'4', jobNo:'1369', projectName:'VILLA 80, STREET 3,  ESMERALDA , VICTORY HEIGHT', deliveryDate:'2026-09-14', delivered:'No', description:'White Aluminum - Schuco & EFP', itemQty:'9', scope:'ASE 36 PD Sliding Units', etaCoating:'', etaFabFrame:'FRAME DELIVERED', etaFabShutter:'SHUTTER WILL BE READY\n12-09-2026\nREQUIRE 02 DAYS FOR BONDING AFTER GLASS RECEIVE', frameDeliveryDate:'', shutterDeliveryDate:'', remarks:'' },
-    { id:'wa21', no:'4', jobNo:'1369', projectName:'VILLA 80, STREET 3,  ESMERALDA , VICTORY HEIGHT', deliveryDate:'2026-10-05', delivered:'No', description:'White Aluminum - Schuco & EFP', itemQty:'4', scope:'ASE 36 PD Sliding Units', etaCoating:'MATERIAL NOT SENT FOR COATING', etaFabFrame:'', etaFabShutter:'', frameDeliveryDate:'', shutterDeliveryDate:'', remarks:'' },
-    { id:'wa22', no:'5', jobNo:'1372', projectName:'Wildflower Villa K80', deliveryDate:'2026-09-19', delivered:'No', description:'White Aluminum - Schuco', itemQty:'1', scope:'FWS-50 (CW FRAME)', etaCoating:'BRACKETS WILL BE RECEIVED\n19-09-2026', etaFabFrame:'', etaFabShutter:'CURTAIN WALL FRAME IS READY, WAITING FOR GAL. BRACKETS', frameDeliveryDate:'', shutterDeliveryDate:'', remarks:'' },
-    { id:'wa23', no:'5', jobNo:'1372', projectName:'Wildflower Villa K80', deliveryDate:'2026-09-14', delivered:'No', description:'White Aluminum - Schuco', itemQty:'1', scope:'ADS 65 HD MAIN PIVOT DOOR (INSIDE CW FRAME)', etaCoating:'', etaFabFrame:'', etaFabShutter:'WILL BE READY,\n14-09-2026\nSUBJECT TO HPL PANEL RECEIVE', frameDeliveryDate:'', shutterDeliveryDate:'', remarks:'' },
-    { id:'wa24', no:'5', jobNo:'1372', projectName:'Wildflower Villa K80', deliveryDate:'2026-09-12', delivered:'No', description:'White Aluminum - Schuco', itemQty:'1', scope:'ADS 65 HD SINGLE LEAF HINGES DOOR', etaCoating:'', etaFabFrame:'', etaFabShutter:'WILL BE READY,\n12-09-2026 - AFTERNOON', frameDeliveryDate:'', shutterDeliveryDate:'', remarks:'' },
-    { id:'wa25', no:'6', jobNo:'1380', projectName:'APARTMENT 606, DUBAI MARINA', deliveryDate:'2026-09-23', delivered:'No', description:'White Aluminum - Schuco', itemQty:'1', scope:'AWS-65 (TOP HUNG & BOTTOM FIX)', etaCoating:'', etaFabFrame:'', etaFabShutter:'', frameDeliveryDate:'', shutterDeliveryDate:'', remarks:'' },
-    { id:'wa26', no:'6', jobNo:'1380', projectName:'APARTMENT 606, DUBAI MARINA', deliveryDate:'2026-09-23', delivered:'No', description:'White Aluminum - Schuco', itemQty:'3', scope:'AWS-65 (TOP HUNG WINDOW)', etaCoating:'', etaFabFrame:'', etaFabShutter:'', frameDeliveryDate:'', shutterDeliveryDate:'', remarks:'' },
-    { id:'wa27', no:'6', jobNo:'1380', projectName:'APARTMENT 606, DUBAI MARINA', deliveryDate:'2026-09-23', delivered:'No', description:'White Aluminum - Schuco', itemQty:'5', scope:'ASE-55 (LIFT & SLIDE)', etaCoating:'', etaFabFrame:'', etaFabShutter:'', frameDeliveryDate:'', shutterDeliveryDate:'', remarks:'' },
-    { id:'wa28', no:'6', jobNo:'1380', projectName:'APARTMENT 606, DUBAI MARINA', deliveryDate:'2026-09-23', delivered:'No', description:'White Aluminum - Schuco', itemQty:'1', scope:'ADS-65 (HINGES DOOR)', etaCoating:'', etaFabFrame:'', etaFabShutter:'', frameDeliveryDate:'', shutterDeliveryDate:'', remarks:'' },
-    { id:'wa29', no:'6', jobNo:'1380', projectName:'APARTMENT 606, DUBAI MARINA', deliveryDate:'2026-09-23', delivered:'No', description:'White Aluminum - Schuco', itemQty:'1', scope:'ASE-54 (SLIDING WINDOW)', etaCoating:'', etaFabFrame:'', etaFabShutter:'', frameDeliveryDate:'', shutterDeliveryDate:'', remarks:'' },
-    { id:'wa30', no:'7', jobNo:'1383', projectName:'APARTMENT 603, KEMPINSKI RESIDENCES, PALM JUMAIRAH', deliveryDate:'2026-09-25', delivered:'No', description:'White Aluminum - Schuco', itemQty:'6', scope:'FWS-50 (CW FRAME) +\nASE-80 (LIFT & SLIDE)', etaCoating:'', etaFabFrame:'', etaFabShutter:'', frameDeliveryDate:'', shutterDeliveryDate:'', remarks:'' },
-    { id:'wa31', no:'7', jobNo:'1383', projectName:'APARTMENT 603, KEMPINSKI RESIDENCES, PALM JUMAIRAH', deliveryDate:'2026-09-25', delivered:'No', description:'White Aluminum - Schuco', itemQty:'3', scope:'FWS-50 (CW FRAME)', etaCoating:'', etaFabFrame:'', etaFabShutter:'', frameDeliveryDate:'', shutterDeliveryDate:'', remarks:'' },
-    { id:'wa32', no:'7', jobNo:'1383', projectName:'APARTMENT 603, KEMPINSKI RESIDENCES, PALM JUMAIRAH', deliveryDate:'2026-09-25', delivered:'No', description:'White Aluminum - Schuco', itemQty:'1', scope:'FWS-50 (CURVE CW FRAME) +\nASE-80 (LIFT & SLIDE)', etaCoating:'', etaFabFrame:'', etaFabShutter:'', frameDeliveryDate:'', shutterDeliveryDate:'', remarks:'' },
-    { id:'wa33', no:'8', jobNo:'1384', projectName:'VILLA 15, THE MANSIONS,\nJUMEIRAH ISLANDS', deliveryDate:'2026-09-22', delivered:'No', description:'PIVOT DOOR', itemQty:'1', scope:'ADS 65 (PIVOT DOOR)', etaCoating:'', etaFabFrame:'', etaFabShutter:'', frameDeliveryDate:'', shutterDeliveryDate:'', remarks:'' },
-    { id:'wa34', no:'9', jobNo:'', projectName:'VILLA 15, THE MANSIONS,\nJUMEIRAH ISLANDS', deliveryDate:'2026-09-12', delivered:'No', description:'SKYLIGHT', itemQty:'', scope:'SKYLIGHT', etaCoating:'?', etaFabFrame:'?', etaFabShutter:'?', frameDeliveryDate:'', shutterDeliveryDate:'', remarks:'' },
-    { id:'wa35', no:'10', jobNo:'1385', projectName:'VILLA 164, GOLF PLACE,\nDUBAI HILLS', deliveryDate:'2026-09-15', delivered:'No', description:'HINGE DOOR', itemQty:'1', scope:'EFP SINGLE HINGED DOOR', etaCoating:'', etaFabFrame:'', etaFabShutter:'', frameDeliveryDate:'', shutterDeliveryDate:'', remarks:'' },
-    { id:'wa36', no:'11', jobNo:'1388', projectName:'VILLA 190,\nFAIRWAYS,\nDUBAI HILLS', deliveryDate:'2026-09-21', delivered:'No', description:'PIVOT DOOR', itemQty:'1', scope:'ADS 65 (PIVOT DOOR) - HPL PANEL', etaCoating:'', etaFabFrame:'', etaFabShutter:'', frameDeliveryDate:'', shutterDeliveryDate:'', remarks:'' },
-    { id:'wa37', no:'12', jobNo:'1392', projectName:'Marsa Al Arab', deliveryDate:'2026-09-24', delivered:'No', description:'ADS 65 (HINGES DOOR)', itemQty:'5', scope:'ADS 65 (DOUBLE LEAF DOOR)', etaCoating:'', etaFabFrame:'', etaFabShutter:'', frameDeliveryDate:'', shutterDeliveryDate:'', remarks:'' },
-    { id:'wa38', no:'12', jobNo:'1392', projectName:'Marsa Al Arab', deliveryDate:'2026-09-24', delivered:'No', description:'ADS 65 (HINGES DOOR)', itemQty:'4', scope:'ADS 65 (SINGLE LEAF DOOR)', etaCoating:'', etaFabFrame:'', etaFabShutter:'', frameDeliveryDate:'', shutterDeliveryDate:'', remarks:'' }
+    { id:'wa1', no:'1', jobNo:'1348', projectName:'RASHA 85, ARABIAN RANCHES 2', lpoRef:'', ralColour:'', deliveryDate:'2026-09-15', delivered:'No', description:'White Aluminum - Schuco', itemQty:'4', scope:'ASE 54 PD ME SLIDING DOOR', etaCoating:'RECEIVED', etaFabFrame:'FRAME WILL BE READY\n17-09-2026', etaFabShutter:'WILL UPDATE THE COMPLETION DATE\n(SUBJECT TO MATERIAL AVAILABILITY AND GLASS DELIVERY)', remarks:'' },
+    { id:'wa2', no:'1', jobNo:'1348', projectName:'RASHA 85, ARABIAN RANCHES 2', lpoRef:'', ralColour:'', deliveryDate:'2026-09-30', delivered:'No', description:'White Aluminum - Schuco', itemQty:'3', scope:'AWS 65 BOTTOM HUNG WINDOW WITH FIXED PANEL ABOVE', etaCoating:'MATERIAL NOT SEND, WAITING FOR BALANCE MATERIAL TO RECEIVE', etaFabFrame:'', etaFabShutter:'', remarks:'' },
+    { id:'wa3', no:'1', jobNo:'1348', projectName:'RASHA 85, ARABIAN RANCHES 2', lpoRef:'', ralColour:'', deliveryDate:'2026-09-30', delivered:'No', description:'White Aluminum - Schuco', itemQty:'6', scope:'AWS 65 SIDE HUNG WINDOW', etaCoating:'MATERIAL NOT SEND, WAITING FOR BALANCE MATERIAL TO RECEIVE', etaFabFrame:'', etaFabShutter:'', remarks:'' },
+    { id:'wa4', no:'2', jobNo:'1350', projectName:'MEADOWS 9 , Villa 15', lpoRef:'', ralColour:'', deliveryDate:'2026-09-22', delivered:'No', description:'White Aluminum - Schuco', itemQty:'5', scope:'ASE 54 PD', etaCoating:'MATERIAL LIST NOT RECEIVED', etaFabFrame:'', etaFabShutter:'', remarks:'' },
+    { id:'wa5', no:'2', jobNo:'1350', projectName:'MEADOWS 9 , Villa 15', lpoRef:'', ralColour:'', deliveryDate:'2026-09-22', delivered:'No', description:'White Aluminum - Schuco', itemQty:'7', scope:'ASE 54 PD', etaCoating:'WILL RECEIVE FROM COATING\n21-09-2026', etaFabFrame:'FRAME WILL BE READY\n05-10-2026', etaFabShutter:'WILL UPDATE THE COMPLETION DATE\n(SUBJECT TO MATERIAL AVAILABILITY AND GLASS DELIVERY)', remarks:'' },
+    { id:'wa6', no:'2', jobNo:'1350', projectName:'MEADOWS 9 , Villa 15', lpoRef:'', ralColour:'', deliveryDate:'2026-09-22', delivered:'No', description:'White Aluminum - Schuco', itemQty:'3', scope:'ADS 65 HD Signle Door ( 2 doors with SANDWICH PANEL SHEET )', etaCoating:'WILL RECEIVE FROM COATING\n21-09-2026', etaFabFrame:'FRAME AND SHUTTER WILL BE READY\n01-10-2026', etaFabShutter:'FRAME AND SHUTTER WILL BE READY\n01-10-2026', remarks:'' },
+    { id:'wa7', no:'2', jobNo:'1350', projectName:'MEADOWS 9 , Villa 15', lpoRef:'', ralColour:'', deliveryDate:'2026-09-22', delivered:'No', description:'White Aluminum - Schuco', itemQty:'6', scope:'AWS 65 Top hanged', etaCoating:'WILL RECEIVE FROM COATING\n21-09-2026', etaFabFrame:'FRAME AND SHUTTER WILL BE READY\n01-10-2026', etaFabShutter:'FRAME AND SHUTTER WILL BE READY\n01-10-2026', remarks:'' },
+    { id:'wa8', no:'2', jobNo:'1350', projectName:'MEADOWS 9 , Villa 15', lpoRef:'', ralColour:'', deliveryDate:'2026-09-22', delivered:'No', description:'White Aluminum - Schuco', itemQty:'3', scope:'AWS Fix Glass', etaCoating:'WILL RECEIVE FROM COATING\n21-09-2026', etaFabFrame:'FRAME AND SHUTTER WILL BE READY\n01-10-2026', etaFabShutter:'FRAME AND SHUTTER WILL BE READY\n01-10-2026', remarks:'' },
+    { id:'wa9', no:'3', jobNo:'1361', projectName:'C35, Jumeirah Park', lpoRef:'', ralColour:'', deliveryDate:'2026-09-23', delivered:'No', description:'White Aluminum - Schuco & EFP', itemQty:'1', scope:'EFP - Curved Curtainwall Unit + Glass Fixed Flat Bars', etaCoating:'WILL RECEIVE FROM COATING\n15-09-2026', etaFabFrame:'TEMPLATE WILL BE READY ON 17-09-2026', etaFabShutter:'', remarks:'' },
+    { id:'wa10', no:'3', jobNo:'1361', projectName:'C35, Jumeirah Park', lpoRef:'', ralColour:'', deliveryDate:'2026-09-23', delivered:'No', description:'White Aluminum - Schuco & EFP', itemQty:'1', scope:'EFP - Curtainwall Unit (BOTTOM OF SLIDING ASE 54)', etaCoating:'', etaFabFrame:'WILL BE READY ON 12-09-2026', etaFabShutter:'', remarks:'' },
+    { id:'wa11', no:'3', jobNo:'1361', projectName:'C35, Jumeirah Park', lpoRef:'', ralColour:'', deliveryDate:'2026-09-23', delivered:'No', description:'White Aluminum - Schuco & EFP', itemQty:'1', scope:'EFP - Curtainwall Unit', etaCoating:'', etaFabFrame:'WILL BE READY ON 12-09-2026', etaFabShutter:'', remarks:'' },
+    { id:'wa12', no:'3', jobNo:'1361', projectName:'C35, Jumeirah Park', lpoRef:'', ralColour:'', deliveryDate:'2026-09-23', delivered:'No', description:'White Aluminum - Schuco & EFP', itemQty:'1', scope:'Main Entrace Door – Schuco ( without smart lock)', etaCoating:'INTERNAL AND EXTERNAL HAVE DIFFERENT COLOUR, WILL UPDATE ON 14-09-2026', etaFabFrame:'INTERNAL AND EXTERNAL HAVE DIFFERENT COLOUR, WILL UPDATE ON 14-09-2026', etaFabShutter:'INTERNAL AND EXTERNAL HAVE DIFFERENT COLOUR, WILL UPDATE ON 14-09-2026', remarks:'' },
+    { id:'wa13', no:'3', jobNo:'1361', projectName:'C35, Jumeirah Park', lpoRef:'', ralColour:'', deliveryDate:'2026-09-23', delivered:'No', description:'White Aluminum - Schuco & EFP', itemQty:'1', scope:'ASE 54 Sliding ( 3 track) + combined with EFP curtainwall unit+ Glass Fixed Flat Bars (Ref: Drawing)', etaCoating:'', etaFabFrame:'FRAMES READY', etaFabShutter:'SHUTTER WILL BE READY\n12-09-2026\nREQUIRE 01 DAY FOR BONDING AFTER GLASS RECEIVE', remarks:'' },
+    { id:'wa14', no:'3', jobNo:'1361', projectName:'C35, Jumeirah Park', lpoRef:'', ralColour:'', deliveryDate:'2026-09-23', delivered:'No', description:'White Aluminum - Schuco & EFP', itemQty:'1', scope:'ASE 54 PD Sliding Window', etaCoating:'', etaFabFrame:'FRAMES READY', etaFabShutter:'SHUTTER WILL BE READY\n12-09-2026\nREQUIRE 01 DAY FOR BONDING AFTER GLASS RECEIVE', remarks:'' },
+    { id:'wa15', no:'3', jobNo:'1361', projectName:'C35, Jumeirah Park', lpoRef:'', ralColour:'', deliveryDate:'2026-09-23', delivered:'No', description:'White Aluminum - Schuco & EFP', itemQty:'2', scope:'ASE 70 PD ME POCKET SLIDING DOOR', etaCoating:'15-09-2026', etaFabFrame:'23-09-2026', etaFabShutter:'WILL UPDATE  (SUBJECT TO GLASS RECEIVE)', remarks:'' },
+    { id:'wa16', no:'4', jobNo:'1369', projectName:'VILLA 80, STREET 3,  ESMERALDA , VICTORY HEIGHT', lpoRef:'', ralColour:'', deliveryDate:'2026-09-23', delivered:'No', description:'White Aluminum - Schuco & EFP', itemQty:'2', scope:'EFP Arched Fixed unit', etaCoating:'WILL BE RECEIVED FROM COATING 19-09-2026', etaFabFrame:'TEMPLATE WILL BE READY ON 20-09-2026', etaFabShutter:'', remarks:'' },
+    { id:'wa17', no:'4', jobNo:'1369', projectName:'VILLA 80, STREET 3,  ESMERALDA , VICTORY HEIGHT', lpoRef:'', ralColour:'', deliveryDate:'', delivered:'Yes', description:'White Aluminum - Schuco & EFP', itemQty:'3', scope:'EFP Rectangle Fixed Unit', etaCoating:'', etaFabFrame:'', etaFabShutter:'DELIVERED', remarks:'' },
+    { id:'wa18', no:'4', jobNo:'1369', projectName:'VILLA 80, STREET 3,  ESMERALDA , VICTORY HEIGHT', lpoRef:'', ralColour:'', deliveryDate:'', delivered:'Yes', description:'White Aluminum - Schuco & EFP', itemQty:'4', scope:'EFP 65 HD Single Door (Open outside- R.Hs-1.No + LHs-3.Nos)', etaCoating:'', etaFabFrame:'', etaFabShutter:'DELIVERED', remarks:'' },
+    { id:'wa19', no:'4', jobNo:'1369', projectName:'VILLA 80, STREET 3,  ESMERALDA , VICTORY HEIGHT', lpoRef:'', ralColour:'', deliveryDate:'', delivered:'Yes', description:'White Aluminum - Schuco & EFP', itemQty:'2', scope:'EFP TOP HUNG WINDOW', etaCoating:'', etaFabFrame:'', etaFabShutter:'DELIVERED', remarks:'' },
+    { id:'wa20', no:'4', jobNo:'1369', projectName:'VILLA 80, STREET 3,  ESMERALDA , VICTORY HEIGHT', lpoRef:'', ralColour:'', deliveryDate:'2026-09-14', delivered:'No', description:'White Aluminum - Schuco & EFP', itemQty:'9', scope:'ASE 36 PD Sliding Units', etaCoating:'', etaFabFrame:'FRAME DELIVERED', etaFabShutter:'SHUTTER WILL BE READY\n12-09-2026\nREQUIRE 02 DAYS FOR BONDING AFTER GLASS RECEIVE', remarks:'' },
+    { id:'wa21', no:'4', jobNo:'1369', projectName:'VILLA 80, STREET 3,  ESMERALDA , VICTORY HEIGHT', lpoRef:'', ralColour:'', deliveryDate:'2026-10-05', delivered:'No', description:'White Aluminum - Schuco & EFP', itemQty:'4', scope:'ASE 36 PD Sliding Units', etaCoating:'MATERIAL NOT SENT FOR COATING', etaFabFrame:'', etaFabShutter:'', remarks:'' },
+    { id:'wa22', no:'5', jobNo:'1372', projectName:'Wildflower Villa K80', lpoRef:'', ralColour:'', deliveryDate:'2026-09-19', delivered:'No', description:'White Aluminum - Schuco', itemQty:'1', scope:'FWS-50 (CW FRAME)', etaCoating:'BRACKETS WILL BE RECEIVED\n19-09-2026', etaFabFrame:'', etaFabShutter:'CURTAIN WALL FRAME IS READY, WAITING FOR GAL. BRACKETS', remarks:'' },
+    { id:'wa23', no:'5', jobNo:'1372', projectName:'Wildflower Villa K80', lpoRef:'', ralColour:'', deliveryDate:'2026-09-14', delivered:'No', description:'White Aluminum - Schuco', itemQty:'1', scope:'ADS 65 HD MAIN PIVOT DOOR (INSIDE CW FRAME)', etaCoating:'', etaFabFrame:'', etaFabShutter:'WILL BE READY,\n14-09-2026\nSUBJECT TO HPL PANEL RECEIVE', remarks:'' },
+    { id:'wa24', no:'5', jobNo:'1372', projectName:'Wildflower Villa K80', lpoRef:'', ralColour:'', deliveryDate:'2026-09-12', delivered:'No', description:'White Aluminum - Schuco', itemQty:'1', scope:'ADS 65 HD SINGLE LEAF HINGES DOOR', etaCoating:'', etaFabFrame:'', etaFabShutter:'WILL BE READY,\n12-09-2026 - AFTERNOON', remarks:'' },
+    { id:'wa25', no:'6', jobNo:'1380', projectName:'APARTMENT 606, DUBAI MARINA', lpoRef:'', ralColour:'', deliveryDate:'2026-09-23', delivered:'No', description:'White Aluminum - Schuco', itemQty:'1', scope:'AWS-65 (TOP HUNG & BOTTOM FIX)', etaCoating:'', etaFabFrame:'', etaFabShutter:'', remarks:'' },
+    { id:'wa26', no:'6', jobNo:'1380', projectName:'APARTMENT 606, DUBAI MARINA', lpoRef:'', ralColour:'', deliveryDate:'2026-09-23', delivered:'No', description:'White Aluminum - Schuco', itemQty:'3', scope:'AWS-65 (TOP HUNG WINDOW)', etaCoating:'', etaFabFrame:'', etaFabShutter:'', remarks:'' },
+    { id:'wa27', no:'6', jobNo:'1380', projectName:'APARTMENT 606, DUBAI MARINA', lpoRef:'', ralColour:'', deliveryDate:'2026-09-23', delivered:'No', description:'White Aluminum - Schuco', itemQty:'5', scope:'ASE-55 (LIFT & SLIDE)', etaCoating:'', etaFabFrame:'', etaFabShutter:'', remarks:'' },
+    { id:'wa28', no:'6', jobNo:'1380', projectName:'APARTMENT 606, DUBAI MARINA', lpoRef:'', ralColour:'', deliveryDate:'2026-09-23', delivered:'No', description:'White Aluminum - Schuco', itemQty:'1', scope:'ADS-65 (HINGES DOOR)', etaCoating:'', etaFabFrame:'', etaFabShutter:'', remarks:'' },
+    { id:'wa29', no:'6', jobNo:'1380', projectName:'APARTMENT 606, DUBAI MARINA', lpoRef:'', ralColour:'', deliveryDate:'2026-09-23', delivered:'No', description:'White Aluminum - Schuco', itemQty:'1', scope:'ASE-54 (SLIDING WINDOW)', etaCoating:'', etaFabFrame:'', etaFabShutter:'', remarks:'' },
+    { id:'wa30', no:'7', jobNo:'1383', projectName:'APARTMENT 603, KEMPINSKI RESIDENCES, PALM JUMAIRAH', lpoRef:'', ralColour:'', deliveryDate:'2026-09-25', delivered:'No', description:'White Aluminum - Schuco', itemQty:'6', scope:'FWS-50 (CW FRAME) +\nASE-80 (LIFT & SLIDE)', etaCoating:'', etaFabFrame:'', etaFabShutter:'', remarks:'' },
+    { id:'wa31', no:'7', jobNo:'1383', projectName:'APARTMENT 603, KEMPINSKI RESIDENCES, PALM JUMAIRAH', lpoRef:'', ralColour:'', deliveryDate:'2026-09-25', delivered:'No', description:'White Aluminum - Schuco', itemQty:'3', scope:'FWS-50 (CW FRAME)', etaCoating:'', etaFabFrame:'', etaFabShutter:'', remarks:'' },
+    { id:'wa32', no:'7', jobNo:'1383', projectName:'APARTMENT 603, KEMPINSKI RESIDENCES, PALM JUMAIRAH', lpoRef:'', ralColour:'', deliveryDate:'2026-09-25', delivered:'No', description:'White Aluminum - Schuco', itemQty:'1', scope:'FWS-50 (CURVE CW FRAME) +\nASE-80 (LIFT & SLIDE)', etaCoating:'', etaFabFrame:'', etaFabShutter:'', remarks:'' },
+    { id:'wa33', no:'8', jobNo:'1384', projectName:'VILLA 15, THE MANSIONS,\nJUMEIRAH ISLANDS', lpoRef:'', ralColour:'', deliveryDate:'2026-09-22', delivered:'No', description:'PIVOT DOOR', itemQty:'1', scope:'ADS 65 (PIVOT DOOR)', etaCoating:'', etaFabFrame:'', etaFabShutter:'', remarks:'' },
+    { id:'wa34', no:'9', jobNo:'', projectName:'VILLA 15, THE MANSIONS,\nJUMEIRAH ISLANDS', lpoRef:'', ralColour:'', deliveryDate:'2026-09-12', delivered:'No', description:'SKYLIGHT', itemQty:'', scope:'SKYLIGHT', etaCoating:'?', etaFabFrame:'?', etaFabShutter:'?', remarks:'' },
+    { id:'wa35', no:'10', jobNo:'1385', projectName:'VILLA 164, GOLF PLACE,\nDUBAI HILLS', lpoRef:'', ralColour:'', deliveryDate:'2026-09-15', delivered:'No', description:'HINGE DOOR', itemQty:'1', scope:'EFP SINGLE HINGED DOOR', etaCoating:'', etaFabFrame:'', etaFabShutter:'', remarks:'' },
+    { id:'wa36', no:'11', jobNo:'1388', projectName:'VILLA 190,\nFAIRWAYS,\nDUBAI HILLS', lpoRef:'', ralColour:'', deliveryDate:'2026-09-21', delivered:'No', description:'PIVOT DOOR', itemQty:'1', scope:'ADS 65 (PIVOT DOOR) - HPL PANEL', etaCoating:'', etaFabFrame:'', etaFabShutter:'', remarks:'' },
+    { id:'wa37', no:'12', jobNo:'1392', projectName:'Marsa Al Arab', lpoRef:'', ralColour:'', deliveryDate:'2026-09-24', delivered:'No', description:'ADS 65 (HINGES DOOR)', itemQty:'5', scope:'ADS 65 (DOUBLE LEAF DOOR)', etaCoating:'', etaFabFrame:'', etaFabShutter:'', remarks:'' },
+    { id:'wa38', no:'12', jobNo:'1392', projectName:'Marsa Al Arab', lpoRef:'', ralColour:'', deliveryDate:'2026-09-24', delivered:'No', description:'ADS 65 (HINGES DOOR)', itemQty:'4', scope:'ADS 65 (SINGLE LEAF DOOR)', etaCoating:'', etaFabFrame:'', etaFabShutter:'', remarks:'' }
   ];
 
   window.WA = {
