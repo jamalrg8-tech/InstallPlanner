@@ -32,6 +32,9 @@
     --danger-soft:#FEE2E2;
     --success:#15803D;
     --success-soft:#DCFCE7;
+    --warning:#B45309;
+    --warning-soft:#FEF3C7;
+    --warning-border:#F59E0B;
     --shadow:0 2px 8px rgba(0,0,0,.08);
     --shadow-lg:0 6px 24px rgba(0,0,0,.12);
     --radius:4px;
@@ -77,6 +80,7 @@
       --accent:#FFFFFF; --accent-soft:#2A2A2A; --accent-strong:#CCCCCC; --accent-ink:#000000;
       --danger:#FF6B6B; --danger-soft:#4A2020;
       --success:#4ADE80; --success-soft:#173B26;
+      --warning:#FBBF24; --warning-soft:#453611; --warning-border:#B45309;
       --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 20px rgba(0,0,0,.35);
       --shadow-lg:0 6px 24px rgba(0,0,0,.5);
       --nav-bg:#000000; --nav-text:#FFFFFF; --nav-border:rgba(255,255,255,.25); --nav-hover:rgba(255,255,255,.12); --nav-active:rgba(255,255,255,.16);
@@ -91,6 +95,7 @@
     --accent:#FFFFFF; --accent-soft:#2A2A2A; --accent-strong:#CCCCCC; --accent-ink:#000000;
     --danger:#FF6B6B; --danger-soft:#4A2020;
     --success:#4ADE80; --success-soft:#173B26;
+    --warning:#FBBF24; --warning-soft:#453611; --warning-border:#B45309;
     --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 20px rgba(0,0,0,.35);
     --shadow-lg:0 6px 24px rgba(0,0,0,.5);
     --nav-bg:#000000; --nav-text:#FFFFFF; --nav-border:rgba(255,255,255,.25); --nav-hover:rgba(255,255,255,.12); --nav-active:rgba(255,255,255,.16);
@@ -524,6 +529,34 @@
     .wa-last-updated{ position:static; }
   }
 
+  /* ---- Delivery-due warning banner (see WA.wireDueSoonBanner in
+     wa-shared.js for the logic/content, and the matching block in
+     wa-tracker.html — identical rules, kept in sync). Sits above the WA
+     Tracker tab's own toolbar, at the top of #wa-view, and stays visible
+     while scrolling. Empty and [hidden] whenever nothing qualifies. ---- */
+  .wa-due-banner{
+    position:sticky; top:0; z-index:20;
+    display:flex; align-items:flex-start; gap:12px;
+    background:var(--warning-soft); border:1px solid var(--warning-border); border-radius:8px;
+    color:var(--warning); padding:12px 16px 12px 14px; margin-bottom:12px;
+  }
+  .wa-due-banner[hidden]{ display:none; }
+  .wa-due-banner-icon{ font-size:17px; flex:none; line-height:1.3; }
+  /* Capped and internally scrollable — see the matching comment in
+     wa-tracker.html: a long list here must never push the WA Tracker tab's
+     own toolbar and always-reachable scrollbar off the bottom of the
+     screen, so the banner scrolls internally past a handful of items
+     instead of just growing taller. */
+  .wa-due-banner-body{ flex:1; min-width:0; max-height:168px; overflow-y:auto; padding-right:4px; }
+  .wa-due-banner-title{ font-weight:700; font-size:13px; margin-bottom:4px; }
+  .wa-due-item{ font-size:12.5px; line-height:1.5; }
+  .wa-due-item b{ font-weight:700; }
+  .wa-due-banner-close{
+    flex:none; background:none; border:none; color:inherit; font-size:19px;
+    line-height:1; cursor:pointer; padding:2px 8px; border-radius:6px; opacity:.75;
+  }
+  .wa-due-banner-close:hover{ background:rgba(0,0,0,.08); opacity:1; }
+
   .wc-idx{ position:relative; width:var(--wa-w-idx, 40px); justify-content:center; padding:0; }
   .wc-no{ width:var(--wa-w-no, 56px); }
   .wc-jobno{ width:var(--wa-w-jobno, 86px); }
@@ -603,6 +636,32 @@
   .daily-task-comments{ width:100%; resize:none; border:1px solid transparent; background:transparent; color:var(--text-muted); font-family:inherit; font-style:italic; font-size:12px; line-height:1.4; padding:6px 4px; border-radius:6px; min-height:20px; }
   .daily-task-comments:hover, .daily-task-comments:focus{ border-color:var(--border-strong); background:var(--surface); color:var(--text); }
   .daily-task-comments::placeholder, .daily-task-desc::placeholder, .daily-task-project::placeholder{ color:var(--text-faint); font-style:italic; }
+
+  /* ---- Daily Schedule: "Paste schedule" — parse a pasted WhatsApp-style
+     work-schedule message straight into tasks, one per bullet, matched to
+     the team named in each "<Name>'s Team:" heading above it. Reuses the
+     report-modal shell for the backdrop/card chrome (see openPasteModal()/
+     parseDailyPasteText() in the script below), with its own body layout. */
+  .paste-modal-card{ width:min(760px, 100%); max-height:min(88vh,820px); }
+  .paste-modal-body{ display:flex; flex-direction:column; gap:14px; overflow:auto; }
+  .paste-textarea{ width:100%; min-height:220px; resize:vertical; border:1px solid var(--border-strong); border-radius:8px; background:var(--surface); color:var(--text); font-family:inherit; font-size:12.5px; line-height:1.5; padding:10px 12px; }
+  .paste-textarea::placeholder{ color:var(--text-faint); }
+  .paste-date-row{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; font-size:12.5px; color:var(--text-muted); }
+  .paste-date-row .date-btn{ font-size:12.5px; padding:6px 10px; }
+  .paste-date-hint{ color:var(--text-faint); font-style:italic; }
+  .paste-preview-head{ font-size:12.5px; color:var(--text-muted); font-weight:600; }
+  .paste-preview{ border:1px solid var(--border); border-radius:8px; max-height:280px; overflow:auto; }
+  .paste-preview-empty{ padding:24px; text-align:center; color:var(--text-muted); font-size:12.5px; }
+  .paste-preview-row{ display:flex; gap:10px; padding:10px 12px; border-bottom:1px solid var(--border); align-items:flex-start; }
+  .paste-preview-row:last-child{ border-bottom:none; }
+  .paste-preview-team{ flex:none; width:120px; font-size:12px; font-weight:700; }
+  .paste-preview-team .new-tag{ display:block; font-size:9.5px; font-weight:700; color:var(--accent); text-transform:uppercase; letter-spacing:.03em; margin-top:2px; }
+  .paste-preview-main{ flex:1; min-width:0; }
+  .paste-preview-project{ font-family:"Playfair Display",Georgia,serif; font-weight:600; font-size:13px; }
+  .paste-preview-task{ font-size:12.5px; color:var(--text-muted); margin-top:2px; }
+  .paste-preview-support{ font-size:11.5px; color:var(--text-faint); margin-top:3px; }
+  .paste-preview-unassigned{ color:var(--text-faint); font-style:italic; }
+  .paste-modal-actions{ display:flex; justify-content:flex-end; gap:8px; }
 
   /* ---- Main list (Schedule tab): meta columns only, no day grid — see
      mainRowHTML()/renderMainList(). Rows auto-grow to fit Scope/Comments. ---- */
@@ -715,6 +774,10 @@
        the standalone factory page (wa-tracker.html) reached via "Share
        factory link". See renderWaView(). -->
   <div id="wa-view" hidden>
+    <!-- Delivery-due warning banner — see the matching container/comment in
+         wa-tracker.html and WA.wireDueSoonBanner in wa-shared.js; wording
+         and logic are shared so both screens agree. -->
+    <div class="wa-due-banner" id="wa-due-banner" hidden></div>
     <div class="wa-toolbar">
       <div class="wa-live-clock" id="wa-live-clock" aria-live="off"></div>
       <div class="wa-last-updated" id="wa-last-updated" title="When this tracker was last changed, by anyone">Last updated: —</div>
@@ -761,6 +824,7 @@
       </div>
       <button class="btn" id="daily-today-btn" type="button">Today</button>
       <button class="btn primary" id="daily-add-btn" type="button">+ Add task</button>
+      <button class="btn" id="daily-paste-btn" type="button">Paste schedule</button>
       <button class="btn" id="daily-report-btn" type="button">View report</button>
       <button class="btn" id="daily-export-pdf-btn" type="button">Export PDF</button>
     </div>
@@ -830,6 +894,32 @@
     <div class="confirm-modal-actions">
       <button type="button" class="btn" id="confirm-modal-cancel">Cancel</button>
       <button type="button" class="btn danger" id="confirm-modal-delete">Delete</button>
+    </div>
+  </div>
+</div>
+
+<!-- Daily Schedule: "Paste schedule" — paste a WhatsApp-style work schedule
+     message and have it parsed straight into tasks. See openPasteModal()/
+     parseDailyPasteText() in the script below. -->
+<div class="report-modal-backdrop" id="paste-modal-backdrop" hidden>
+  <div class="report-modal-card paste-modal-card" role="dialog" aria-modal="true" aria-labelledby="paste-modal-title">
+    <div class="report-modal-header">
+      <h2 id="paste-modal-title">Paste daily schedule</h2>
+      <button type="button" class="report-modal-close" id="paste-modal-close" aria-label="Close">×</button>
+    </div>
+    <div class="report-modal-body paste-modal-body">
+      <textarea class="paste-textarea" id="paste-textarea" placeholder="Paste the schedule message here, e.g.&#10;&#10;Mark’s Team:&#10;•  Desert Leaf 6, Villa 10 - installation of glass panels."></textarea>
+      <div class="paste-date-row">
+        <span>Date for these tasks:</span>
+        <button type="button" class="date-btn" id="paste-date-btn"></button>
+        <span class="paste-date-hint" id="paste-date-hint"></span>
+      </div>
+      <div class="paste-preview-head" id="paste-preview-count"></div>
+      <div class="paste-preview" id="paste-preview"></div>
+      <div class="paste-modal-actions">
+        <button type="button" class="btn" id="paste-modal-cancel">Cancel</button>
+        <button type="button" class="btn primary" id="paste-modal-add" disabled>Add tasks</button>
+      </div>
     </div>
   </div>
 </div>
@@ -2036,6 +2126,7 @@
     waBoardEl.innerHTML = html;
     autosizeAllTextareas(waBoardEl);
     if (waControls) waControls.refreshScrollbar();
+    if (dueBanner) dueBanner.refresh();
   }
 
   // ---- Daily Schedule: who's assigned to do what, on a given day. Replaces
@@ -2340,6 +2431,13 @@
     showToast("WA tracker column widths and row height reset.", null, null);
   });
 
+  // ---- Delivery-due warning banner — see the CSS comment on
+  // .wa-due-banner and the doc comment on WA.wireDueSoonBanner in
+  // wa-shared.js. refresh() is called at the end of renderWaView() above,
+  // so it stays current after every add/edit/delete/import/undo/sync
+  // update, the same as the standalone factory link.
+  var dueBanner = WA.wireDueSoonBanner(document.getElementById("wa-due-banner"), function(){ return state.waRows||[]; });
+
   // ---- WA tab: search + group by project ----
   var waSearchInputEl = document.getElementById("wa-search-input");
   var waSearchClearBtn = document.getElementById("wa-search-clear-btn");
@@ -2376,6 +2474,16 @@
     renderDailyView();
   });
   document.getElementById("daily-date-btn").addEventListener("click", function(e){
+    // Stop this click from also reaching the document-level "click outside
+    // closes the date popup" handler below — without this, that same click
+    // (which just opened the popup a moment ago, in this very handler) would
+    // bubble up and immediately close it again, since #date-popup is a
+    // sibling element rather than an ancestor of this button and so never
+    // appears in the click's own composedPath(). Buttons that open the
+    // popup via the central [data-date-btn] click dispatch don't need this
+    // — that dispatch returns before reaching the closing check — but this
+    // button (like #paste-date-btn below) is wired directly, so it does.
+    e.stopPropagation();
     openDatePopupGeneric(e.currentTarget, dailySelectedDate, function(isoVal){
       if (isoVal) dailySelectedDate = isoVal;
       renderDailyView();
@@ -2450,6 +2558,220 @@
   }
   document.getElementById("daily-export-pdf-btn").addEventListener("click", exportDailyPDF);
   document.getElementById("daily-report-btn").addEventListener("click", openDailyReport);
+
+  // ---- Daily Schedule: "Paste schedule" — turn a pasted WhatsApp-style work
+  // schedule message straight into tasks, instead of typing each one in by
+  // hand. Expected shape (matches how the factory's daily message actually
+  // reads):
+  //   Mark's Team:
+  //   • Desert Leaf 6, Villa 10 - installation of glass panels.
+  // Each "<Name>'s Team:" heading line sets which team the bullets under it
+  // belong to; each bullet splits on the first hyphen into "Project /
+  // location - task", and a trailing "with <Name>'s Team" clause on the task
+  // (e.g. "...sliding door frame with Angelo's Team.") is pulled out as a
+  // support team rather than left in the task text. A date mentioned
+  // anywhere in the pasted text (e.g. "Sept 16, 2026") becomes the default
+  // target date, editable before committing. Parsing itself never mutates
+  // state — it only resolves each team name against the existing roster and
+  // flags ones that don't match yet; those are created via addCustomTeam()
+  // (the same thing "+ Add new team..." does) only once "Add tasks" is
+  // actually clicked, and the whole batch (new tasks + any new teams) is a
+  // single Undo-able step via lastSnapshotForUndo, same as every other bulk
+  // import in this app. ----
+  var MONTH_NAMES = { jan:1, january:1, feb:2, february:2, mar:3, march:3, apr:4, april:4, may:5, jun:6, june:6, jul:7, july:7, aug:8, august:8, sep:9, sept:9, september:9, oct:10, october:10, nov:11, november:11, dec:12, december:12 };
+  function stripInvisibleChars(s){ return String(s||"").replace(/[⁠﻿​‌‍]/g, ""); }
+  function isoFromYMD(y,m,d){
+    if (!(m>=1 && m<=12 && d>=1 && d<=31)) return null;
+    return y+"-"+pad2(m)+"-"+pad2(d);
+  }
+  // Looks for a date anywhere in one line of pasted text — "Sept 16, 2026",
+  // "16 September 2026", an ISO date, or d/m/yyyy (this app's own date
+  // convention, so a schedule that already uses it round-trips correctly).
+  function findDateInText(line){
+    var m = line.match(/\b([A-Za-z]{3,9})\.?\s+(\d{1,2})(?:st|nd|rd|th)?,?\s+(\d{4})\b/);
+    if (m && MONTH_NAMES[m[1].toLowerCase()]) return isoFromYMD(+m[3], MONTH_NAMES[m[1].toLowerCase()], +m[2]);
+    m = line.match(/\b(\d{1,2})(?:st|nd|rd|th)?\s+([A-Za-z]{3,9})\.?,?\s+(\d{4})\b/);
+    if (m && MONTH_NAMES[m[2].toLowerCase()]) return isoFromYMD(+m[3], MONTH_NAMES[m[2].toLowerCase()], +m[1]);
+    m = line.match(/\b(\d{4})-(\d{2})-(\d{2})\b/);
+    if (m) return isoFromYMD(+m[1], +m[2], +m[3]);
+    m = line.match(/\b(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})\b/);
+    if (m) return isoFromYMD(+m[3], +m[2], +m[1]);
+    return null;
+  }
+  // Matches WhatsApp/Word-style bullet characters, including the
+  // bullet + zero-width-joiner combination WhatsApp's own copy/paste
+  // produces (already stripped out by stripInvisibleChars by the time this
+  // runs) — "-" is included too since a plain hyphen bullet is common and
+  // team headings are recognized by their own separate pattern below, so
+  // this can't mistake a heading for a task.
+  var PASTE_BULLET_RE = /^[••●▪‣◦⁃*\-]\s*/;
+  // "Mark's Team:" / "Mark's Team" / "Mark Team:" — the whole line, nothing
+  // else, so it can't accidentally match a task line that merely mentions a
+  // team in passing.
+  function matchTeamHeaderLine(line){
+    var m = line.match(/^([A-Za-z][A-Za-z0-9 &'’.\-]{0,40}?)['’]s\s+team\s*:?\s*$/i);
+    if (m) return m[1].trim();
+    m = line.match(/^([A-Za-z][A-Za-z0-9 &.\-]{0,40}?)\s+team\s*:?\s*$/i);
+    if (m) return m[1].trim();
+    return null;
+  }
+  function splitProjectAndTask(text){
+    var m = text.match(/^(.*?)\s*[-–—]\s*(.+)$/);
+    if (m && m[1].trim()) return { projectName: m[1].trim(), task: m[2].trim() };
+    return { projectName: "", task: text.trim() };
+  }
+  // Pulls a trailing "with X's Team[, Y's Team][ and Z's Team]" clause off
+  // the end of a task description and returns those names separately, e.g.
+  // "installation of sliding door frame with Angelo's Team." becomes task
+  // "installation of sliding door frame" + supportNames ["Angelo"]. Only
+  // fires when every comma/"and"-separated part after "with" ends in
+  // "('s) team(s)", so an ordinary "with sealant" or "with extra care" in a
+  // task description is left completely alone.
+  function extractInlineSupportTeams(text){
+    var m = text.match(/^(.*?)\s+with\s+([^]+?)\s*\.?\s*$/i);
+    if (!m || !/\bteams?\b/i.test(m[2])) return { task: text, supportNames: [] };
+    var parts = m[2].split(/\s*,\s*|\s+and\s+/i);
+    var names = [];
+    for (var i=0; i<parts.length; i++){
+      var pm = parts[i].match(/^(.+?)['’]s\s+teams?\s*$/i) || parts[i].match(/^(.+?)\s+teams?\s*$/i);
+      if (!pm || !pm[1].trim()) return { task: text, supportNames: [] };
+      names.push(pm[1].trim());
+    }
+    return { task: m[1].trim(), supportNames: names };
+  }
+  function parseDailyPasteText(rawText){
+    var text = stripInvisibleChars(rawText||"");
+    var lines = text.split(/\r\n|\r|\n/);
+    var dateIso = null;
+    var currentTeam = "";
+    var newTeamNames = []; // dedupe-by-lowercase list of not-yet-existing team names seen so far
+    function resolveTeamName(name){
+      name = String(name||"").trim();
+      if (!name) return { name:"", isNew:false };
+      var existing = allTeamNames().find(function(n){ return n.toLowerCase()===name.toLowerCase(); });
+      if (existing) return { name:existing, isNew:false };
+      var pending = newTeamNames.find(function(n){ return n.toLowerCase()===name.toLowerCase(); });
+      if (pending) return { name:pending, isNew:true };
+      newTeamNames.push(name);
+      return { name:name, isNew:true };
+    }
+    var tasks = [];
+    lines.forEach(function(rawLine){
+      var line = rawLine.replace(/\s+/g," ").trim();
+      if (!line) return;
+      if (!dateIso) dateIso = findDateInText(line);
+      var headerName = matchTeamHeaderLine(line);
+      if (headerName){ currentTeam = headerName; return; }
+      if (!PASTE_BULLET_RE.test(line)) return; // not a heading and not a bullet — ignore (title lines, blank separators, etc.)
+      var body = line.replace(PASTE_BULLET_RE, "").trim();
+      if (!body) return;
+      var split = splitProjectAndTask(body);
+      var extracted = extractInlineSupportTeams(split.task);
+      var teamR = resolveTeamName(currentTeam);
+      var supportR = extracted.supportNames.map(resolveTeamName).filter(function(r){ return r.name && r.name.toLowerCase() !== teamR.name.toLowerCase(); });
+      tasks.push({
+        team: teamR.name, teamIsNew: teamR.isNew,
+        projectName: split.projectName, task: extracted.task,
+        supportTeams: supportR.map(function(r){return r.name;}),
+        supportIsNew: supportR.filter(function(r){return r.isNew;}).map(function(r){return r.name;})
+      });
+    });
+    return { dateIso: dateIso, tasks: tasks, newTeamNames: newTeamNames };
+  }
+
+  var pasteModalBackdropEl = document.getElementById("paste-modal-backdrop");
+  var pasteTextareaEl = document.getElementById("paste-textarea");
+  var pasteDateBtnEl = document.getElementById("paste-date-btn");
+  var pasteDateHintEl = document.getElementById("paste-date-hint");
+  var pastePreviewEl = document.getElementById("paste-preview");
+  var pastePreviewCountEl = document.getElementById("paste-preview-count");
+  var pasteAddBtnEl = document.getElementById("paste-modal-add");
+  var pasteCurrentParse = null;
+  var pasteTargetDate = "";
+  var pasteDateManuallySet = false;
+
+  function openPasteModal(){
+    pasteTextareaEl.value = "";
+    pasteTargetDate = dailySelectedDate;
+    pasteDateManuallySet = false;
+    renderPastePreview();
+    pasteModalBackdropEl.hidden = false;
+    setTimeout(function(){ pasteTextareaEl.focus(); }, 0);
+  }
+  function closePasteModal(){
+    pasteModalBackdropEl.hidden = true;
+    closeDatePopup();
+  }
+  function renderPastePreview(){
+    var parsed = parseDailyPasteText(pasteTextareaEl.value);
+    pasteCurrentParse = parsed;
+    if (parsed.dateIso && !pasteDateManuallySet) pasteTargetDate = parsed.dateIso;
+    if (!pasteTargetDate) pasteTargetDate = dailySelectedDate;
+    pasteDateBtnEl.textContent = fmtDailyDateLabel(pasteTargetDate);
+    pasteDateHintEl.textContent = parsed.dateIso
+      ? "(detected in the pasted text)"
+      : "(no date found in the text — pick one, or it'll use the day currently open)";
+    var tasks = parsed.tasks;
+    if (!tasks.length){
+      pastePreviewEl.innerHTML = '<div class="paste-preview-empty">Paste your schedule above — each “&lt;Name&gt;’s Team:” heading and its bullet points underneath will show up here as tasks to add.</div>';
+      pastePreviewCountEl.textContent = "";
+      pasteAddBtnEl.disabled = true;
+      return;
+    }
+    pastePreviewCountEl.textContent = tasks.length+" task"+(tasks.length===1?"":"s")+" found";
+    pasteAddBtnEl.disabled = false;
+    pastePreviewEl.innerHTML = tasks.map(function(item){
+      var teamLabel = item.team
+        ? '<span style="color:'+teamColorValue(item.team)+';">'+escText(item.team)+'</span>'+(item.teamIsNew?'<span class="new-tag">New team</span>':"")
+        : '<span class="paste-preview-unassigned">No team</span>';
+      var supportLabel = item.supportTeams.length
+        ? '<div class="paste-preview-support">+ '+item.supportTeams.map(function(n){ return escText(n)+(item.supportIsNew.indexOf(n)!==-1?" (new)":""); }).join(", ")+'</div>'
+        : "";
+      return '<div class="paste-preview-row">'+
+        '<div class="paste-preview-team">'+teamLabel+'</div>'+
+        '<div class="paste-preview-main">'+
+          '<div class="paste-preview-project">'+escText(item.projectName||"(no project name found)")+'</div>'+
+          '<div class="paste-preview-task">'+escText(item.task||"—")+'</div>'+
+          supportLabel+
+        '</div>'+
+      '</div>';
+    }).join("");
+  }
+  function commitPasteModal(){
+    if (!pasteCurrentParse || !pasteCurrentParse.tasks.length) return;
+    var targetDate = pasteTargetDate || dailySelectedDate;
+    lastSnapshotForUndo = cloneState();
+    pasteCurrentParse.newTeamNames.forEach(function(n){ addCustomTeam(n); });
+    var created = pasteCurrentParse.tasks.map(function(item){
+      var t = newDailyTask(targetDate);
+      t.team = item.team;
+      t.projectName = item.projectName;
+      t.task = item.task;
+      t.supportTeams = item.supportTeams.slice();
+      dedupeDailySupportTeams(t);
+      return t;
+    });
+    if (!state.dailyTasks) state.dailyTasks = [];
+    state.dailyTasks = created.concat(state.dailyTasks);
+    dailySelectedDate = targetDate;
+    closePasteModal();
+    render();
+    scheduleSave();
+    showToast("Added "+created.length+" task"+(created.length===1?"":"s")+" for "+fmtDailyDateLabel(targetDate)+".", "Undo", undoLast);
+  }
+
+  document.getElementById("daily-paste-btn").addEventListener("click", openPasteModal);
+  document.getElementById("paste-modal-cancel").addEventListener("click", closePasteModal);
+  document.getElementById("paste-modal-close").addEventListener("click", closePasteModal);
+  pasteModalBackdropEl.addEventListener("click", function(e){ if (e.target === pasteModalBackdropEl) closePasteModal(); });
+  pasteTextareaEl.addEventListener("input", renderPastePreview);
+  pasteDateBtnEl.addEventListener("click", function(e){
+    e.stopPropagation(); // see the matching comment on #daily-date-btn's listener above
+    openDatePopupGeneric(e.currentTarget, pasteTargetDate, function(isoVal){
+      if (isoVal){ pasteTargetDate = isoVal; pasteDateManuallySet = true; renderPastePreview(); }
+    });
+  });
+  pasteAddBtnEl.addEventListener("click", commitPasteModal);
 
   // ---- Daily Schedule: field editing ----
   document.addEventListener("input", function(e){
@@ -2997,6 +3319,13 @@
       });
     }
     if (t.classList.contains("autosize-field")) autosizeTextarea(t);
+    // Keep the delivery-due banner honest without waiting for a full
+    // render() — this handler never calls render() (see the comment above),
+    // and the banner needs to react instantly to two things it can't get
+    // any other way: "Delivered" flipping to Yes/No (drops a row out of, or
+    // back into, the warning) and a Job #/Project Name edit on a row that's
+    // currently listed in the banner (keeps its label from going stale).
+    if (dueBanner) dueBanner.refresh();
     scheduleSave();
   });
 
@@ -3557,6 +3886,7 @@
       if (teamsPopupState){ closeExtraTeamsPopup(); return; }
       if (dailySupportPopupState){ closeDailySupportPopup(); return; }
       if (!dateFilterPopupEl.hidden){ closeDateFilterPopup(); return; }
+      if (pasteModalBackdropEl && !pasteModalBackdropEl.hidden){ closePasteModal(); return; }
       var confirmBackdrop = document.getElementById("confirm-modal-backdrop");
       if (confirmBackdrop && !confirmBackdrop.hidden){ closeConfirmModal(); return; }
       var gridBackdrop2 = document.getElementById("grid-modal-backdrop");
@@ -4004,6 +4334,11 @@
     tickClock();
     setInterval(tickClock, 1000);
     renderLastUpdated();
+    // Catches the delivery-due banner's day-boundary rollover for anyone who
+    // just leaves the WA Tracker tab open — renderWaView() already refreshes
+    // it on every edit/sync and every time you switch onto the tab, so this
+    // is just the idle-tab case.
+    setInterval(function(){ if (currentView === "wa" && dueBanner) dueBanner.refresh(); }, 60000);
   }
 
   init();

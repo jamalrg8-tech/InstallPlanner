@@ -50,6 +50,94 @@
     return "";
   }
 
+  // ---- Due-soon delivery warning: flags any row whose Eurolux Required
+  // Delivery Date is within `thresholdDays` of today (default 7) and hasn't
+  // been marked Delivered yet, so both host pages compute — and word — the
+  // exact same warning off the same data. `todayIso` can be passed for
+  // testing; it defaults to the real current date. Rows are returned most-
+  // urgent first (overdue rows before rows still days away).
+  function dueSoonLabel(row){
+    var name = (row.projectName && row.projectName.trim()) ? row.projectName.trim() : "Untitled line-item";
+    return row.jobNo ? name+" (Job "+row.jobNo+")" : name;
+  }
+  function dueSoonMessage(row, daysLeft){
+    var dateStr = fmtDateDisplay(row.deliveryDate);
+    if (daysLeft < 0){
+      var overdueBy = -daysLeft;
+      return "Eurolux required delivery date was due "+overdueBy+" day"+(overdueBy===1?"":"s")+" ago ("+dateStr+") — please ensure all materials are ready for collection as soon as possible.";
+    }
+    if (daysLeft === 0){
+      return "Eurolux required delivery date is due today ("+dateStr+") — please ensure all materials are ready for collection today.";
+    }
+    return "Eurolux required delivery date will be due in "+daysLeft+" day"+(daysLeft===1?"":"s")+", please ensure all materials are ready for collection on "+dateStr+".";
+  }
+  function dueSoonRows(rows, thresholdDays, todayIso){
+    thresholdDays = (thresholdDays==null) ? 7 : thresholdDays;
+    var today = todayIso || (function(){ var t=new Date(); return iso(t.getFullYear(), t.getMonth()+1, t.getDate()); })();
+    var todayMs = Date.UTC(+today.slice(0,4), +today.slice(5,7)-1, +today.slice(8,10));
+    var out = [];
+    (rows||[]).forEach(function(row){
+      if (!row || !row.deliveryDate || row.delivered === "Yes") return;
+      var dMs = Date.UTC(+row.deliveryDate.slice(0,4), +row.deliveryDate.slice(5,7)-1, +row.deliveryDate.slice(8,10));
+      if (isNaN(dMs)) return;
+      var daysLeft = Math.round((dMs - todayMs) / 86400000);
+      if (daysLeft > thresholdDays) return;
+      out.push({ row: row, daysLeft: daysLeft, label: dueSoonLabel(row), message: dueSoonMessage(row, daysLeft) });
+    });
+    out.sort(function(a,b){ return a.daysLeft - b.daysLeft; });
+    return out;
+  }
+  // Builds the warning banner's inner HTML (icon, summary line, one row per
+  // item, and a dismiss button) from an already-computed/filtered list (see
+  // dueSoonRows() above) — kept here, not in each host page, so the wording
+  // is guaranteed identical on both screens. Each host page owns the outer
+  // container (position/sticky styling, its own "which ids did I already
+  // dismiss this session" set) and just swaps this HTML in and out of it;
+  // the close button carries data-wa-due-dismiss so a host's own delegated
+  // click listener can hide the banner (see wireDueSoonBanner() below).
+  function dueSoonBannerHTML(items){
+    if (!items || !items.length) return "";
+    var rows = items.map(function(it){
+      return '<div class="wa-due-item" data-wa-due-id="'+escAttr(it.row.id)+'"><b>'+escText(it.label)+':</b> '+escText(it.message)+'</div>';
+    }).join("");
+    return '<div class="wa-due-banner-icon" aria-hidden="true">⚠️</div>'+
+      '<div class="wa-due-banner-body">'+
+        '<div class="wa-due-banner-title">'+items.length+' WA line-item'+(items.length===1?"":"s")+' due for delivery soon</div>'+
+        rows+
+      '</div>'+
+      '<button type="button" class="wa-due-banner-close" data-wa-due-dismiss="1" aria-label="Dismiss this warning">×</button>';
+  }
+  // Wires one host page's banner container up to dueSoonRows()/dueSoonBannerHTML()
+  // above. `getRows` returns the current array of WA rows (called fresh each
+  // refresh(), so it always sees the latest data) and `el` is the banner's
+  // outer container (an empty, hidden-by-default element in the host's own
+  // markup). Dismissing hides the banner for the rest of this page load only
+  // (dismissedIds lives in memory, not saved anywhere) — reloading the page,
+  // or the item simply no longer qualifying (delivered, or no longer within
+  // the threshold), is what actually clears it for good. Returns a
+  // refresh() function the host calls after any edit/save/reload.
+  function wireDueSoonBanner(el, getRows, opts){
+    if (!el) return { refresh: function(){} };
+    var thresholdDays = (opts && opts.thresholdDays!=null) ? opts.thresholdDays : 7;
+    var dismissedIds = {};
+    var lastShownIds = [];
+    el.addEventListener("click", function(e){
+      if (e.target.closest("[data-wa-due-dismiss]")){
+        lastShownIds.forEach(function(id){ dismissedIds[id] = true; });
+        el.hidden = true;
+        el.innerHTML = "";
+      }
+    });
+    function refresh(){
+      var items = dueSoonRows(getRows(), thresholdDays).filter(function(it){ return !dismissedIds[it.row.id]; });
+      lastShownIds = items.map(function(it){ return it.row.id; });
+      if (!items.length){ el.hidden = true; el.innerHTML = ""; return; }
+      el.hidden = false;
+      el.innerHTML = dueSoonBannerHTML(items);
+    }
+    return { refresh: refresh };
+  }
+
   function newRow(){
     return { id:"wa"+Date.now().toString(36)+Math.random().toString(36).slice(2,7),
       no:"", jobNo:"", projectName:"", lpoRef:"", ralColour:"", deliveryDate:"",
@@ -570,6 +658,9 @@ var SEED_ROWS = [
     exportPDF: exportPDF,
     createBoardControls: createBoardControls,
     createHScrollbar: createHScrollbar,
+    dueSoonRows: dueSoonRows,
+    dueSoonBannerHTML: dueSoonBannerHTML,
+    wireDueSoonBanner: wireDueSoonBanner,
     escText: escText,
     escAttr: escAttr,
     fmtDateDisplay: fmtDateDisplay,
