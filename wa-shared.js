@@ -142,7 +142,7 @@
     return { id:"wa"+Date.now().toString(36)+Math.random().toString(36).slice(2,7),
       no:"", jobNo:"", projectName:"", lpoRef:"", ralColour:"", deliveryDate:"",
       delivered:"No", description:"", itemQty:"", scope:"", etaCoating:"", etaFabFrame:"", etaFabShutter:"",
-      remarks:"" };
+      remarks:"", editedAt:{} };
   }
 
   function normalizeRow(row){
@@ -160,7 +160,155 @@
     if (row.etaFabFrame==null) row.etaFabFrame = "";
     if (row.etaFabShutter==null) row.etaFabShutter = "";
     if (row.remarks==null) row.remarks = "";
+    if (!row.editedAt || typeof row.editedAt !== "object") row.editedAt = {};
     return row;
+  }
+
+  // ---- Field-updated notification: any edit to any WA field bolds +
+  // highlights that one field for 24 hours and lists it in a banner at the
+  // top of the screen, so a change (by anyone, on either host page) is hard
+  // to miss. Timestamps live on the row itself (row.editedAt[fieldKey] =
+  // epoch ms), saved/synced the same as every other field, so this survives
+  // reloads and is shared across every device looking at the same tracker —
+  // unlike the due-soon banner's dismissal, which is deliberately
+  // per-session only, this is genuinely time-based: it only clears once 24
+  // hours have actually passed since that edit, not just on request. ----
+  var FIELD_EDIT_WINDOW_MS = 24*60*60*1000;
+
+  function markFieldEdited(row, field, nowMs){
+    if (!row) return;
+    if (!row.editedAt || typeof row.editedAt !== "object") row.editedAt = {};
+    row.editedAt[field] = nowMs || Date.now();
+  }
+
+  function fieldLabelFor(field){
+    var found = null;
+    META_LABELS.some(function(l){ if (l.key===field){ found=l.txt; return true; } return false; });
+    return found || field;
+  }
+
+  function isFieldRecentlyEdited(row, field, windowMs, nowMs){
+    windowMs = (windowMs==null) ? FIELD_EDIT_WINDOW_MS : windowMs;
+    nowMs = (nowMs==null) ? Date.now() : nowMs;
+    if (!row || !row.editedAt) return false;
+    var ts = row.editedAt[field];
+    if (!ts) return false;
+    var age = nowMs - ts;
+    return age>=0 && age<=windowMs;
+  }
+
+  function relativeAge(ms){
+    var mins = Math.floor(ms/60000);
+    if (mins < 1) return "just now";
+    if (mins === 1) return "1 minute ago";
+    if (mins < 60) return mins+" minutes ago";
+    var hrs = Math.floor(mins/60);
+    if (hrs === 1) return "1 hour ago";
+    return hrs+" hours ago";
+  }
+
+  function fieldEditMessage(row, field, ageMs){
+    var label = fieldLabelFor(field);
+    var raw = row[field];
+    var valStr = (raw==null ? "" : String(raw)).trim();
+    if (field === "deliveryDate") valStr = fmtDateDisplay(raw);
+    var valuePart;
+    if (!valStr) valuePart = "cleared";
+    else if (valStr.length > 70) valuePart = 'changed to "'+valStr.slice(0,67)+'…"';
+    else valuePart = 'changed to "'+valStr+'"';
+    return label+" was "+valuePart+" — "+relativeAge(ageMs)+".";
+  }
+
+  // Returns every field edit still inside the window, most-recent first —
+  // one entry per (row, field) pair, so a row with three fields changed
+  // recently shows up as three separate lines (each field is its own fact
+  // worth stating), across however many rows currently qualify.
+  function recentFieldEdits(rows, windowMs, nowMs){
+    windowMs = (windowMs==null) ? FIELD_EDIT_WINDOW_MS : windowMs;
+    nowMs = (nowMs==null) ? Date.now() : nowMs;
+    var out = [];
+    (rows||[]).forEach(function(row){
+      if (!row || !row.editedAt) return;
+      Object.keys(row.editedAt).forEach(function(field){
+        var ts = row.editedAt[field];
+        if (!ts) return;
+        var age = nowMs - ts;
+        if (age < 0 || age > windowMs) return;
+        out.push({ row:row, field:field, ts:ts, label:dueSoonLabel(row), message:fieldEditMessage(row, field, age) });
+      });
+    });
+    out.sort(function(a,b){ return b.ts - a.ts; });
+    return out;
+  }
+
+  // Same shape/markup pattern as dueSoonBannerHTML() above (icon, title,
+  // one line per item, dismiss button) so the two banners look like a
+  // matched pair when both are showing, just in a different color.
+  function fieldEditBannerHTML(items){
+    if (!items || !items.length) return "";
+    var rows = items.map(function(it){
+      return '<div class="wa-edit-item" data-wa-edit-id="'+escAttr(it.row.id)+'" data-wa-edit-field="'+escAttr(it.field)+'"><b>'+escText(it.label)+':</b> '+escText(it.message)+'</div>';
+    }).join("");
+    return '<div class="wa-edit-banner-icon" aria-hidden="true">✏️</div>'+
+      '<div class="wa-edit-banner-body">'+
+        '<div class="wa-edit-banner-title">'+items.length+' field'+(items.length===1?"":"s")+' updated in the last 24 hours</div>'+
+        rows+
+      '</div>'+
+      '<button type="button" class="wa-edit-banner-close" data-wa-edit-dismiss="1" aria-label="Dismiss this notification">×</button>';
+  }
+
+  // Wires one host page's field-edit banner up to recentFieldEdits()/
+  // fieldEditBannerHTML() above — mirrors wireDueSoonBanner()'s shape, but
+  // dismissal is keyed by (row id + field + timestamp) rather than just row
+  // id: since a genuinely new edit gets a new timestamp, dismissing a stale
+  // notice never suppresses a fresh one on that same field later. Reappears
+  // next time the tracker is opened (dismissedKeys lives only in memory)
+  // for as long as that edit is still inside the 24-hour window; refresh()
+  // is also what naturally drops an item once 24 hours actually pass.
+  function wireFieldEditBanner(el, getRows, opts){
+    if (!el) return { refresh: function(){} };
+    var windowMs = (opts && opts.windowMs!=null) ? opts.windowMs : FIELD_EDIT_WINDOW_MS;
+    var dismissedKeys = {};
+    var lastShownKeys = [];
+    el.addEventListener("click", function(e){
+      if (e.target.closest("[data-wa-edit-dismiss]")){
+        lastShownKeys.forEach(function(k){ dismissedKeys[k] = true; });
+        el.hidden = true;
+        el.innerHTML = "";
+      }
+    });
+    function keyFor(it){ return it.row.id+"|"+it.field+"|"+it.ts; }
+    function refresh(){
+      var items = recentFieldEdits(getRows(), windowMs).filter(function(it){ return !dismissedKeys[keyFor(it)]; });
+      lastShownKeys = items.map(keyFor);
+      if (!items.length){ el.hidden = true; el.innerHTML = ""; return; }
+      el.hidden = false;
+      el.innerHTML = fieldEditBannerHTML(items);
+    }
+    return { refresh: refresh };
+  }
+
+  // The field-edit input handler patches a cell's highlight class directly
+  // (no full render, so typing never loses focus — see the comment above
+  // that handler in each host page), which means the class never gets
+  // cleared on its own once 24 hours pass unless something re-renders that
+  // row. This sweep — run from the same periodic timer that already
+  // refreshes the banners — checks every currently-highlighted cell inside
+  // `boardEl` against the live data and drops the class the moment its edit
+  // ages out, without touching anything else on the board.
+  function sweepFieldHighlights(boardEl, getRows){
+    if (!boardEl) return;
+    var rowsById = {};
+    (getRows()||[]).forEach(function(r){ if (r && r.id) rowsById[r.id] = r; });
+    var cells = boardEl.querySelectorAll(".wa-field-recent-edit");
+    for (var i=0; i<cells.length; i++){
+      var cell = cells[i];
+      var fieldEl = cell.querySelector("[data-wa-field]") || cell.querySelector("[data-wa-date-btn]");
+      if (!fieldEl){ cell.classList.remove("wa-field-recent-edit"); continue; }
+      var row = rowsById[fieldEl.dataset.id];
+      var field = fieldEl.dataset.waField || fieldEl.dataset.waDateBtn;
+      if (!row || !isFieldRecentlyEdited(row, field)) cell.classList.remove("wa-field-recent-edit");
+    }
   }
 
   // ---- header/column layout: every column is resizable (drag the handle
@@ -245,53 +393,58 @@
     // page's own <style> block defines .row-delivered the same way (light
     // and dark mode both covered there).
     var deliveredCls = row.delivered === "Yes" ? " row-delivered" : "";
+    // Bold + highlight whichever individual fields were edited in the last
+    // 24 hours (see markFieldEdited()/isFieldRecentlyEdited() above) — a
+    // per-field class, not a whole-row one like deliveredCls, since it's
+    // meant to point at exactly what changed, not the row as a whole.
+    function editCls(key){ return isFieldRecentlyEdited(row, key) ? " wa-field-recent-edit" : ""; }
     var html = "";
     html += '<div class="cell wc-idx'+deliveredCls+'" style="grid-column:1; grid-row:'+gridRow+';">'+
       '<button class="del-btn" type="button" data-wa-action="delete" data-id="'+row.id+'" aria-label="Delete row" title="Delete row">✕</button></div>';
 
-    html += '<div class="cell wc-no'+deliveredCls+'" style="grid-column:2; grid-row:'+gridRow+';">'+
+    html += '<div class="cell wc-no'+deliveredCls+editCls("no")+'" style="grid-column:2; grid-row:'+gridRow+';">'+
       '<input class="field" data-wa-field="no" data-id="'+row.id+'" value="'+escAttr(row.no)+'" aria-label="No."></div>';
 
-    html += '<div class="cell wc-jobno'+deliveredCls+'" style="grid-column:3; grid-row:'+gridRow+';">'+
+    html += '<div class="cell wc-jobno'+deliveredCls+editCls("jobNo")+'" style="grid-column:3; grid-row:'+gridRow+';">'+
       '<input class="field" data-wa-field="jobNo" data-id="'+row.id+'" value="'+escAttr(row.jobNo)+'" aria-label="Job number"></div>';
 
-    html += '<div class="cell wc-projectname'+deliveredCls+'" style="grid-column:4; grid-row:'+gridRow+';">'+
+    html += '<div class="cell wc-projectname'+deliveredCls+editCls("projectName")+'" style="grid-column:4; grid-row:'+gridRow+';">'+
       '<textarea class="field autosize-field" data-wa-field="projectName" data-id="'+row.id+'" placeholder="Project name" aria-label="Project name">'+escText(row.projectName)+'</textarea></div>';
 
-    html += '<div class="cell wc-lporef'+deliveredCls+'" style="grid-column:5; grid-row:'+gridRow+';">'+
+    html += '<div class="cell wc-lporef'+deliveredCls+editCls("lpoRef")+'" style="grid-column:5; grid-row:'+gridRow+';">'+
       '<input class="field" data-wa-field="lpoRef" data-id="'+row.id+'" value="'+escAttr(row.lpoRef)+'" aria-label="LPO reference"></div>';
 
-    html += '<div class="cell wc-ralcolour'+deliveredCls+'" style="grid-column:6; grid-row:'+gridRow+';">'+
+    html += '<div class="cell wc-ralcolour'+deliveredCls+editCls("ralColour")+'" style="grid-column:6; grid-row:'+gridRow+';">'+
       '<input class="field" data-wa-field="ralColour" data-id="'+row.id+'" value="'+escAttr(row.ralColour)+'" aria-label="RAL colour"></div>';
 
-    html += '<div class="cell wc-deliverydate'+deliveredCls+'" style="grid-column:7; grid-row:'+gridRow+';">'+
+    html += '<div class="cell wc-deliverydate'+deliveredCls+editCls("deliveryDate")+'" style="grid-column:7; grid-row:'+gridRow+';">'+
       '<button type="button" class="date-btn'+(row.deliveryDate?"":" placeholder")+'" data-wa-date-btn="deliveryDate" data-id="'+row.id+'" aria-label="Eurolux required delivery date">'+(fmtDateDisplay(row.deliveryDate)||"d/mm/yyyy")+'</button></div>';
 
-    html += '<div class="cell wc-delivered'+deliveredCls+'" style="grid-column:8; grid-row:'+gridRow+';">'+
+    html += '<div class="cell wc-delivered'+deliveredCls+editCls("delivered")+'" style="grid-column:8; grid-row:'+gridRow+';">'+
       '<select class="field" data-wa-field="delivered" data-id="'+row.id+'" aria-label="Delivered">'+
       '<option value="No"'+(row.delivered!=="Yes"?" selected":"")+'>No</option>'+
       '<option value="Yes"'+(row.delivered==="Yes"?" selected":"")+'>Yes</option>'+
       '</select></div>';
 
-    html += '<div class="cell wc-description'+deliveredCls+'" style="grid-column:9; grid-row:'+gridRow+';">'+
+    html += '<div class="cell wc-description'+deliveredCls+editCls("description")+'" style="grid-column:9; grid-row:'+gridRow+';">'+
       '<textarea class="field autosize-field" data-wa-field="description" data-id="'+row.id+'" placeholder="Description" aria-label="Description">'+escText(row.description)+'</textarea></div>';
 
-    html += '<div class="cell wc-itemqty'+deliveredCls+'" style="grid-column:10; grid-row:'+gridRow+';">'+
+    html += '<div class="cell wc-itemqty'+deliveredCls+editCls("itemQty")+'" style="grid-column:10; grid-row:'+gridRow+';">'+
       '<input class="field" data-wa-field="itemQty" data-id="'+row.id+'" value="'+escAttr(row.itemQty)+'" aria-label="Item quantity"></div>';
 
-    html += '<div class="cell wc-scope'+deliveredCls+'" style="grid-column:11; grid-row:'+gridRow+';">'+
+    html += '<div class="cell wc-scope'+deliveredCls+editCls("scope")+'" style="grid-column:11; grid-row:'+gridRow+';">'+
       '<textarea class="field autosize-field" data-wa-field="scope" data-id="'+row.id+'" placeholder="Scope" aria-label="Scope">'+escText(row.scope)+'</textarea></div>';
 
-    html += '<div class="cell wc-etacoating'+deliveredCls+'" style="grid-column:12; grid-row:'+gridRow+';">'+
+    html += '<div class="cell wc-etacoating'+deliveredCls+editCls("etaCoating")+'" style="grid-column:12; grid-row:'+gridRow+';">'+
       '<textarea class="field autosize-field" data-wa-field="etaCoating" data-id="'+row.id+'" placeholder="ETA coating" aria-label="ETA coating">'+escText(row.etaCoating)+'</textarea></div>';
 
-    html += '<div class="cell wc-etaframe'+deliveredCls+'" style="grid-column:13; grid-row:'+gridRow+';">'+
+    html += '<div class="cell wc-etaframe'+deliveredCls+editCls("etaFabFrame")+'" style="grid-column:13; grid-row:'+gridRow+';">'+
       '<textarea class="field autosize-field" data-wa-field="etaFabFrame" data-id="'+row.id+'" placeholder="ETA fabrication frame" aria-label="ETA fabrication frame">'+escText(row.etaFabFrame)+'</textarea></div>';
 
-    html += '<div class="cell wc-etashutter'+deliveredCls+'" style="grid-column:14; grid-row:'+gridRow+';">'+
+    html += '<div class="cell wc-etashutter'+deliveredCls+editCls("etaFabShutter")+'" style="grid-column:14; grid-row:'+gridRow+';">'+
       '<textarea class="field autosize-field" data-wa-field="etaFabShutter" data-id="'+row.id+'" placeholder="ETA fabrication shutter" aria-label="ETA fabrication shutter">'+escText(row.etaFabShutter)+'</textarea></div>';
 
-    html += '<div class="cell wc-remarks'+deliveredCls+'" style="grid-column:15; grid-row:'+gridRow+';">'+
+    html += '<div class="cell wc-remarks'+deliveredCls+editCls("remarks")+'" style="grid-column:15; grid-row:'+gridRow+';">'+
       '<textarea class="field autosize-field" data-wa-field="remarks" data-id="'+row.id+'" placeholder="Remarks" aria-label="Remarks">'+escText(row.remarks)+'</textarea></div>';
 
     return html;
@@ -661,6 +814,13 @@ var SEED_ROWS = [
     dueSoonRows: dueSoonRows,
     dueSoonBannerHTML: dueSoonBannerHTML,
     wireDueSoonBanner: wireDueSoonBanner,
+    FIELD_EDIT_WINDOW_MS: FIELD_EDIT_WINDOW_MS,
+    markFieldEdited: markFieldEdited,
+    isFieldRecentlyEdited: isFieldRecentlyEdited,
+    recentFieldEdits: recentFieldEdits,
+    fieldEditBannerHTML: fieldEditBannerHTML,
+    wireFieldEditBanner: wireFieldEditBanner,
+    sweepFieldHighlights: sweepFieldHighlights,
     escText: escText,
     escAttr: escAttr,
     fmtDateDisplay: fmtDateDisplay,

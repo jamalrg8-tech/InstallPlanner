@@ -35,6 +35,9 @@
     --warning:#B45309;
     --warning-soft:#FEF3C7;
     --warning-border:#F59E0B;
+    --edit:#1D4ED8;
+    --edit-soft:#DBEAFE;
+    --edit-border:#93C5FD;
     --shadow:0 2px 8px rgba(0,0,0,.08);
     --shadow-lg:0 6px 24px rgba(0,0,0,.12);
     --radius:4px;
@@ -81,6 +84,7 @@
       --danger:#FF6B6B; --danger-soft:#4A2020;
       --success:#4ADE80; --success-soft:#173B26;
       --warning:#FBBF24; --warning-soft:#453611; --warning-border:#B45309;
+      --edit:#93C5FD; --edit-soft:#1E3A5F; --edit-border:#2563EB;
       --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 20px rgba(0,0,0,.35);
       --shadow-lg:0 6px 24px rgba(0,0,0,.5);
       --nav-bg:#000000; --nav-text:#FFFFFF; --nav-border:rgba(255,255,255,.25); --nav-hover:rgba(255,255,255,.12); --nav-active:rgba(255,255,255,.16);
@@ -96,6 +100,7 @@
     --danger:#FF6B6B; --danger-soft:#4A2020;
     --success:#4ADE80; --success-soft:#173B26;
     --warning:#FBBF24; --warning-soft:#453611; --warning-border:#B45309;
+    --edit:#93C5FD; --edit-soft:#1E3A5F; --edit-border:#2563EB;
     --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 20px rgba(0,0,0,.35);
     --shadow-lg:0 6px 24px rgba(0,0,0,.5);
     --nav-bg:#000000; --nav-text:#FFFFFF; --nav-border:rgba(255,255,255,.25); --nav-hover:rgba(255,255,255,.12); --nav-active:rgba(255,255,255,.16);
@@ -241,6 +246,15 @@
      tracker cells (rowHTML is the only place that adds this class), so it
      has no effect on the main project schedule's own cells. */
   .cell.row-delivered{ background:var(--success-soft); }
+  /* Any single field edited in the last 24 hours (see WA.markFieldEdited /
+     WA.isFieldRecentlyEdited in wa-shared.js) gets bolded and highlighted —
+     just that one cell, not the whole row, since the point is to show
+     exactly what changed. Declared after .row-delivered so a field edited
+     on an already-delivered row still shows the (temporary) edit highlight
+     rather than staying plain green. */
+  .cell.wa-field-recent-edit{ background:var(--edit-soft); }
+  .cell.wa-field-recent-edit .field,
+  .cell.wa-field-recent-edit .date-btn{ font-weight:700; }
 
   /* meta column sticky offsets */
   .c-idx{ position:sticky; left:0; z-index:3; width:var(--w-idx); justify-content:center; padding:0; }
@@ -529,33 +543,42 @@
     .wa-last-updated{ position:static; }
   }
 
-  /* ---- Delivery-due warning banner (see WA.wireDueSoonBanner in
-     wa-shared.js for the logic/content, and the matching block in
-     wa-tracker.html — identical rules, kept in sync). Sits above the WA
-     Tracker tab's own toolbar, at the top of #wa-view, and stays visible
-     while scrolling. Empty and [hidden] whenever nothing qualifies. ---- */
-  .wa-due-banner{
-    position:sticky; top:0; z-index:20;
-    display:flex; align-items:flex-start; gap:12px;
-    background:var(--warning-soft); border:1px solid var(--warning-border); border-radius:8px;
-    color:var(--warning); padding:12px 16px 12px 14px; margin-bottom:12px;
+  /* ---- Warning/notification banners (delivery-due, see
+     WA.wireDueSoonBanner in wa-shared.js; and field-updated, see
+     WA.wireFieldEditBanner) — identical rules to the matching block in
+     wa-tracker.html, kept in sync. Both live inside this one sticky wrapper
+     so they stack cleanly above the WA Tracker tab's own toolbar, at the
+     top of #wa-view, and stay visible while scrolling. Each banner is
+     independently [hidden] whenever nothing qualifies for it; its own
+     margin-bottom collapses along with it when hidden, so any combination
+     lays out correctly with no extra JS. ---- */
+  .wa-banner-stack{ position:sticky; top:0; z-index:20; }
+  .wa-due-banner, .wa-edit-banner{
+    display:flex; align-items:flex-start; gap:12px; border-radius:8px;
+    padding:12px 16px 12px 14px; margin-bottom:12px;
   }
-  .wa-due-banner[hidden]{ display:none; }
-  .wa-due-banner-icon{ font-size:17px; flex:none; line-height:1.3; }
+  .wa-due-banner{
+    background:var(--warning-soft); border:1px solid var(--warning-border); color:var(--warning);
+  }
+  .wa-edit-banner{
+    background:var(--edit-soft); border:1px solid var(--edit-border); color:var(--edit);
+  }
+  .wa-due-banner[hidden], .wa-edit-banner[hidden]{ display:none; }
+  .wa-due-banner-icon, .wa-edit-banner-icon{ font-size:17px; flex:none; line-height:1.3; }
   /* Capped and internally scrollable — see the matching comment in
      wa-tracker.html: a long list here must never push the WA Tracker tab's
      own toolbar and always-reachable scrollbar off the bottom of the
      screen, so the banner scrolls internally past a handful of items
      instead of just growing taller. */
-  .wa-due-banner-body{ flex:1; min-width:0; max-height:168px; overflow-y:auto; padding-right:4px; }
-  .wa-due-banner-title{ font-weight:700; font-size:13px; margin-bottom:4px; }
-  .wa-due-item{ font-size:12.5px; line-height:1.5; }
-  .wa-due-item b{ font-weight:700; }
-  .wa-due-banner-close{
+  .wa-due-banner-body, .wa-edit-banner-body{ flex:1; min-width:0; max-height:168px; overflow-y:auto; padding-right:4px; }
+  .wa-due-banner-title, .wa-edit-banner-title{ font-weight:700; font-size:13px; margin-bottom:4px; }
+  .wa-due-item, .wa-edit-item{ font-size:12.5px; line-height:1.5; }
+  .wa-due-item b, .wa-edit-item b{ font-weight:700; }
+  .wa-due-banner-close, .wa-edit-banner-close{
     flex:none; background:none; border:none; color:inherit; font-size:19px;
     line-height:1; cursor:pointer; padding:2px 8px; border-radius:6px; opacity:.75;
   }
-  .wa-due-banner-close:hover{ background:rgba(0,0,0,.08); opacity:1; }
+  .wa-due-banner-close:hover, .wa-edit-banner-close:hover{ background:rgba(0,0,0,.08); opacity:1; }
 
   .wc-idx{ position:relative; width:var(--wa-w-idx, 40px); justify-content:center; padding:0; }
   .wc-no{ width:var(--wa-w-no, 56px); }
@@ -774,10 +797,14 @@
        the standalone factory page (wa-tracker.html) reached via "Share
        factory link". See renderWaView(). -->
   <div id="wa-view" hidden>
-    <!-- Delivery-due warning banner — see the matching container/comment in
-         wa-tracker.html and WA.wireDueSoonBanner in wa-shared.js; wording
-         and logic are shared so both screens agree. -->
-    <div class="wa-due-banner" id="wa-due-banner" hidden></div>
+    <!-- Delivery-due + field-updated banners — see the matching container/
+         comment in wa-tracker.html and WA.wireDueSoonBanner /
+         WA.wireFieldEditBanner in wa-shared.js; wording and logic are
+         shared so both screens agree. -->
+    <div class="wa-banner-stack" id="wa-banner-stack">
+      <div class="wa-due-banner" id="wa-due-banner" hidden></div>
+      <div class="wa-edit-banner" id="wa-edit-banner" hidden></div>
+    </div>
     <div class="wa-toolbar">
       <div class="wa-live-clock" id="wa-live-clock" aria-live="off"></div>
       <div class="wa-last-updated" id="wa-last-updated" title="When this tracker was last changed, by anyone">Last updated: —</div>
@@ -2127,6 +2154,7 @@
     autosizeAllTextareas(waBoardEl);
     if (waControls) waControls.refreshScrollbar();
     if (dueBanner) dueBanner.refresh();
+    if (editBanner) editBanner.refresh();
   }
 
   // ---- Daily Schedule: who's assigned to do what, on a given day. Replaces
@@ -2437,6 +2465,11 @@
   // so it stays current after every add/edit/delete/import/undo/sync
   // update, the same as the standalone factory link.
   var dueBanner = WA.wireDueSoonBanner(document.getElementById("wa-due-banner"), function(){ return state.waRows||[]; });
+
+  // ---- Field-updated notification banner — see the CSS comment on
+  // .wa-banner-stack and the doc comment on WA.wireFieldEditBanner in
+  // wa-shared.js. Same refresh-on-every-change wiring as dueBanner above.
+  var editBanner = WA.wireFieldEditBanner(document.getElementById("wa-edit-banner"), function(){ return state.waRows||[]; });
 
   // ---- WA tab: search + group by project ----
   var waSearchInputEl = document.getElementById("wa-search-input");
@@ -3318,14 +3351,24 @@
         if (cell) cell.classList.toggle("row-delivered", isDelivered);
       });
     }
+    // Record + show the field-updated highlight right away, same reasoning
+    // as the "delivered" patch above: no full render(), so this cell's own
+    // class is toggled on directly instead of waiting for rowHTML() to pick
+    // it up next render. markFieldEdited() stamps row.editedAt[field] with
+    // now, which is what both this highlight and the notification banner
+    // key off — and what makes it survive a reload/sync for the rest of the
+    // 24-hour window.
+    WA.markFieldEdited(row, field);
+    var editedCell = t.closest(".cell");
+    if (editedCell) editedCell.classList.add("wa-field-recent-edit");
     if (t.classList.contains("autosize-field")) autosizeTextarea(t);
-    // Keep the delivery-due banner honest without waiting for a full
-    // render() — this handler never calls render() (see the comment above),
-    // and the banner needs to react instantly to two things it can't get
-    // any other way: "Delivered" flipping to Yes/No (drops a row out of, or
-    // back into, the warning) and a Job #/Project Name edit on a row that's
-    // currently listed in the banner (keeps its label from going stale).
+    // Keep both banners honest without waiting for a full render() — this
+    // handler never calls render() (see the comment above), and each banner
+    // needs to react instantly: the delivery-due banner to "Delivered"
+    // flipping Yes/No and to a Job #/Project Name edit keeping a listed
+    // row's label current, and the field-updated banner to this very edit.
     if (dueBanner) dueBanner.refresh();
+    if (editBanner) editBanner.refresh();
     scheduleSave();
   });
 
@@ -3414,6 +3457,7 @@
     if (!row) return;
     openDatePopupGeneric(btn, row[field], function(isoVal){
       row[field] = isoVal;
+      WA.markFieldEdited(row, field);
       render();
       scheduleSave();
     });
@@ -4334,11 +4378,19 @@
     tickClock();
     setInterval(tickClock, 1000);
     renderLastUpdated();
-    // Catches the delivery-due banner's day-boundary rollover for anyone who
-    // just leaves the WA Tracker tab open — renderWaView() already refreshes
-    // it on every edit/sync and every time you switch onto the tab, so this
-    // is just the idle-tab case.
-    setInterval(function(){ if (currentView === "wa" && dueBanner) dueBanner.refresh(); }, 60000);
+    // Catches the delivery-due banner's day-boundary rollover, the
+    // field-updated banner's "X minutes/hours ago" wording aging on, and a
+    // field-updated highlight whose 24 hours have quietly run out, for
+    // anyone who just leaves the WA Tracker tab open — renderWaView()
+    // already refreshes the banners on every edit/sync and every time you
+    // switch onto the tab, so this is just the idle-tab case, plus the
+    // highlight sweep that only this timer does.
+    setInterval(function(){
+      if (currentView !== "wa") return;
+      if (dueBanner) dueBanner.refresh();
+      if (editBanner) editBanner.refresh();
+      WA.sweepFieldHighlights(document.getElementById("wa-tracker-board"), function(){ return state.waRows||[]; });
+    }, 60000);
   }
 
   init();
