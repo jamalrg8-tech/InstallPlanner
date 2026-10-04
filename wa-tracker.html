@@ -151,7 +151,20 @@
      stays prominent at the top either way; you just scroll *inside* it
      instead of the whole page moving. */
   .wa-due-banner-body, .wa-edit-banner-body{ flex:1; min-width:0; max-height:168px; overflow-y:auto; padding-right:4px; }
-  .wa-due-banner-title, .wa-edit-banner-title{ font-weight:700; font-size:13px; margin-bottom:4px; }
+  .wa-edit-banner-title{ font-weight:700; font-size:13px; margin-bottom:4px; }
+  /* The delivery-due banner's title doubles as its expand/collapse control
+     (see WA.wireDueSoonBanner's data-wa-due-toggle) — it shows just the
+     summary count until clicked, so the full list of items only appears
+     when you actually want to read it. A plain <button>, reset to look
+     like the text label it replaces. */
+  .wa-due-banner-title{
+    display:flex; align-items:center; gap:6px;
+    font-weight:700; font-size:13px; margin-bottom:4px; width:100%;
+    background:none; border:none; padding:0; color:inherit; font-family:inherit;
+    cursor:pointer; text-align:left;
+  }
+  .wa-due-banner-title:hover{ text-decoration:underline; }
+  .wa-due-banner-chevron{ font-size:10px; flex:none; }
   .wa-due-item, .wa-edit-item{ font-size:12.5px; line-height:1.5; }
   .wa-due-item b, .wa-edit-item b{ font-weight:700; }
   .wa-due-banner-close, .wa-edit-banner-close{
@@ -214,12 +227,24 @@
      past a group's header, you can still see which project the rows
      beneath it belong to; the next group's header simply takes over that
      same sticky slot as it scrolls up. ---- */
-  .wa-group-row{ padding:0; background:var(--surface-2); border-bottom:1px solid var(--border-strong); position:sticky; top:56px; z-index:8; }
-  .wa-group-toggle{ width:100%; height:100%; display:flex; align-items:center; gap:10px; padding:0 14px; background:none; border:none; cursor:pointer; text-align:left; font-family:inherit; }
+  .wa-group-row{ padding:0; background:var(--surface-2); border-bottom:1px solid var(--border-strong); position:sticky; top:56px; z-index:8; display:flex; align-items:stretch; }
+  .wa-group-toggle{ flex:1; min-width:0; display:flex; align-items:center; gap:10px; padding:0 14px; background:none; border:none; cursor:pointer; text-align:left; font-family:inherit; }
   .wa-group-toggle:hover{ background:var(--border); }
   .wa-group-chevron{ font-size:10px; color:var(--text-muted); width:12px; flex:none; text-align:center; }
   .wa-group-name{ font-weight:700; font-size:12.5px; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
   .wa-group-count{ font-size:11px; color:var(--text-muted); font-weight:600; background:var(--surface); border:1px solid var(--border-strong); border-radius:100px; padding:1px 8px; flex:none; }
+  /* A new row added here (see the data-wa-group-add handler below) joins
+     this exact project's group — its No./Job #/Project Name are copied
+     from an existing row in the group — rather than landing in a brand new
+     "(No project name)" group at the bottom of the whole board. */
+  .wa-group-add-btn{
+    flex:none; align-self:center; margin-right:10px;
+    display:flex; align-items:center; gap:4px;
+    font-size:11px; font-weight:600; color:var(--text);
+    background:var(--surface); border:1px solid var(--border-strong); border-radius:100px;
+    padding:3px 10px; cursor:pointer; white-space:nowrap; font-family:inherit;
+  }
+  .wa-group-add-btn:hover{ background:var(--accent-soft); border-color:var(--accent); }
 
   .board-wrap{ border:1px solid var(--border); border-radius:6px; box-shadow:var(--shadow); background:var(--surface); overflow:hidden; }
   .board-scroll{ overflow:auto; max-height:calc(100vh - 170px); min-height:260px; }
@@ -360,6 +385,7 @@
       <button class="btn" id="export-xlsx-btn" type="button">Export Excel</button>
       <button class="btn" id="export-pdf-btn" type="button">Export PDF</button>
       <button class="btn" id="group-toggle-btn" type="button" aria-pressed="false" title="Group rows that share the same Project Name">Group by project</button>
+      <button class="btn" id="hide-delivered-btn" type="button" aria-pressed="false" title="Hide every row currently marked Delivered">Hide delivered</button>
       <label class="wa-rowheight-label">Row height
         <select id="rowheight-select" class="field">
           <option value="compact">Compact</option>
@@ -447,6 +473,11 @@
   var searchQuery = "";
   var groupByProject = false;
   var collapsedGroups = {}; // key: trimmed Project Name -> true if collapsed
+  // Hides every row currently marked Delivered = Yes from the board — a
+  // manual, per-device toggle (same persistence as grouping below), not
+  // automatic: it stays off/on exactly as you last left it, regardless of
+  // how many rows are delivered. See matchesFilters() below.
+  var hideDelivered = false;
   var GROUP_PREFS_KEY = "installPlanner.waGroupPrefs.v1";
 
   function loadGroupPrefs(){
@@ -456,26 +487,32 @@
       var data = JSON.parse(raw);
       if (data && typeof data.groupByProject === "boolean") groupByProject = data.groupByProject;
       if (data && data.collapsed && typeof data.collapsed === "object") collapsedGroups = data.collapsed;
+      if (data && typeof data.hideDelivered === "boolean") hideDelivered = data.hideDelivered;
     } catch(e){ /* corrupt or inaccessible storage — fall back to defaults */ }
   }
   function saveGroupPrefs(){
-    try{ localStorage.setItem(GROUP_PREFS_KEY, JSON.stringify({ groupByProject:groupByProject, collapsed:collapsedGroups })); } catch(e){}
+    try{ localStorage.setItem(GROUP_PREFS_KEY, JSON.stringify({ groupByProject:groupByProject, collapsed:collapsedGroups, hideDelivered:hideDelivered })); } catch(e){}
   }
 
   function matchesSearch(row){
     if (!searchQuery) return true;
     return (row.projectName||"").toLowerCase().indexOf(searchQuery) > -1;
   }
+  function matchesFilters(row){
+    if (!matchesSearch(row)) return false;
+    if (hideDelivered && row.delivered === "Yes") return false;
+    return true;
+  }
 
-  // Clusters the (already search-filtered) rows by Project Name, preserving
-  // each project's first-appearance order rather than re-sorting the list —
-  // so grouping just pulls a project's line-items together without
+  // Clusters the (already filtered) rows by Project Name, preserving each
+  // project's first-appearance order rather than re-sorting the list — so
+  // grouping just pulls a project's line-items together without
   // reshuffling which project comes before which. Rows with a blank
   // Project Name are grouped together under "(No project name)" rather
   // than left ungrouped, so "Group by project" always produces one row per
   // distinct name, blank included.
   function buildRenderPlan(){
-    var rows = (state.waRows || []).filter(matchesSearch);
+    var rows = (state.waRows || []).filter(matchesFilters);
     if (!groupByProject) return rows.map(function(row){ return { type:"row", row:row }; });
 
     var groups = [];
@@ -504,13 +541,24 @@
         '<span class="wa-group-chevron">'+(item.collapsed?"▸":"▾")+'</span>'+
         '<span class="wa-group-name">'+WA.escText(item.label)+'</span>'+
         '<span class="wa-group-count">'+item.count+' item'+(item.count===1?"":"s")+'</span>'+
-      '</button></div>';
+      '</button>'+
+      '<button type="button" class="wa-group-add-btn" data-wa-group-add="'+WA.escAttr(item.key)+'" title="Add a new row under this project">+ Add row</button>'+
+      '</div>';
   }
 
   function toggleGroup(key){
     collapsedGroups[key] = !collapsedGroups[key];
     saveGroupPrefs();
     render();
+  }
+
+  // Finds an existing row belonging to a given group (by its trimmed
+  // Project Name key) so a row added via that group's "+ Add row" button
+  // can copy its No./Job #/Project Name — see the data-wa-group-add handler
+  // below. Always re-derived from the live data rather than cached, so it's
+  // correct even if the group's membership just changed.
+  function findGroupSampleRow(key){
+    return (state.waRows||[]).find(function(r){ return (r.projectName||"").trim() === key; });
   }
 
   // Matches wa-shared.js's own HEADER_ROW_H (56px) — kept as a separate
@@ -587,8 +635,10 @@
       html += '<div class="cell empty-state" style="grid-column:1 / span '+totalCols+'; grid-row:2; justify-content:center;">'+
         'No rows yet. Click “+ Add row” or use “Import Excel / CSV” to bring in a list.</div>';
     } else if (plan.length === 0){
-      html += '<div class="cell empty-state" style="grid-column:1 / span '+totalCols+'; grid-row:2; justify-content:center;">'+
-        'No rows match “'+WA.escText(searchQuery)+'”.</div>';
+      var emptyMsg = searchQuery
+        ? 'No rows match “'+WA.escText(searchQuery)+'”.'
+        : (hideDelivered ? 'Every line-item is delivered and hidden. Click “Show delivered” to see them.' : 'No rows to show.');
+      html += '<div class="cell empty-state" style="grid-column:1 / span '+totalCols+'; grid-row:2; justify-content:center;">'+emptyMsg+'</div>';
     } else {
       var rowIndex = 0;
       plan.forEach(function(item){
@@ -663,6 +713,19 @@
     groupByProject = !groupByProject;
     saveGroupPrefs();
     updateGroupToggleBtn();
+    render();
+  });
+
+  // ---- hide delivered ----
+  var hideDeliveredBtn = document.getElementById("hide-delivered-btn");
+  function updateHideDeliveredBtn(){
+    hideDeliveredBtn.textContent = hideDelivered ? "Show delivered" : "Hide delivered";
+    hideDeliveredBtn.setAttribute("aria-pressed", hideDelivered ? "true" : "false");
+  }
+  hideDeliveredBtn.addEventListener("click", function(){
+    hideDelivered = !hideDelivered;
+    saveGroupPrefs();
+    updateHideDeliveredBtn();
     render();
   });
 
@@ -927,6 +990,25 @@
     if (!row) return;
     var field = t.dataset.waField;
     row[field] = t.value;
+    // markFieldEdited() stamps row.editedAt[field] with now, which both the
+    // field-updated highlight and its notification banner key off — and
+    // what makes it survive a reload/sync for the rest of the 24-hour
+    // window. Done up front so it's already set no matter which branch
+    // below actually repaints the board.
+    WA.markFieldEdited(row, field);
+
+    if (field === "delivered" && hideDelivered){
+      // "Hide delivered" is on, so this row needs to actually appear or
+      // disappear from the board, which changes the grid's row count — that
+      // needs a full render(), unlike every other field edit here (which
+      // patches the DOM directly to keep typing focus-safe; a <select>'s
+      // "change" event doesn't have that same mid-typing fragility).
+      // render() already refreshes both banners at its end.
+      render();
+      scheduleSave();
+      return;
+    }
+
     if (field === "delivered"){
       // Flip the whole row's green highlight right away. This board
       // deliberately never calls render() on a field edit (see the comment
@@ -943,11 +1025,7 @@
     // Record + show the field-updated highlight right away, same reasoning
     // as the "delivered" patch above: no full render(), so this cell's own
     // class is toggled on directly instead of waiting for rowHTML() to pick
-    // it up next render. markFieldEdited() stamps row.editedAt[field] with
-    // now, which is what both this highlight and the notification banner
-    // key off — and what makes it survive a reload/sync for the rest of the
-    // 24-hour window.
-    WA.markFieldEdited(row, field);
+    // it up next render.
     var editedCell = t.closest(".cell");
     if (editedCell) editedCell.classList.add("wa-field-recent-edit");
     if (t.classList.contains("autosize-field")) autosizeTextarea(t);
@@ -1088,6 +1166,32 @@
     var groupToggle = e.target.closest("[data-wa-group-toggle]");
     if (groupToggle){ toggleGroup(groupToggle.dataset.waGroupToggle); return; }
 
+    // Adds a new row that joins THIS group, rather than the plain "+ Add
+    // row" button's behavior of appending a blank row to the very end of
+    // the list (which, under "Group by project", would land it in its own
+    // new "(No project name)" group instead of alongside the rows you're
+    // looking at). Copying No./Job #/Project Name from an existing row in
+    // the group is what actually places it there — buildRenderPlan()
+    // clusters purely by those field values, not by position in the array.
+    var groupAddBtn = e.target.closest("[data-wa-group-add]");
+    if (groupAddBtn){
+      var groupKey = groupAddBtn.dataset.waGroupAdd;
+      var sample = findGroupSampleRow(groupKey);
+      var newGroupRow = WA.newRow();
+      if (sample){
+        newGroupRow.no = sample.no;
+        newGroupRow.jobNo = sample.jobNo;
+        newGroupRow.projectName = sample.projectName;
+      }
+      state.waRows.push(newGroupRow);
+      if (collapsedGroups[groupKey]){ collapsedGroups[groupKey] = false; saveGroupPrefs(); }
+      render();
+      scheduleSave();
+      var newGroupInput = boardEl.querySelector('[data-wa-field="description"][data-id="'+newGroupRow.id+'"]');
+      if (newGroupInput){ newGroupInput.focus(); newGroupInput.scrollIntoView({block:"center"}); }
+      return;
+    }
+
     var dateBtn = e.target.closest("[data-wa-date-btn]");
     if (dateBtn){ openDatePopup(dateBtn); return; }
     if (datePopupState){
@@ -1166,6 +1270,7 @@
     document.getElementById("rowheight-select").value = waControls.getRowHeight();
     loadGroupPrefs();
     updateGroupToggleBtn();
+    updateHideDeliveredBtn();
     setSaveStatus("connecting");
     await initBackend();
     setSaveStatus(backendMode === "firebase" ? "synced" : "local-saved");

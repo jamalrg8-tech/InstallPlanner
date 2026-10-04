@@ -95,15 +95,24 @@
   // dismiss this session" set) and just swaps this HTML in and out of it;
   // the close button carries data-wa-due-dismiss so a host's own delegated
   // click listener can hide the banner (see wireDueSoonBanner() below).
-  function dueSoonBannerHTML(items){
+  // `expanded` controls whether the per-item list renders at all — the
+  // banner always shows just the summary line (count + chevron) until
+  // clicked, so it states that something needs attention without forcing
+  // the full list open every time it appears. The title is a <button> for
+  // exactly this: data-wa-due-toggle is what wireDueSoonBanner() below
+  // listens for to flip `expanded` and re-render.
+  function dueSoonBannerHTML(items, expanded){
     if (!items || !items.length) return "";
     var rows = items.map(function(it){
       return '<div class="wa-due-item" data-wa-due-id="'+escAttr(it.row.id)+'"><b>'+escText(it.label)+':</b> '+escText(it.message)+'</div>';
     }).join("");
     return '<div class="wa-due-banner-icon" aria-hidden="true">⚠️</div>'+
       '<div class="wa-due-banner-body">'+
-        '<div class="wa-due-banner-title">'+items.length+' WA line-item'+(items.length===1?"":"s")+' due for delivery soon</div>'+
-        rows+
+        '<button type="button" class="wa-due-banner-title" data-wa-due-toggle="1" aria-expanded="'+(expanded?"true":"false")+'">'+
+          '<span class="wa-due-banner-chevron" aria-hidden="true">'+(expanded?"▾":"▸")+'</span>'+
+          items.length+' WA line-item'+(items.length===1?"":"s")+' due for delivery soon'+
+        '</button>'+
+        (expanded ? rows : "")+
       '</div>'+
       '<button type="button" class="wa-due-banner-close" data-wa-due-dismiss="1" aria-label="Dismiss this warning">×</button>';
   }
@@ -114,18 +123,30 @@
   // markup). Dismissing hides the banner for the rest of this page load only
   // (dismissedIds lives in memory, not saved anywhere) — reloading the page,
   // or the item simply no longer qualifying (delivered, or no longer within
-  // the threshold), is what actually clears it for good. Returns a
-  // refresh() function the host calls after any edit/save/reload.
+  // the threshold), is what actually clears it for good. `expanded` (whether
+  // the item list is currently showing) lives in this same closure so it
+  // survives refresh() being called on every keystroke elsewhere on the
+  // page — toggling it open doesn't collapse again on the next unrelated
+  // edit — and resets to collapsed once dismissed, so it starts closed again
+  // next time something qualifies. Returns a refresh() function the host
+  // calls after any edit/save/reload.
   function wireDueSoonBanner(el, getRows, opts){
     if (!el) return { refresh: function(){} };
     var thresholdDays = (opts && opts.thresholdDays!=null) ? opts.thresholdDays : 7;
     var dismissedIds = {};
     var lastShownIds = [];
+    var expanded = false;
     el.addEventListener("click", function(e){
       if (e.target.closest("[data-wa-due-dismiss]")){
         lastShownIds.forEach(function(id){ dismissedIds[id] = true; });
+        expanded = false;
         el.hidden = true;
         el.innerHTML = "";
+        return;
+      }
+      if (e.target.closest("[data-wa-due-toggle]")){
+        expanded = !expanded;
+        refresh();
       }
     });
     function refresh(){
@@ -133,7 +154,7 @@
       lastShownIds = items.map(function(it){ return it.row.id; });
       if (!items.length){ el.hidden = true; el.innerHTML = ""; return; }
       el.hidden = false;
-      el.innerHTML = dueSoonBannerHTML(items);
+      el.innerHTML = dueSoonBannerHTML(items, expanded);
     }
     return { refresh: refresh };
   }
