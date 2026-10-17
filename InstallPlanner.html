@@ -817,8 +817,16 @@
   .pending-modal-body{ max-height:60vh; overflow-y:auto; }
   .pending-entry{ border-bottom:1px solid var(--border); padding:8px 0; display:flex; gap:10px; align-items:flex-start; }
   .pending-entry:last-child{ border-bottom:none; }
-  .pending-entry-date{ flex:0 0 auto; font-weight:700; color:var(--text-muted); font-size:12px; min-width:76px; }
-  .pending-entry-text{ flex:1 1 auto; white-space:pre-wrap; font-size:13px; }
+  /* Date + text used to be plain, read-only spans; they're now a button and a
+     textarea (see pendingEntryRowHTML()) so an existing entry can be edited
+     in place, not just deleted and retyped. Sized/styled to still read like
+     the old static text until hovered or focused. */
+  .pending-entry-date-btn{ flex:0 0 auto; min-width:76px; font-weight:700; color:var(--text-muted); font-size:12px; font-family:inherit; border:1px solid transparent; background:transparent; border-radius:4px; padding:2px 4px; margin:-2px 0 0 -4px; cursor:pointer; text-align:left; }
+  .pending-entry-date-btn:hover{ background:var(--surface-2); color:var(--text); }
+  .pending-entry-date-btn.active, .pending-entry-date-btn:focus-visible{ background:var(--surface); color:var(--text); box-shadow:inset 0 0 0 1px var(--accent); outline:none; }
+  .pending-entry-text-field{ flex:1 1 auto; display:block; width:100%; min-width:0; white-space:pre-wrap; font-size:13px; font-family:inherit; line-height:1.4; color:var(--text); border:1px solid transparent; background:transparent; resize:none; overflow:hidden; padding:2px 4px; margin:-2px 0 0 -4px; border-radius:4px; }
+  .pending-entry-text-field:hover{ border-color:var(--border); }
+  .pending-entry-text-field:focus{ border-color:var(--accent); background:var(--surface); outline:none; }
   .pending-entry-source{ flex:0 0 auto; font-size:10px; text-transform:uppercase; letter-spacing:.03em; color:var(--text-faint); }
   .pending-entry-del{ flex:0 0 auto; background:transparent; border:none; color:var(--text-faint); cursor:pointer; font-size:14px; padding:0 4px; }
   .pending-entry-del:hover{ color:var(--danger); }
@@ -4578,6 +4586,28 @@
         selEnd: (typeof active.selectionEnd === "number") ? active.selectionEnd : null
       };
     }
+    // Pending-actions entries (grid popup + detail page, see
+    // pendingEntryRowHTML()) carry the entry id in a single attribute rather
+    // than a field+id pair, since there's only ever one editable thing per
+    // entry. The detail page's copy genuinely needs this: any render() while
+    // its page is open rebuilds its whole pending list (see render()'s
+    // detailViewProjectId check), same as every other field there.
+    if (active.matches("[data-pending-edit]")){
+      return {
+        attr: "data-pending-edit",
+        value: active.dataset.pendingEdit,
+        selStart: (typeof active.selectionStart === "number") ? active.selectionStart : null,
+        selEnd: (typeof active.selectionEnd === "number") ? active.selectionEnd : null
+      };
+    }
+    if (active.matches("[data-detail-pending-edit]")){
+      return {
+        attr: "data-detail-pending-edit",
+        value: active.dataset.detailPendingEdit,
+        selStart: (typeof active.selectionStart === "number") ? active.selectionStart : null,
+        selEnd: (typeof active.selectionEnd === "number") ? active.selectionEnd : null
+      };
+    }
     return null;
   }
   function restoreFocusInfo(info){
@@ -4587,6 +4617,10 @@
         ? '[data-wa-field="'+info.field+'"][data-id="'+info.id+'"]'
         : info.attr === "data-daily-field"
         ? '[data-daily-field="'+info.field+'"][data-id="'+info.id+'"]'
+        : info.attr === "data-pending-edit"
+        ? '[data-pending-edit="'+info.value+'"]'
+        : info.attr === "data-detail-pending-edit"
+        ? '[data-detail-pending-edit="'+info.value+'"]'
         : '[data-field="'+info.field+'"][data-id="'+info.id+'"]';
       // The single-project detail page (see #detail-view) renders the same
       // data-field/data-id on its own copy of a field whenever that
@@ -6019,6 +6053,27 @@
     scheduleSave();
   });
 
+  // ---- Pending-actions entry text editing — the grid's popup modal and the
+  // detail page's own copy of the list (see pendingEntryRowHTML()) share this
+  // one listener, since both use the same free-typing textarea pattern. No
+  // render() here (same reasoning as the WA tracker listener just below):
+  // rebuilding the list mid-keystroke would blow away the field being typed
+  // into — editPendingEntryText()/editDetailPendingEntryText() just patch the
+  // underlying entry and schedule a save.
+  document.addEventListener("input", function(e){
+    var t = e.target;
+    if (t.matches("[data-pending-edit]")){
+      editPendingEntryText(t.dataset.pendingEdit, t.value);
+      autosizeTextarea(t);
+      return;
+    }
+    if (t.matches("[data-detail-pending-edit]")){
+      editDetailPendingEntryText(t.dataset.detailPendingEdit, t.value);
+      autosizeTextarea(t);
+      return;
+    }
+  });
+
   // ---- WA production tracker: field editing. Parallel to the [data-field]
   // listener above but scoped to [data-wa-field] so the two boards' data
   // models (state.projects vs state.waRows) never cross-wire. No field here
@@ -6313,6 +6368,26 @@
       '<button type="button" class="pending-btn" data-pending-btn="1" data-id="'+p.id+'" aria-label="Pending actions and remarks">'+countBadge+'<span class="pending-preview">'+preview+'</span></button></div>';
   }
 
+  // Shared row markup for one pending-actions entry, used by both the
+  // Schedule grid's popup modal (renderPendingModal()) and the single-project
+  // detail page (renderDetailPendingList()). Both the date and the text used
+  // to be plain read-only spans — they're now a date-popup button and an
+  // autosizing textarea, wired up by whichever data-*-date-edit / data-*-edit
+  // attribute name the caller passes in, so an existing entry can be edited
+  // (not just deleted and retyped) from either place. "opts.dateAttr" /
+  // "opts.editAttr" / "opts.delAttr" are the literal attribute names (e.g.
+  // "data-pending-date-edit"); "opts.showSource" adds the little
+  // PENDING/REMARK/etc. badge (detail page only — the modal doesn't have
+  // room for it).
+  function pendingEntryRowHTML(en, opts){
+    return '<div class="pending-entry">'+
+      '<button type="button" class="pending-entry-date-btn" '+opts.dateAttr+'="'+en.id+'" aria-label="Change this entry\'s date">'+(fmtDateDisplay(en.date)||"d/mm/yyyy")+'</button>'+
+      '<textarea class="pending-entry-text-field autosize-field" rows="1" '+opts.editAttr+'="'+en.id+'" aria-label="Edit this entry">'+escText(en.text)+'</textarea>'+
+      (opts.showSource ? '<span class="pending-entry-source">'+escText(PENDING_SOURCE_LABELS[en.source]||"")+'</span>' : "")+
+      '<button type="button" class="pending-entry-del" '+opts.delAttr+'="'+en.id+'" aria-label="Delete this entry" title="Delete this entry">✕</button>'+
+      '</div>';
+  }
+
   function renderPendingModal(){
     if (!pendingModalState) return;
     var p = findProject(pendingModalState.projectId);
@@ -6323,13 +6398,10 @@
     var bodyEl = document.getElementById("pending-modal-body");
     bodyEl.innerHTML = sorted.length
       ? sorted.map(function(en){
-          return '<div class="pending-entry">'+
-            '<span class="pending-entry-date">'+(fmtDateDisplay(en.date)||"—")+'</span>'+
-            '<span class="pending-entry-text">'+escText(en.text)+'</span>'+
-            '<button type="button" class="pending-entry-del" data-pending-del="'+en.id+'" aria-label="Delete this entry" title="Delete this entry">✕</button>'+
-            '</div>';
+          return pendingEntryRowHTML(en, { dateAttr:"data-pending-date-edit", editAttr:"data-pending-edit", delAttr:"data-pending-del" });
         }).join("")
       : '<div class="pending-empty">No pending actions or remarks logged yet — add the first one below.</div>';
+    autosizeAllTextareas(bodyEl);
     var addDateBtn = document.getElementById("pending-add-date-btn");
     addDateBtn.textContent = fmtDateDisplay(pendingModalState.addDate) || "d/mm/yyyy";
     addDateBtn.classList.toggle("placeholder", !pendingModalState.addDate);
@@ -6341,8 +6413,13 @@
     if (!Array.isArray(p.pendingActions)) p.pendingActions = [];
     pendingModalState = { projectId: projectId, addDate: TODAY_ISO };
     document.getElementById("pending-add-text").value = "";
-    renderPendingModal();
+    // Unhide BEFORE rendering: renderPendingModal() autosizes each entry's
+    // textarea by reading its scrollHeight, which is always 0 on an element
+    // still inside a hidden (display:none) ancestor — every entry would open
+    // collapsed to 0 height (text present but invisible) until its own next
+    // edit happened to fix just that one row.
     document.getElementById("pending-modal-backdrop").hidden = false;
+    renderPendingModal();
   }
   function closePendingModal(){
     pendingModalState = null;
@@ -6377,6 +6454,41 @@
     renderPendingModal();
     render();
     scheduleSave();
+  }
+  // Text edits land on every keystroke (an "input" listener, see below) —
+  // deliberately no renderPendingModal()/render() call here, same reasoning
+  // as every other free-typing field in the app (e.g. the WA tracker's own
+  // [data-wa-field] input handler): rebuilding the list's HTML mid-keystroke
+  // would blow away the textarea the person is actively typing in. The grid's
+  // own one-line preview (and the modal's own re-sort, if the edit changed
+  // which entry is newest) catches up next time something else triggers a
+  // full render().
+  function editPendingEntryText(entryId, text){
+    if (!pendingModalState) return;
+    var p = findProject(pendingModalState.projectId);
+    if (!p || !Array.isArray(p.pendingActions)) return;
+    var en = p.pendingActions.find(function(e){ return e.id === entryId; });
+    if (!en) return;
+    en.text = text;
+    scheduleSave();
+  }
+  // Date edits go through the same shared date-popup component as every
+  // other date field; unlike a free-typing text edit, picking a day is a
+  // single, instant action, so re-rendering right after (to re-sort the
+  // list by its new date, same as adding or deleting an entry) can't disturb
+  // anything the person is mid-typing.
+  function openPendingEntryDatePopup(btn, entryId){
+    if (!pendingModalState) return;
+    var p = findProject(pendingModalState.projectId);
+    if (!p || !Array.isArray(p.pendingActions)) return;
+    var en = p.pendingActions.find(function(e){ return e.id === entryId; });
+    if (!en) return;
+    openDatePopupGeneric(btn, en.date, function(isoVal){
+      en.date = isoVal || en.date; // a pending entry always needs a date to sort/display by — Clear is a no-op here
+      renderPendingModal();
+      render();
+      scheduleSave();
+    });
   }
 
   // ---- Single-project detail page: a full page (not a popup) for one
@@ -6477,14 +6589,10 @@
     var bodyEl = document.getElementById("detail-pending-body");
     bodyEl.innerHTML = sorted.length
       ? sorted.map(function(en){
-          return '<div class="pending-entry">'+
-            '<span class="pending-entry-date">'+(fmtDateDisplay(en.date)||"—")+'</span>'+
-            '<span class="pending-entry-text">'+escText(en.text)+'</span>'+
-            '<span class="pending-entry-source">'+escText(PENDING_SOURCE_LABELS[en.source]||"")+'</span>'+
-            '<button type="button" class="pending-entry-del" data-detail-pending-del="'+en.id+'" aria-label="Delete this entry" title="Delete this entry">✕</button>'+
-            '</div>';
+          return pendingEntryRowHTML(en, { dateAttr:"data-detail-pending-date-edit", editAttr:"data-detail-pending-edit", delAttr:"data-detail-pending-del", showSource:true });
         }).join("")
       : '<div class="pending-empty">No pending actions or remarks logged yet — add the first one below.</div>';
+    autosizeAllTextareas(bodyEl);
     var addDateBtn = document.getElementById("detail-pending-add-date-btn");
     addDateBtn.textContent = fmtDateDisplay(detailPendingAddDate) || "d/mm/yyyy";
     addDateBtn.classList.toggle("placeholder", !detailPendingAddDate);
@@ -6539,6 +6647,32 @@
     p.pendingActions.splice(idx, 1);
     renderDetailPendingList(p);
     scheduleSave();
+  }
+  // Same reasoning as editPendingEntryText() above: no renderDetailPendingList()
+  // call here, so a render() firing elsewhere mid-keystroke (e.g. a Firestore
+  // echo, or editing another field on this same page) doesn't wipe out the
+  // textarea being typed in — restoreFocusInfo() now knows how to find this
+  // field again by its entry id either way (see captureFocusInfo()).
+  function editDetailPendingEntryText(entryId, text){
+    if (!detailViewProjectId) return;
+    var p = findProject(detailViewProjectId);
+    if (!p || !Array.isArray(p.pendingActions)) return;
+    var en = p.pendingActions.find(function(e){ return e.id === entryId; });
+    if (!en) return;
+    en.text = text;
+    scheduleSave();
+  }
+  function openDetailPendingEntryDatePopup(btn, entryId){
+    if (!detailViewProjectId) return;
+    var p = findProject(detailViewProjectId);
+    if (!p || !Array.isArray(p.pendingActions)) return;
+    var en = p.pendingActions.find(function(e){ return e.id === entryId; });
+    if (!en) return;
+    openDatePopupGeneric(btn, en.date, function(isoVal){
+      en.date = isoVal || en.date; // a pending entry always needs a date to sort/display by — Clear is a no-op here
+      renderDetailPendingList(p);
+      scheduleSave();
+    });
   }
 
   // ---- date filter: search for projects by any custom start/finish date range ----
@@ -6918,6 +7052,8 @@
     }
     var pendingDelBtn = e.target.closest("[data-pending-del]");
     if (pendingDelBtn){ deletePendingEntry(pendingDelBtn.dataset.pendingDel); return; }
+    var pendingDateEditBtn = e.target.closest("[data-pending-date-edit]");
+    if (pendingDateEditBtn){ openPendingEntryDatePopup(pendingDateEditBtn, pendingDateEditBtn.dataset.pendingDateEdit); return; }
     if (e.target.id === "pending-add-btn"){ addPendingEntry(); return; }
     if (e.target.id === "pending-add-date-btn"){
       openDatePopupGeneric(e.target, pendingModalState ? pendingModalState.addDate : "", function(isoVal){
@@ -6932,6 +7068,8 @@
     if (e.target.id === "detail-back-btn"){ closeProjectDetail(); return; }
     var detailPendingDelBtn = e.target.closest("[data-detail-pending-del]");
     if (detailPendingDelBtn){ deleteDetailPendingEntry(detailPendingDelBtn.dataset.detailPendingDel); return; }
+    var detailPendingDateEditBtn = e.target.closest("[data-detail-pending-date-edit]");
+    if (detailPendingDateEditBtn){ openDetailPendingEntryDatePopup(detailPendingDateEditBtn, detailPendingDateEditBtn.dataset.detailPendingDateEdit); return; }
     if (e.target.id === "detail-pending-add-btn"){ addDetailPendingEntry(); return; }
     if (e.target.id === "detail-pending-add-date-btn"){
       openDatePopupGeneric(e.target, detailPendingAddDate, function(isoVal){
@@ -7140,6 +7278,15 @@
     // layout, so scrollHeight reads as 0) — e.g. importing or clearing
     // projects while viewing the Dashboard. Re-measure now that it's visible.
     if (view === "schedule") autosizeAllTextareas(boardEl);
+    // Same reasoning for the single-project detail page: openProjectDetail()
+    // calls renderDetailView() (which autosizes the title, Project scope, and
+    // every pending-actions entry) *before* this function makes #detail-view
+    // visible, so every one of those textareas gets measured at 0 height and
+    // stays stuck there — Project scope only looked fine by accident (its
+    // CSS min-height floor happened to be taller than most test content),
+    // and a pending entry's text was invisible outright. Re-measure the
+    // whole page now that it's actually on screen.
+    if (view === "detail" && detailViewProjectId) autosizeAllTextareas(document.getElementById("detail-view"));
     updateToolbarForView(view);
   }
 
