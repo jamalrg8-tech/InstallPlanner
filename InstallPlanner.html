@@ -123,16 +123,15 @@
     font-family:"Montserrat",system-ui,-apple-system,sans-serif;
     font-size:13px; line-height:1.4;
     -webkit-font-smoothing:antialiased;
-    /* Bumps every page's text size roughly a sixth larger in one place,
-       instead of hand-editing the 100+ individual font-size declarations
-       scattered through this file's dense Schedule grid, popups and
-       buttons. zoom scales layout and text together (unlike
-       transform:scale, which only scales what's painted and would break
-       this grid's sticky-column math and the date/teams popups' own
-       getBoundingClientRect()-based positioning), so every page keeps
-       lining up exactly as before, just larger. Raise/lower this one
-       number to change it everywhere at once. */
-    zoom:1.15;
+    /* A global zoom:1.15 briefly lived here to make text bigger everywhere
+       at once, but it made the app look worse overall (everything just
+       slightly oversized/blurry rather than genuinely easier to read), so
+       it's reverted back to the original 1:1 size/theme/font. The
+       popup-positioning helpers below (pageZoomFactor()/
+       positionZoomedPopup()) were written to work correctly at any zoom
+       level, 1 included, so they're left in place rather than unwound —
+       harmless now, and ready if a real per-element font bump is wanted
+       later without the whole-page side effects this had. */
   }
   h1{font-family:"Playfair Display",Georgia,serif; text-wrap:balance; margin:0;}
   h2{font-family:"Montserrat",sans-serif; font-weight:700; text-wrap:balance; margin:0;}
@@ -838,7 +837,18 @@
      narrow grid cells, and its Pending actions and remarks list is the
      complete log with nothing truncated (unlike the grid cell's one-line
      preview) or height-capped (unlike the popup modal's 60vh scroll box). */
-  #detail-view{ max-width:960px; margin:0 auto; padding:22px 20px 60px; }
+  /* width:100% is the actual fix here, not decoration: #detail-view is a
+     flex item of .app (display:flex; flex-direction:column — see .app{}),
+     and a flex item with "margin:0 auto" but an auto (unset) width doesn't
+     stretch to fill the cross axis the way a plain block element would —
+     the auto side-margins absorb ALL the spare width instead, shrinking the
+     item down to fit its content. That collapsed the fields grid below to
+     its narrowest possible single column, which is what made every field
+     render one-per-row no matter how wide the browser window was. Setting
+     width:100% up front means there's no spare width left for the auto
+     margins to eat — they're left with only whatever's beyond max-width, so
+     centering on a very wide screen still works exactly as before. */
+  #detail-view{ width:100%; max-width:1400px; margin:0 auto; padding:22px 24px 60px; box-sizing:border-box; }
   /* Sticky, not just top-of-page: a busy project's Pending actions and
      remarks log (the whole point of this page — see detailPendingList())
      can run long enough that the page scrolls well past where this bar
@@ -854,12 +864,18 @@
   .detail-title-field{ font-size:1.25rem; font-weight:700; margin:0; color:var(--text); word-break:break-word; border:1px solid transparent; background:transparent; resize:none; overflow:hidden; padding:4px 6px; flex:1 1 auto; min-width:200px; font-family:inherit; }
   .detail-title-field:hover{ border-color:var(--border); }
   .detail-title-field:focus{ border-color:var(--accent); background:var(--surface); outline:none; }
-  .detail-fields{ display:grid; grid-template-columns:repeat(auto-fit, minmax(240px, 1fr)); gap:16px 20px; margin-bottom:30px; }
-  .detail-field{ display:flex; flex-direction:column; gap:5px; min-width:0; }
+  /* Compact, many-per-row layout (narrower columns, tighter gaps, no forced
+     min-height) so the top section reads as one dense block — like a lot of
+     other apps' project-summary pages — instead of a long column of fields
+     one after another. The fields themselves are still the exact same live
+     .field/.date-btn/.teams-btn controls as the grid, just given less
+     padding to sit in; nothing here is a separate read-only display mode. */
+  .detail-fields{ display:grid; grid-template-columns:repeat(auto-fill, minmax(150px, 1fr)); gap:14px 22px; margin-bottom:26px; }
+  .detail-field{ display:flex; flex-direction:column; gap:3px; min-width:0; }
   .detail-field.detail-field-wide{ grid-column:1 / -1; }
-  .detail-field-label{ font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.04em; color:var(--text-muted); }
-  .detail-field .field, .detail-field .date-btn, .detail-field .teams-btn{ width:100%; box-sizing:border-box; min-height:36px; }
-  .detail-field textarea.field{ min-height:84px; resize:none; overflow:hidden; }
+  .detail-field-label{ font-size:10.5px; font-weight:700; text-transform:uppercase; letter-spacing:.04em; color:var(--text-muted); }
+  .detail-field .field, .detail-field .date-btn, .detail-field .teams-btn{ width:100%; box-sizing:border-box; }
+  .detail-field textarea.field{ min-height:60px; resize:none; overflow:hidden; }
   .detail-pending-section{ border-top:1px solid var(--border-strong); padding-top:20px; }
   .detail-pending-section h3{ margin:0 0 10px; font-size:1rem; }
   .detail-pending-list{ display:flex; flex-direction:column; margin-bottom:6px; }
