@@ -175,6 +175,13 @@
   .toolbar .btn.primary{ background:#fff; border-color:#fff; color:#000; }
   .toolbar .btn.primary:hover{ background:#e5e5e5; border-color:#e5e5e5; }
 
+  /* Checkbox next to Import Excel / CSV — lets a re-import fill in gaps on
+     projects that already exist (matched by name) instead of always adding
+     a new, duplicate row. See the import-input change handler below. */
+  .import-merge-label{ display:inline-flex; align-items:center; gap:6px; font-size:0.74rem; color:var(--nav-text); opacity:.85; white-space:nowrap; cursor:pointer; }
+  .import-merge-label:hover{ opacity:1; }
+  .import-merge-label input{ margin:0; }
+
   .sync-status{ display:flex; align-items:center; gap:7px; font-size:12px; color:var(--text-muted); font-family:"Montserrat",sans-serif; padding:7px 12px; border:1px solid var(--border); border-radius:100px; background:var(--surface); white-space:nowrap; }
   .sync-dot{ width:8px; height:8px; border-radius:50%; flex:none; background:var(--text-faint); }
   .sync-status.state-synced{ border-color:#15803D; color:var(--text); }
@@ -864,6 +871,9 @@
       <button class="btn" id="toggle-hidden-rows-btn" type="button" title="Hide/unhide individual projects with the row's eye button, then use this to find them again">Show hidden rows</button>
       <button class="btn" id="import-btn" type="button">Import Excel / CSV</button>
       <input class="import-input" id="import-input" type="file" accept=".xlsx,.xls,.csv">
+      <label class="import-merge-label" title="When checked, a sheet row whose Project name matches a project already on the board fills in that project's blank fields (like Project Value or RAL/Glass) and adds any Pending Status / Installation Pending / Remark / SuWai Handover notes it doesn't already have — nothing that's already filled in gets overwritten. A sheet row with no matching project is still added as new either way.">
+        <input type="checkbox" id="import-merge-toggle"> Merge into existing by name
+      </label>
       <button class="btn" id="export-pdf-btn" type="button">Export PDF</button>
       <button class="btn primary" id="add-btn" type="button">+ Add project</button>
     </div>
@@ -6960,12 +6970,29 @@
         }
         lastSnapshotForUndo = cloneState();
         var onlyExamples = state.projects.length>0 && state.projects.every(function(p){return p.isExample;});
-        if (onlyExamples) state.projects = imported;
-        else state.projects = state.projects.concat(imported);
-        state.bannerDismissed = true;
-        render();
-        scheduleSave();
-        showToast("Imported "+imported.length+" project"+(imported.length===1?"":"s")+" from "+file.name+".", "Undo", undoLast);
+        var mergeMode = !onlyExamples && !!(document.getElementById("import-merge-toggle") && document.getElementById("import-merge-toggle").checked);
+        if (onlyExamples){
+          state.projects = imported;
+          state.bannerDismissed = true;
+          render();
+          scheduleSave();
+          showToast("Imported "+imported.length+" project"+(imported.length===1?"":"s")+" from "+file.name+".", "Undo", undoLast);
+        } else if (mergeMode){
+          var mergeResult = mergeImportedProjects(imported);
+          state.bannerDismissed = true;
+          render();
+          scheduleSave();
+          var parts = [];
+          if (mergeResult.mergedCount) parts.push("updated "+mergeResult.mergedCount+" existing project"+(mergeResult.mergedCount===1?"":"s")+" ("+mergeResult.notesAddedCount+" new note"+(mergeResult.notesAddedCount===1?"":"s")+")");
+          if (mergeResult.addedCount) parts.push("added "+mergeResult.addedCount+" new project"+(mergeResult.addedCount===1?"":"s"));
+          showToast((parts.length ? parts.join(", ") : "Nothing new found")+" from "+file.name+".", "Undo", undoLast);
+        } else {
+          state.projects = state.projects.concat(imported);
+          state.bannerDismissed = true;
+          render();
+          scheduleSave();
+          showToast("Imported "+imported.length+" project"+(imported.length===1?"":"s")+" from "+file.name+".", "Undo", undoLast);
+        }
       } catch(err){
         showToast("Couldn't read that file. Try exporting as .xlsx or .csv.", null, null);
       }
@@ -7177,6 +7204,55 @@
       });
     }
     return out;
+  }
+
+  // "Merge into existing by name" import mode (see the import-input change
+  // handler above, and its checkbox in the toolbar): instead of blindly
+  // appending every imported row as a brand-new project — which is what
+  // creates a duplicate when the sheet still has a row for a project
+  // that's already on the board — this matches each imported row to an
+  // existing (non-example) project with the same name and:
+  //   - fills in that project's blank text/date fields from the sheet,
+  //     but NEVER overwrites a field that already has something in it;
+  //   - adds any Pending Status / Installation Pending / Remark / SuWai
+  //     Handover note from the sheet that isn't already in that project's
+  //     Pending actions and remarks log (matched on the note's text, so
+  //     re-importing the same sheet twice doesn't pile up duplicate notes).
+  // A sheet row that doesn't match any existing project is still added as
+  // a new project, same as a normal import.
+  var MERGE_FILL_IF_BLANK_FIELDS = ["client","scope","systemsSupplier","frameDelivery","glassDelivery","start","finish","ralGlass","projectValue","designApprovalDate"];
+  function mergeImportedProjects(imported){
+    var addedCount = 0, mergedCount = 0, notesAddedCount = 0;
+    imported.forEach(function(imp){
+      var importedName = String(imp.name||"").trim().toLowerCase();
+      var existing = state.projects.find(function(p){
+        return !p.isExample && String(p.name||"").trim().toLowerCase() === importedName;
+      });
+      if (!existing){
+        state.projects.push(imp);
+        addedCount++;
+        return;
+      }
+      var touched = false;
+      MERGE_FILL_IF_BLANK_FIELDS.forEach(function(key){
+        if (!String(existing[key]||"").trim() && String(imp[key]||"").trim()){
+          existing[key] = imp[key];
+          touched = true;
+        }
+      });
+      if (!Array.isArray(existing.pendingActions)) existing.pendingActions = [];
+      var existingNoteTexts = existing.pendingActions.map(function(entry){ return String(entry.text||"").trim().toLowerCase(); });
+      (imp.pendingActions||[]).forEach(function(entry){
+        var norm = String(entry.text||"").trim().toLowerCase();
+        if (!norm || existingNoteTexts.indexOf(norm)!==-1) return;
+        existing.pendingActions.push(entry);
+        existingNoteTexts.push(norm);
+        notesAddedCount++;
+        touched = true;
+      });
+      if (touched) mergedCount++;
+    });
+    return { addedCount: addedCount, mergedCount: mergedCount, notesAddedCount: notesAddedCount };
   }
 
   // ---- PDF export ----
