@@ -821,7 +821,12 @@
      complete log with nothing truncated (unlike the grid cell's one-line
      preview) or height-capped (unlike the popup modal's 60vh scroll box). */
   #detail-view{ max-width:960px; margin:0 auto; padding:22px 20px 60px; }
-  .detail-topbar{ display:flex; align-items:center; gap:16px; margin-bottom:22px; flex-wrap:wrap; }
+  /* Sticky, not just top-of-page: a busy project's Pending actions and
+     remarks log (the whole point of this page — see detailPendingList())
+     can run long enough that the page scrolls well past where this bar
+     started, and "Back to schedule" needs to stay reachable the whole way
+     down rather than requiring a scroll back to the top first. */
+  .detail-topbar{ display:flex; align-items:center; gap:16px; margin-bottom:22px; flex-wrap:wrap; position:sticky; top:0; z-index:10; background:var(--bg); padding:10px 0; border-bottom:1px solid var(--border); }
   .detail-title{ font-size:1.25rem; font-weight:700; margin:0; color:var(--text); word-break:break-word; }
   .detail-fields{ display:grid; grid-template-columns:repeat(auto-fit, minmax(240px, 1fr)); gap:16px 20px; margin-bottom:30px; }
   .detail-field{ display:flex; flex-direction:column; gap:5px; min-width:0; }
