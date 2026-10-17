@@ -123,6 +123,16 @@
     font-family:"Montserrat",system-ui,-apple-system,sans-serif;
     font-size:13px; line-height:1.4;
     -webkit-font-smoothing:antialiased;
+    /* Bumps every page's text size roughly a sixth larger in one place,
+       instead of hand-editing the 100+ individual font-size declarations
+       scattered through this file's dense Schedule grid, popups and
+       buttons. zoom scales layout and text together (unlike
+       transform:scale, which only scales what's painted and would break
+       this grid's sticky-column math and the date/teams popups' own
+       getBoundingClientRect()-based positioning), so every page keeps
+       lining up exactly as before, just larger. Raise/lower this one
+       number to change it everywhere at once. */
+    zoom:1.15;
   }
   h1{font-family:"Playfair Display",Georgia,serif; text-wrap:balance; margin:0;}
   h2{font-family:"Montserrat",sans-serif; font-weight:700; text-wrap:balance; margin:0;}
@@ -827,13 +837,21 @@
      started, and "Back to schedule" needs to stay reachable the whole way
      down rather than requiring a scroll back to the top first. */
   .detail-topbar{ display:flex; align-items:center; gap:16px; margin-bottom:22px; flex-wrap:wrap; position:sticky; top:0; z-index:10; background:var(--bg); padding:10px 0; border-bottom:1px solid var(--border); }
-  .detail-title{ font-size:1.25rem; font-weight:700; margin:0; color:var(--text); word-break:break-word; }
+  /* Project name on the detail page — looks like the plain heading it used
+     to be, but is now the same editable textarea as every other field here
+     (data-field="name" is set in renderDetailView()), so renaming a project
+     no longer requires going back to the grid. autosize-field (see
+     autosizeTextarea()) grows it to fit a name that wraps or, like a few of
+     this office's projects, has a literal line break in it. */
+  .detail-title-field{ font-size:1.25rem; font-weight:700; margin:0; color:var(--text); word-break:break-word; border:1px solid transparent; background:transparent; resize:none; overflow:hidden; padding:4px 6px; flex:1 1 auto; min-width:200px; font-family:inherit; }
+  .detail-title-field:hover{ border-color:var(--border); }
+  .detail-title-field:focus{ border-color:var(--accent); background:var(--surface); outline:none; }
   .detail-fields{ display:grid; grid-template-columns:repeat(auto-fit, minmax(240px, 1fr)); gap:16px 20px; margin-bottom:30px; }
   .detail-field{ display:flex; flex-direction:column; gap:5px; min-width:0; }
   .detail-field.detail-field-wide{ grid-column:1 / -1; }
   .detail-field-label{ font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.04em; color:var(--text-muted); }
   .detail-field .field, .detail-field .date-btn, .detail-field .teams-btn{ width:100%; box-sizing:border-box; min-height:36px; }
-  .detail-field textarea.field{ min-height:84px; resize:vertical; }
+  .detail-field textarea.field{ min-height:84px; resize:none; overflow:hidden; }
   .detail-pending-section{ border-top:1px solid var(--border-strong); padding-top:20px; }
   .detail-pending-section h3{ margin:0 0 10px; font-size:1rem; }
   .detail-pending-list{ display:flex; flex-direction:column; margin-bottom:6px; }
@@ -944,7 +962,7 @@
   <div id="detail-view" hidden>
     <div class="detail-topbar">
       <button type="button" class="btn" id="detail-back-btn">← Back to schedule</button>
-      <h2 class="detail-title" id="detail-title"></h2>
+      <textarea class="field detail-title-field autosize-field" id="detail-title" rows="1" aria-label="Project name" placeholder="Project name"></textarea>
     </div>
     <div class="detail-fields" id="detail-fields"></div>
     <div class="detail-pending-section">
@@ -3670,16 +3688,7 @@
     if (columnsPopupEl){
       columnsPopupEl.hidden = false;
       if (btn){
-        var rect = btn.getBoundingClientRect();
-        var popW = columnsPopupEl.offsetWidth || 220;
-        var popH = columnsPopupEl.offsetHeight || 260;
-        var left = Math.min(rect.left, window.innerWidth - popW - 8);
-        left = Math.max(8, left);
-        var top = rect.bottom + 4;
-        if (top + popH > window.innerHeight - 8) top = rect.top - popH - 4;
-        if (top < 8) top = 8;
-        columnsPopupEl.style.left = left + "px";
-        columnsPopupEl.style.top = top + "px";
+        positionZoomedPopup(columnsPopupEl, btn, 220, 260);
       }
     }
   }
@@ -5007,16 +5016,7 @@
     dailySupportPopupEl.hidden = true;
   }
   function positionDailySupportPopup(btn){
-    var rect = btn.getBoundingClientRect();
-    var popW = dailySupportPopupEl.offsetWidth || 200;
-    var popH = dailySupportPopupEl.offsetHeight || 220;
-    var left = Math.min(rect.left, window.innerWidth - popW - 8);
-    left = Math.max(8, left);
-    var top = rect.bottom + 4;
-    if (top + popH > window.innerHeight - 8) top = rect.top - popH - 4;
-    if (top < 8) top = 8;
-    dailySupportPopupEl.style.left = left + "px";
-    dailySupportPopupEl.style.top = top + "px";
+    positionZoomedPopup(dailySupportPopupEl, btn, 200, 220);
   }
   function toggleDailySupportTeam(taskId, teamName, checked){
     var t = findDailyTask(taskId);
@@ -6186,17 +6186,38 @@
     datePopupEl.hidden = true;
   }
 
-  function positionDatePopup(btn){
+  // The app's page zoom (see body{zoom:...} in CSS) scales up all text and
+  // layout for readability. Popups like this one are plain children of
+  // <body>, so they sit inside that zoomed subtree: their own offsetWidth/
+  // offsetHeight and any style.left/style.top we assign are measured in
+  // <body>'s *local*, pre-zoom pixels, while btn.getBoundingClientRect()
+  // and window.innerWidth/innerHeight report the *real*, post-zoom pixels
+  // actually on screen (the browser multiplies local px by the zoom factor
+  // when it paints). Mixing the two without converting is what pushed
+  // popups off-screen. positionZoomedPopup() does the on-screen-fit math
+  // in real pixels, then divides back down to local units before writing
+  // style.left/style.top, so it stays correct at any zoom level (including 1).
+  function pageZoomFactor(){
+    var z = parseFloat(getComputedStyle(document.body).zoom);
+    return (z && !isNaN(z)) ? z : 1;
+  }
+
+  function positionZoomedPopup(el, btn, fallbackW, fallbackH){
+    var z = pageZoomFactor();
     var rect = btn.getBoundingClientRect();
-    var popW = datePopupEl.offsetWidth || 236;
-    var popH = datePopupEl.offsetHeight || 260;
+    var popW = (el.offsetWidth || fallbackW) * z;
+    var popH = (el.offsetHeight || fallbackH) * z;
     var left = Math.min(rect.left, window.innerWidth - popW - 8);
     left = Math.max(8, left);
     var top = rect.bottom + 4;
     if (top + popH > window.innerHeight - 8) top = rect.top - popH - 4;
     if (top < 8) top = 8;
-    datePopupEl.style.left = left + "px";
-    datePopupEl.style.top = top + "px";
+    el.style.left = (left / z) + "px";
+    el.style.top = (top / z) + "px";
+  }
+
+  function positionDatePopup(btn){
+    positionZoomedPopup(datePopupEl, btn, 236, 260);
   }
 
   // ---- Helper teams popup: tags extra teams onto a project without
@@ -6246,16 +6267,7 @@
   }
 
   function positionTeamsPopup(btn){
-    var rect = btn.getBoundingClientRect();
-    var popW = teamsPopupEl.offsetWidth || 200;
-    var popH = teamsPopupEl.offsetHeight || 220;
-    var left = Math.min(rect.left, window.innerWidth - popW - 8);
-    left = Math.max(8, left);
-    var top = rect.bottom + 4;
-    if (top + popH > window.innerHeight - 8) top = rect.top - popH - 4;
-    if (top < 8) top = 8;
-    teamsPopupEl.style.left = left + "px";
-    teamsPopupEl.style.top = top + "px";
+    positionZoomedPopup(teamsPopupEl, btn, 200, 220);
   }
 
   function toggleExtraTeam(projectId, teamName, checked){
@@ -6452,7 +6464,7 @@
     }
     html += detailFieldRow("Project status", statusHTML);
 
-    html += detailFieldRow("Project scope", '<textarea class="field" data-field="scope" data-id="'+p.id+'" placeholder="Scope of work" aria-label="Project scope">'+escText(p.scope)+'</textarea>', true);
+    html += detailFieldRow("Project scope", '<textarea class="field autosize-field" data-field="scope" data-id="'+p.id+'" placeholder="Scope of work" aria-label="Project scope">'+escText(p.scope)+'</textarea>', true);
 
     return html;
   }
@@ -6482,8 +6494,20 @@
     if (!detailViewProjectId) return;
     var p = findProject(detailViewProjectId);
     if (!p){ closeProjectDetail(); return; } // the project was deleted while its detail page was open
-    document.getElementById("detail-title").textContent = p.name || "Untitled project";
+    var titleEl = document.getElementById("detail-title");
+    titleEl.dataset.field = "name";
+    titleEl.dataset.id = p.id;
+    titleEl.title = p.name;
+    // Only overwrite the textarea's value when it's not the thing the user
+    // is actively typing in — render() (and so this function) can run again
+    // mid-edit (see the detailViewProjectId check near the end of render()),
+    // and re-stamping the same value there is harmless, but re-stamping a
+    // DIFFERENT project's detail page while this one is focused never
+    // happens in practice since only one project's page is open at a time.
+    if (document.activeElement !== titleEl) titleEl.value = p.name || "";
+    autosizeTextarea(titleEl);
     document.getElementById("detail-fields").innerHTML = detailFieldsHTML(p);
+    autosizeAllTextareas(document.getElementById("detail-fields"));
     renderDetailPendingList(p);
   }
 
@@ -6543,16 +6567,7 @@
     dateFilterPopupEl.hidden = true;
   }
   function positionDateFilterPopup(btn){
-    var rect = btn.getBoundingClientRect();
-    var popW = dateFilterPopupEl.offsetWidth || 300;
-    var popH = dateFilterPopupEl.offsetHeight || 220;
-    var left = Math.min(rect.left, window.innerWidth - popW - 8);
-    left = Math.max(8, left);
-    var top = rect.bottom + 4;
-    if (top + popH > window.innerHeight - 8) top = rect.top - popH - 4;
-    if (top < 8) top = 8;
-    dateFilterPopupEl.style.left = left + "px";
-    dateFilterPopupEl.style.top = top + "px";
+    positionZoomedPopup(dateFilterPopupEl, btn, 300, 220);
   }
   function runDateFilter(){
     var v = dateFilterValues;
