@@ -51,27 +51,34 @@
     --team-alex:#2F8F72;
     --team-angelo:#C98A2D;
     --team-albert:#B3542E;
-    --team-bert:#7A5C99;
+    --team-norberto:#7A5C99;
     --team-sammy:#5B7B3F;
+    --team-edson:#2E8A8A;
     --team-none:#7C8493;
 
-    --w-idx:40px; --w-name:195px; --w-team:122px; --w-extrateams:150px; --w-bondingrequired:118px; --w-divider:10px;
-    --base-w-client:108px; --base-w-scope:160px; --base-w-glassdelivery:124px;
-    --base-w-glassdeliverycomments:150px;
-    --base-w-framedelivery:124px; --base-w-framedeliverycomments:150px;
-    --base-w-start:124px;
-    --base-w-finish:124px; --base-w-pct:78px; --base-w-comments:175px;
+    --w-idx:40px; --w-divider:10px;
+    --base-w-client:108px; --base-w-scope:180px; --base-w-pendingactions:280px;
+    --base-w-framedelivery:124px; --base-w-glassdelivery:124px; --base-w-start:136px; --base-w-finish:136px;
+    --base-w-systemssupplier:140px; --base-w-pct:78px; --base-w-ralglass:120px;
+    --base-w-projectvalue:130px; --base-w-designapprovaldate:124px;
     --detail-scale:1;
+    --w-name:195px;
     --w-client: calc(var(--base-w-client) * var(--detail-scale));
     --w-scope: calc(var(--base-w-scope) * var(--detail-scale));
-    --w-glassdelivery: calc(var(--base-w-glassdelivery) * var(--detail-scale));
-    --w-glassdeliverycomments: calc(var(--base-w-glassdeliverycomments) * var(--detail-scale));
+    --w-pendingactions: calc(var(--base-w-pendingactions) * var(--detail-scale));
     --w-framedelivery: calc(var(--base-w-framedelivery) * var(--detail-scale));
-    --w-framedeliverycomments: calc(var(--base-w-framedeliverycomments) * var(--detail-scale));
+    --w-glassdelivery: calc(var(--base-w-glassdelivery) * var(--detail-scale));
     --w-start: calc(var(--base-w-start) * var(--detail-scale));
     --w-finish: calc(var(--base-w-finish) * var(--detail-scale));
+    --w-systemssupplier: calc(var(--base-w-systemssupplier) * var(--detail-scale));
     --w-pct: calc(var(--base-w-pct) * var(--detail-scale));
-    --w-comments: calc(var(--base-w-comments) * var(--detail-scale));
+    --w-team:122px;
+    --w-extrateams:150px;
+    --w-ralglass: calc(var(--base-w-ralglass) * var(--detail-scale));
+    --w-projectvalue: calc(var(--base-w-projectvalue) * var(--detail-scale));
+    --w-designapprovaldate: calc(var(--base-w-designapprovaldate) * var(--detail-scale));
+    --w-bondingrequired:118px;
+    --w-projectstatus:170px;
     --day:30px;
     --w-alloc-team:150px; --aday:26px;
   }
@@ -89,7 +96,7 @@
       --shadow-lg:0 6px 24px rgba(0,0,0,.5);
       --nav-bg:#000000; --nav-text:#FFFFFF; --nav-border:rgba(255,255,255,.25); --nav-hover:rgba(255,255,255,.12); --nav-active:rgba(255,255,255,.16);
       --team-mark:#6FA8DB; --team-alex:#5FBB9B; --team-angelo:#E3AC55;
-      --team-albert:#D4805C; --team-bert:#A488C7; --team-sammy:#8AAD5F; --team-none:#9AA3B4;
+      --team-albert:#D4805C; --team-norberto:#A488C7; --team-sammy:#8AAD5F; --team-edson:#4FB8B8; --team-none:#9AA3B4;
     }
   }
   :root[data-theme="dark"]{
@@ -105,7 +112,7 @@
     --shadow-lg:0 6px 24px rgba(0,0,0,.5);
     --nav-bg:#000000; --nav-text:#FFFFFF; --nav-border:rgba(255,255,255,.25); --nav-hover:rgba(255,255,255,.12); --nav-active:rgba(255,255,255,.16);
     --team-mark:#6FA8DB; --team-alex:#5FBB9B; --team-angelo:#E3AC55;
-    --team-albert:#D4805C; --team-bert:#A488C7; --team-sammy:#8AAD5F; --team-none:#9AA3B4;
+    --team-albert:#D4805C; --team-norberto:#A488C7; --team-sammy:#8AAD5F; --team-edson:#4FB8B8; --team-none:#9AA3B4;
   }
 
   *{box-sizing:border-box;}
@@ -258,21 +265,24 @@
 
   /* meta column sticky offsets */
   .c-idx{ position:sticky; left:0; z-index:3; width:var(--w-idx); justify-content:center; padding:0; }
-  .c-name{ position:sticky; left:var(--w-idx); z-index:3; width:var(--w-name); }
+  .c-name{ position:sticky; left:calc(var(--w-idx)); z-index:3; width:var(--w-name); }
   .c-client{ position:sticky; left:calc(var(--w-idx) + var(--w-name)); z-index:3; width:var(--w-client); }
   .c-scope{ position:sticky; left:calc(var(--w-idx) + var(--w-name) + var(--w-client)); z-index:3; width:var(--w-scope); }
-  .c-glassdelivery{ position:sticky; left:calc(var(--w-idx) + var(--w-name) + var(--w-client) + var(--w-scope)); z-index:3; width:var(--w-glassdelivery); }
-  .c-glassdeliverycomments{ position:sticky; left:calc(var(--w-idx) + var(--w-name) + var(--w-client) + var(--w-scope) + var(--w-glassdelivery)); z-index:3; width:var(--w-glassdeliverycomments); }
-  .c-framedelivery{ position:sticky; left:calc(var(--w-idx) + var(--w-name) + var(--w-client) + var(--w-scope) + var(--w-glassdelivery) + var(--w-glassdeliverycomments)); z-index:3; width:var(--w-framedelivery); }
-  .c-framedeliverycomments{ position:sticky; left:calc(var(--w-idx) + var(--w-name) + var(--w-client) + var(--w-scope) + var(--w-glassdelivery) + var(--w-glassdeliverycomments) + var(--w-framedelivery)); z-index:3; width:var(--w-framedeliverycomments); }
-  .c-start{ position:sticky; left:calc(var(--w-idx) + var(--w-name) + var(--w-client) + var(--w-scope) + var(--w-glassdelivery) + var(--w-glassdeliverycomments) + var(--w-framedelivery) + var(--w-framedeliverycomments)); z-index:3; width:var(--w-start); }
-  .c-finish{ position:sticky; left:calc(var(--w-idx) + var(--w-name) + var(--w-client) + var(--w-scope) + var(--w-glassdelivery) + var(--w-glassdeliverycomments) + var(--w-framedelivery) + var(--w-framedeliverycomments) + var(--w-start)); z-index:3; width:var(--w-finish); }
-  .c-comments{ position:sticky; left:calc(var(--w-idx) + var(--w-name) + var(--w-client) + var(--w-scope) + var(--w-glassdelivery) + var(--w-glassdeliverycomments) + var(--w-framedelivery) + var(--w-framedeliverycomments) + var(--w-start) + var(--w-finish)); z-index:3; width:var(--w-comments); }
-  .c-pct{ position:sticky; left:calc(var(--w-idx) + var(--w-name) + var(--w-client) + var(--w-scope) + var(--w-glassdelivery) + var(--w-glassdeliverycomments) + var(--w-framedelivery) + var(--w-framedeliverycomments) + var(--w-start) + var(--w-finish) + var(--w-comments)); z-index:3; width:var(--w-pct); }
-  .c-team{ position:sticky; left:calc(var(--w-idx) + var(--w-name) + var(--w-client) + var(--w-scope) + var(--w-glassdelivery) + var(--w-glassdeliverycomments) + var(--w-framedelivery) + var(--w-framedeliverycomments) + var(--w-start) + var(--w-finish) + var(--w-comments) + var(--w-pct)); z-index:3; width:var(--w-team); }
-  .c-extrateams{ position:sticky; left:calc(var(--w-idx) + var(--w-name) + var(--w-client) + var(--w-scope) + var(--w-glassdelivery) + var(--w-glassdeliverycomments) + var(--w-framedelivery) + var(--w-framedeliverycomments) + var(--w-start) + var(--w-finish) + var(--w-comments) + var(--w-pct) + var(--w-team)); z-index:3; width:var(--w-extrateams); }
-  .c-bondingrequired{ position:sticky; left:calc(var(--w-idx) + var(--w-name) + var(--w-client) + var(--w-scope) + var(--w-glassdelivery) + var(--w-glassdeliverycomments) + var(--w-framedelivery) + var(--w-framedeliverycomments) + var(--w-start) + var(--w-finish) + var(--w-comments) + var(--w-pct) + var(--w-team) + var(--w-extrateams)); z-index:3; width:var(--w-bondingrequired); }
-  .c-divider{ position:sticky; left:calc(var(--w-idx) + var(--w-name) + var(--w-client) + var(--w-scope) + var(--w-glassdelivery) + var(--w-glassdeliverycomments) + var(--w-framedelivery) + var(--w-framedeliverycomments) + var(--w-start) + var(--w-finish) + var(--w-comments) + var(--w-pct) + var(--w-team) + var(--w-extrateams) + var(--w-bondingrequired)); z-index:5; width:var(--w-divider); min-width:var(--w-divider); padding:0; border-right:1px solid var(--border-strong); box-shadow:2px 0 4px rgba(0,0,0,.08); background:var(--surface-2); cursor:col-resize; display:block; }
+  .c-pendingactions{ position:sticky; left:calc(var(--w-idx) + var(--w-name) + var(--w-client) + var(--w-scope)); z-index:3; width:var(--w-pendingactions); }
+  .c-framedelivery{ position:sticky; left:calc(var(--w-idx) + var(--w-name) + var(--w-client) + var(--w-scope) + var(--w-pendingactions)); z-index:3; width:var(--w-framedelivery); }
+  .c-glassdelivery{ position:sticky; left:calc(var(--w-idx) + var(--w-name) + var(--w-client) + var(--w-scope) + var(--w-pendingactions) + var(--w-framedelivery)); z-index:3; width:var(--w-glassdelivery); }
+  .c-start{ position:sticky; left:calc(var(--w-idx) + var(--w-name) + var(--w-client) + var(--w-scope) + var(--w-pendingactions) + var(--w-framedelivery) + var(--w-glassdelivery)); z-index:3; width:var(--w-start); }
+  .c-finish{ position:sticky; left:calc(var(--w-idx) + var(--w-name) + var(--w-client) + var(--w-scope) + var(--w-pendingactions) + var(--w-framedelivery) + var(--w-glassdelivery) + var(--w-start)); z-index:3; width:var(--w-finish); }
+  .c-systemssupplier{ position:sticky; left:calc(var(--w-idx) + var(--w-name) + var(--w-client) + var(--w-scope) + var(--w-pendingactions) + var(--w-framedelivery) + var(--w-glassdelivery) + var(--w-start) + var(--w-finish)); z-index:3; width:var(--w-systemssupplier); }
+  .c-pct{ position:sticky; left:calc(var(--w-idx) + var(--w-name) + var(--w-client) + var(--w-scope) + var(--w-pendingactions) + var(--w-framedelivery) + var(--w-glassdelivery) + var(--w-start) + var(--w-finish) + var(--w-systemssupplier)); z-index:3; width:var(--w-pct); }
+  .c-team{ position:sticky; left:calc(var(--w-idx) + var(--w-name) + var(--w-client) + var(--w-scope) + var(--w-pendingactions) + var(--w-framedelivery) + var(--w-glassdelivery) + var(--w-start) + var(--w-finish) + var(--w-systemssupplier) + var(--w-pct)); z-index:3; width:var(--w-team); }
+  .c-extrateams{ position:sticky; left:calc(var(--w-idx) + var(--w-name) + var(--w-client) + var(--w-scope) + var(--w-pendingactions) + var(--w-framedelivery) + var(--w-glassdelivery) + var(--w-start) + var(--w-finish) + var(--w-systemssupplier) + var(--w-pct) + var(--w-team)); z-index:3; width:var(--w-extrateams); }
+  .c-ralglass{ position:sticky; left:calc(var(--w-idx) + var(--w-name) + var(--w-client) + var(--w-scope) + var(--w-pendingactions) + var(--w-framedelivery) + var(--w-glassdelivery) + var(--w-start) + var(--w-finish) + var(--w-systemssupplier) + var(--w-pct) + var(--w-team) + var(--w-extrateams)); z-index:3; width:var(--w-ralglass); }
+  .c-projectvalue{ position:sticky; left:calc(var(--w-idx) + var(--w-name) + var(--w-client) + var(--w-scope) + var(--w-pendingactions) + var(--w-framedelivery) + var(--w-glassdelivery) + var(--w-start) + var(--w-finish) + var(--w-systemssupplier) + var(--w-pct) + var(--w-team) + var(--w-extrateams) + var(--w-ralglass)); z-index:3; width:var(--w-projectvalue); }
+  .c-designapprovaldate{ position:sticky; left:calc(var(--w-idx) + var(--w-name) + var(--w-client) + var(--w-scope) + var(--w-pendingactions) + var(--w-framedelivery) + var(--w-glassdelivery) + var(--w-start) + var(--w-finish) + var(--w-systemssupplier) + var(--w-pct) + var(--w-team) + var(--w-extrateams) + var(--w-ralglass) + var(--w-projectvalue)); z-index:3; width:var(--w-designapprovaldate); }
+  .c-bondingrequired{ position:sticky; left:calc(var(--w-idx) + var(--w-name) + var(--w-client) + var(--w-scope) + var(--w-pendingactions) + var(--w-framedelivery) + var(--w-glassdelivery) + var(--w-start) + var(--w-finish) + var(--w-systemssupplier) + var(--w-pct) + var(--w-team) + var(--w-extrateams) + var(--w-ralglass) + var(--w-projectvalue) + var(--w-designapprovaldate)); z-index:3; width:var(--w-bondingrequired); }
+  .c-projectstatus{ position:sticky; left:calc(var(--w-idx) + var(--w-name) + var(--w-client) + var(--w-scope) + var(--w-pendingactions) + var(--w-framedelivery) + var(--w-glassdelivery) + var(--w-start) + var(--w-finish) + var(--w-systemssupplier) + var(--w-pct) + var(--w-team) + var(--w-extrateams) + var(--w-ralglass) + var(--w-projectvalue) + var(--w-designapprovaldate) + var(--w-bondingrequired)); z-index:3; width:var(--w-projectstatus); }
+  .c-divider{ position:sticky; left:calc(var(--w-idx) + var(--w-name) + var(--w-client) + var(--w-scope) + var(--w-pendingactions) + var(--w-framedelivery) + var(--w-glassdelivery) + var(--w-start) + var(--w-finish) + var(--w-systemssupplier) + var(--w-pct) + var(--w-team) + var(--w-extrateams) + var(--w-ralglass) + var(--w-projectvalue) + var(--w-designapprovaldate) + var(--w-bondingrequired) + var(--w-projectstatus)); z-index:5; width:var(--w-divider); min-width:var(--w-divider); padding:0; border-right:1px solid var(--border-strong); box-shadow:2px 0 4px rgba(0,0,0,.08); background:var(--surface-2); cursor:col-resize; display:block; }
   .c-divider:hover, .c-divider.dragging{ background:var(--accent-soft); }
   .c-divider::after{ content:""; position:absolute; top:50%; left:50%; width:2px; height:28px; background:var(--border-strong); border-radius:1px; transform:translate(-50%,-50%); }
   .c-divider:hover::after, .c-divider.dragging::after{ background:var(--accent); }
@@ -387,7 +397,7 @@
   select.field[data-team="Alex"]{ color:var(--team-alex); }
   select.field[data-team="Angelo"]{ color:var(--team-angelo); }
   select.field[data-team="Albert"]{ color:var(--team-albert); }
-  select.field[data-team="Bert"]{ color:var(--team-bert); }
+  select.field[data-team="Norberto"]{ color:var(--team-norberto); }
   select.field[data-team="Sammy"]{ color:var(--team-sammy); }
 
   .row-name-wrap{ display:flex; flex-direction:column; gap:1px; min-width:0; }
@@ -728,13 +738,92 @@
      still anchors its absolutely-positioned delete button. */
   .board-list .cell{ left:auto; }
 
-  /* Hide/unhide Client column (toolbar toggle) — the grid track itself
-     collapses to 0 via --w-client (see applyColumnVars()), but the cell's
-     own padding/border would otherwise still paint a visible sliver even
-     at zero width, so both are zeroed here too. Applies in both the plain
-     list and the Schedule grid modal, and to the header cell as well,
-     since all three share the ".c-client" class. */
-  .client-hidden .c-client{ padding:0; border-right:0; overflow:hidden; }
+  /* Hide/unhide any column via the "Columns" toolbar popover — the grid
+     track itself collapses to 0 via --w-X/--base-w-X (see
+     applyColumnVars()), but the cell's own padding/border would otherwise
+     still paint a visible sliver even at zero width, so both are zeroed
+     here too. Applies in both the plain list and the Schedule grid modal,
+     and to the header cell as well, since both share each ".c-X" class.
+     document.body gets one "col-hidden-<key>" class per hidden column (see
+     applyHiddenColsClasses()). */
+  .col-hidden-name .c-name,
+  .col-hidden-client .c-client,
+  .col-hidden-scope .c-scope,
+  .col-hidden-framedelivery .c-framedelivery,
+  .col-hidden-glassdelivery .c-glassdelivery,
+  .col-hidden-start .c-start,
+  .col-hidden-finish .c-finish,
+  .col-hidden-systemssupplier .c-systemssupplier,
+  .col-hidden-pct .c-pct,
+  .col-hidden-team .c-team,
+  .col-hidden-extrateams .c-extrateams,
+  .col-hidden-ralglass .c-ralglass,
+  .col-hidden-projectvalue .c-projectvalue,
+  .col-hidden-designapprovaldate .c-designapprovaldate,
+  .col-hidden-bondingrequired .c-bondingrequired,
+  .col-hidden-pendingactions .c-pendingactions{ padding:0; border-right:0; overflow:hidden; }
+  .col-hidden-projectstatus .c-projectstatus{ padding:0; border-right:0; overflow:hidden; }
+
+  /* Row hide/unhide (Schedule list only — see visibleProjects filtering in
+     render()). A hidden row only ever appears here when "Show hidden rows"
+     is on, dimmed so it reads clearly as hidden while still being easy to
+     click back on. */
+  .row-dimmed{ opacity:.45; }
+  .row-dimmed .hide-row-btn{ opacity:1; }
+
+  .hide-row-btn{ position:absolute; top:1px; left:1px; width:14px; height:14px; line-height:14px; font-size:9px;
+    border:none; border-radius:3px; background:transparent; color:var(--text-faint); cursor:pointer; padding:0; opacity:.35; }
+  .hide-row-btn:hover{ opacity:1; background:var(--accent-soft); color:var(--text); }
+  /* .c-idx is already position:sticky (see the sticky column rules above),
+     which — like relative/absolute/fixed — establishes a containing block
+     for this absolutely-positioned button, so no extra positioning rule is
+     needed (and adding "position:relative" here would wrongly override the
+     sticky behavior that pins the row-number column while scrolling). */
+
+  /* "Pending actions and remarks" cell: a button showing the most recent
+     dated entry, opened into the full dated log (see openPendingModal()). */
+  .pending-btn{ width:100%; height:100%; text-align:left; background:transparent; border:none; cursor:pointer;
+    display:flex; align-items:center; gap:6px; padding:4px 2px; font-size:12px; color:var(--text); white-space:normal; }
+  .pending-btn:hover{ background:var(--accent-soft); }
+  .pending-count{ flex:0 0 auto; background:var(--accent-soft); color:var(--text); border-radius:999px; font-size:10px; font-weight:700; padding:1px 6px; }
+  .pending-preview{ overflow:hidden; text-overflow:ellipsis; display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; }
+  .pending-date{ font-weight:700; color:var(--text-muted); }
+
+  .pending-modal-body{ max-height:60vh; overflow-y:auto; }
+  .pending-entry{ border-bottom:1px solid var(--border); padding:8px 0; display:flex; gap:10px; align-items:flex-start; }
+  .pending-entry:last-child{ border-bottom:none; }
+  .pending-entry-date{ flex:0 0 auto; font-weight:700; color:var(--text-muted); font-size:12px; min-width:76px; }
+  .pending-entry-text{ flex:1 1 auto; white-space:pre-wrap; font-size:13px; }
+  .pending-entry-source{ flex:0 0 auto; font-size:10px; text-transform:uppercase; letter-spacing:.03em; color:var(--text-faint); }
+  .pending-entry-del{ flex:0 0 auto; background:transparent; border:none; color:var(--text-faint); cursor:pointer; font-size:14px; padding:0 4px; }
+  .pending-entry-del:hover{ color:var(--danger); }
+  .pending-empty{ color:var(--text-faint); font-style:italic; padding:12px 0; }
+  .pending-add-row{ display:flex; gap:8px; align-items:center; padding-top:10px; border-top:1px solid var(--border-strong); margin-top:4px; }
+  .pending-add-row input[type="text"]{ flex:1 1 auto; padding:6px 8px; border:1px solid var(--border); border-radius:var(--radius); background:var(--surface); color:var(--text); font-size:13px; }
+
+  .columns-btn.active, #toggle-hidden-rows-btn.active, #view-density-btn.active{ background:var(--accent-soft); }
+
+  /* Show/Hide Columns button: always a bit more visually prominent than the
+     other toolbar buttons, and switches to a warning color once one or more
+     columns are currently hidden, so it's obvious at a glance that the grid
+     isn't showing everything. */
+  .toolbar .columns-btn{ font-weight:800; border-width:2px; }
+  .toolbar .columns-btn.cols-hidden-active{
+    background:#FFD400; border-color:#FFD400; color:#1a1400;
+  }
+  .toolbar .columns-btn.cols-hidden-active:hover{ background:#FFC700; border-color:#FFC700; }
+
+  /* Normal / Compact view density toggle for the Schedule tab's plain list —
+     tightens cell padding, field padding and the fixed textarea/date-button
+     height so more rows fit on screen at once, without touching the Grid
+     modal or any other tab (each of which has its own sizing). */
+  #schedule-view.view-compact .board-list .cell{ padding:0 5px; }
+  #schedule-view.view-compact .board-list .field{ padding:2px 4px; font-size:11.5px; }
+  #schedule-view.view-compact .board-list select.field{ padding:2px 4px; }
+  #schedule-view.view-compact .board-list textarea.field{ height:26px; }
+  #schedule-view.view-compact .board-list textarea.field.autosize-field{ min-height:24px; }
+  #schedule-view.view-compact .board-list .date-btn{ padding:3px 4px; }
+  #schedule-view.view-compact .board-list .row-num{ font-size:11px; }
 
   @media (max-width: 1100px){
     .dash-grid{ grid-template-columns:repeat(2,1fr); }
@@ -769,8 +858,10 @@
         <button class="tab-btn" id="tab-wa" type="button" role="tab" aria-selected="false">WA Tracker</button>
         <button class="tab-btn" id="tab-daily" type="button" role="tab" aria-selected="false">Daily Schedule</button>
       </div>
+      <button class="btn" id="view-density-btn" type="button" title="Switch between normal and compact row height">Compact view</button>
       <button class="btn" id="reset-cols-btn" type="button" title="Reset column widths and the details panel back to defaults">Reset columns</button>
-      <button class="btn" id="toggle-client-btn" type="button" title="Show or hide the Client column">Hide Client</button>
+      <button class="btn columns-btn" id="columns-btn" type="button" title="Show or hide any column">Show/Hide Columns</button>
+      <button class="btn" id="toggle-hidden-rows-btn" type="button" title="Hide/unhide individual projects with the row's eye button, then use this to find them again">Show hidden rows</button>
       <button class="btn" id="import-btn" type="button">Import Excel / CSV</button>
       <input class="import-input" id="import-input" type="file" accept=".xlsx,.xls,.csv">
       <button class="btn" id="export-pdf-btn" type="button">Export PDF</button>
@@ -833,10 +924,6 @@
     <div class="wa-toolbar">
       <div class="wa-live-clock" id="wa-live-clock" aria-live="off"></div>
       <div class="wa-last-updated" id="wa-last-updated" title="When this tracker was last changed, by anyone">Last updated: —</div>
-      <div class="search-box">
-        <input type="search" class="search-field" id="wa-search-input" placeholder="Search project name…" aria-label="Search rows by project name">
-        <button type="button" class="search-clear" id="wa-search-clear-btn" hidden aria-label="Clear search">×</button>
-      </div>
       <button class="btn" id="wa-add-btn" type="button">+ Add row</button>
       <button class="btn" id="wa-import-btn" type="button">Import Excel / CSV</button>
       <input class="import-input" id="wa-import-input" type="file" accept=".xlsx,.xls,.csv">
@@ -894,6 +981,7 @@
 
 <div class="date-popup" id="date-popup" hidden></div>
 <div class="teams-popup" id="teams-popup" hidden></div>
+<div class="teams-popup" id="columns-popup" hidden></div>
 <div class="teams-popup" id="daily-support-popup" hidden></div>
 
 <div class="datefilter-popup" id="datefilter-popup" hidden>
@@ -937,6 +1025,24 @@
     </div>
     <div class="report-modal-sub" id="report-modal-sub"></div>
     <div class="report-modal-body" id="report-modal-body"></div>
+  </div>
+</div>
+
+<!-- "Pending actions and remarks": a dated, multi-entry log per project (see
+     pendingActionsCellHTML()/openPendingModal()). Reuses the report-modal
+     card shell for its backdrop/close button, with its own body/footer. -->
+<div class="report-modal-backdrop" id="pending-modal-backdrop" hidden>
+  <div class="report-modal-card" role="dialog" aria-modal="true" aria-labelledby="pending-modal-title" style="width:min(560px, 100%);">
+    <div class="report-modal-header">
+      <h2 id="pending-modal-title">Pending actions and remarks</h2>
+      <button type="button" class="report-modal-close" id="pending-modal-close" aria-label="Close">×</button>
+    </div>
+    <div class="report-modal-body pending-modal-body" id="pending-modal-body"></div>
+    <div class="pending-add-row">
+      <button type="button" class="date-btn" id="pending-add-date-btn"></button>
+      <input type="text" id="pending-add-text" placeholder="Add a dated note…" aria-label="New pending action or remark">
+      <button type="button" class="btn primary" id="pending-add-btn">Add</button>
+    </div>
   </div>
 </div>
 
@@ -1021,8 +1127,10 @@
 (function(){
   "use strict";
 
-  var TEAMS = ["Mark","Alex","Angelo","Albert","Bert","Sammy"];
-  var TEAM_KEY = { Mark:"mark", Alex:"alex", Angelo:"angelo", Albert:"albert", Bert:"bert", Sammy:"sammy" };
+  // Team names are the installers' team-leader names — projects are referred
+  // to by whichever team leader heads them up.
+  var TEAMS = ["Mark","Alex","Angelo","Albert","Norberto","Sammy","Edson"];
+  var TEAM_KEY = { Mark:"mark", Alex:"alex", Angelo:"angelo", Albert:"albert", Norberto:"norberto", Sammy:"sammy", Edson:"edson" };
 
   // ---- custom teams: anyone can add a team that isn't in the built-in list above.
   // Custom teams are stored in state.customTeams (shared via the same backend as
@@ -1108,11 +1216,1957 @@
   }
 
   // ---- state ----
+  // Real project list imported from the office's "Pending project" tracker
+  // (Project_Tracker spreadsheet), transformed on import: Pending & Status +
+  // Installation Pending + Remark merged into the dated pendingActions log
+  // (SuWai Handover dropped per instruction); SCHUCO-scope projects had any
+  // matching WA Tracker line items appended to their scope text; Frame/Glass
+  // delivery, % complete, Assigned team and Bonding required weren't in that
+  // source sheet so they default blank/0/No for office staff to fill in.
   var EXAMPLE_PROJECTS = [
-    { id:"ex1", isExample:true, name:"Marina Heights Tower — Unit 2104", client:"GTS", scope:"Supply & install ducted AC system, 3BR apartment", glassDelivery:"2026-08-18", glassDeliveryComments:"", frameDelivery:"2026-08-16", frameDeliveryComments:"", start:"2026-08-25", finish:"2026-09-10", pct:60, team:"Mark", extraTeams:["Alex"], comments:"Awaiting client access confirmation for Friday visit.", bondingRequired:"No" },
-    { id:"ex2", isExample:true, name:"Al Barari Villa 12 — Lighting Retrofit", client:"GreenBull", scope:"Retrofit lighting control panel and fixtures", glassDelivery:"", glassDeliveryComments:"", frameDelivery:"", frameDeliveryComments:"", start:"2026-09-08", finish:"2026-09-25", pct:15, team:"Angelo", extraTeams:[], comments:"Materials on order, ETA Sep 8.", bondingRequired:"No" },
-    { id:"ex3", isExample:true, name:"Downtown Office L14 — Containment", client:"MACS", scope:"First-fix electrical containment and cable tray", glassDelivery:"2026-09-25", glassDeliveryComments:"", frameDelivery:"2026-09-25", frameDeliveryComments:"", start:"2026-10-01", finish:"2026-10-20", pct:0, team:"Sammy", extraTeams:[], comments:"Start pending permit approval.", bondingRequired:"Yes" }
-  ];
+  {
+    "id": "pp003",
+    "isExample": false,
+    "name": "Villa 9, Street 1, Samara",
+    "client": "",
+    "scope": "Rabel + EFP",
+    "systemsSupplier": "Rabel + EFP",
+    "frameDelivery": "",
+    "glassDelivery": "",
+    "start": "2026-08-21",
+    "finish": "",
+    "pct": 100,
+    "team": "",
+    "extraTeams": [],
+    "ralGlass": "9005/HP70",
+    "projectValue": "AED 78,219.99",
+    "designApprovalDate": "2026-06-30",
+    "bondingRequired": "No",
+    "pendingActions": [
+      {
+        "id": "pa001",
+        "date": "2026-10-17",
+        "text": "All finished",
+        "source": "pending"
+      },
+      {
+        "id": "pa002",
+        "date": "2026-10-17",
+        "text": "Farah will check on with Loureanne, 12 Oct if final payment settled",
+        "source": "remark"
+      }
+    ],
+    "hidden": false
+  },
+  {
+    "id": "pp006",
+    "isExample": false,
+    "name": "K80, WILDFLOWER, JGE",
+    "client": "ZINTERIO Tech",
+    "scope": "1x Schuco ADS 65 HD Entrance Pivot Door With Schuco Fws 50 Curtain Wall\n1x Schuco Ads 65 HD Single Hinged Door\n\nWA Tracker items: ADS 65 HD MAIN PIVOT DOOR (INSIDE CW FRAME); ADS 65 HD SINGLE LEAF HINGES DOOR; FWS-50 (CW FRAME)",
+    "systemsSupplier": "Schuco",
+    "frameDelivery": "",
+    "glassDelivery": "",
+    "start": "2026-09-15",
+    "finish": "",
+    "pct": 100,
+    "team": "",
+    "extraTeams": [],
+    "ralGlass": "",
+    "projectValue": "AED 111,048.25",
+    "designApprovalDate": "2026-07-25",
+    "bondingRequired": "No",
+    "pendingActions": [
+      {
+        "id": "pa004",
+        "date": "2026-10-17",
+        "text": "Completed. Informed Ate Loureanna on Oct 6 for payment",
+        "source": "pending"
+      },
+      {
+        "id": "pa005",
+        "date": "2026-10-17",
+        "text": "Farah will check on with Loureanne, 12 Oct if final payment settled",
+        "source": "remark"
+      }
+    ],
+    "hidden": false
+  },
+  {
+    "id": "pp012",
+    "isExample": false,
+    "name": "Villa A06, Palm Jumeirah",
+    "client": "MACs",
+    "scope": "Schuco",
+    "systemsSupplier": "Schuco",
+    "frameDelivery": "",
+    "glassDelivery": "",
+    "start": "2026-03-30",
+    "finish": "",
+    "pct": 0,
+    "team": "",
+    "extraTeams": [],
+    "ralGlass": "",
+    "projectValue": "",
+    "designApprovalDate": "",
+    "bondingRequired": "No",
+    "pendingActions": [
+      {
+        "id": "pa007",
+        "date": "2026-10-17",
+        "text": "Item 28 glass replacement Job Card No. 6002341. To follow up with Mohanad.",
+        "source": "pending"
+      },
+      {
+        "id": "pa008",
+        "date": "2026-10-17",
+        "text": "x2 Flyscreens yet to be installed, No access to openings . Lucito will check with Haider by 5th Oct.",
+        "source": "install"
+      },
+      {
+        "id": "pa009",
+        "date": "2026-10-17",
+        "text": "10% Final payment pending once snags completed.",
+        "source": "remark"
+      },
+      {
+        "id": "pa010",
+        "date": "2026-10-12",
+        "text": "Update from WA, the glass is not in stock, it has been order from Saudi, ETA to be confirmed by 15th Oct, Ed to follow up",
+        "source": "remark"
+      },
+      {
+        "id": "pa011",
+        "date": "2026-10-05",
+        "text": "Ed to chase WA for Glass ETA by 6th Oct.",
+        "source": "remark"
+      }
+    ],
+    "hidden": false
+  },
+  {
+    "id": "pp020",
+    "isExample": false,
+    "name": "Mansion - Villa 15",
+    "client": "GTS",
+    "scope": "Schuco",
+    "systemsSupplier": "Schuco",
+    "frameDelivery": "",
+    "glassDelivery": "",
+    "start": "",
+    "finish": "",
+    "pct": 0,
+    "team": "",
+    "extraTeams": [],
+    "ralGlass": "",
+    "projectValue": "AED 606,755.71",
+    "designApprovalDate": "",
+    "bondingRequired": "No",
+    "pendingActions": [
+      {
+        "id": "pa013",
+        "date": "2026-10-17",
+        "text": "Main door RAL color powder issue with WA coating. Client has confirm approval with the original RAL which has a 6 weeks lead time  starting from 30th Sept.",
+        "source": "pending"
+      },
+      {
+        "id": "pa014",
+        "date": "2026-10-17",
+        "text": "Customized Bar handle collected on Oct 2 from Hidayath and sent to WA.",
+        "source": "pending"
+      },
+      {
+        "id": "pa015",
+        "date": "2026-10-17",
+        "text": "Skylight Flashing pending delivery. Adnan confirmed it can be ready around Oct 9.",
+        "source": "pending"
+      },
+      {
+        "id": "pa016",
+        "date": "2026-10-17",
+        "text": "Glass & Flashing will be installed once the Flashing is delivered from WA",
+        "source": "install"
+      },
+      {
+        "id": "pa017",
+        "date": "2026-10-17",
+        "text": "RAL confirmed with 6 week leadtime from 30th September.",
+        "source": "remark"
+      },
+      {
+        "id": "pa018",
+        "date": "2026-10-15",
+        "text": "Skylight centre piece is the wrong colour. WA informed, awaiting response.",
+        "source": "remark"
+      },
+      {
+        "id": "pa019",
+        "date": "2026-10-12",
+        "text": "Flashing delivered to site.",
+        "source": "remark"
+      }
+    ],
+    "hidden": false
+  },
+  {
+    "id": "pp024",
+    "isExample": false,
+    "name": "Villa 9, Jasmine Leaf 3, Al Barari",
+    "client": "GTS",
+    "scope": "EFP + Vetromax",
+    "systemsSupplier": "EFP + Vetromax",
+    "frameDelivery": "",
+    "glassDelivery": "",
+    "start": "2026-06-19",
+    "finish": "",
+    "pct": 0,
+    "team": "",
+    "extraTeams": [],
+    "ralGlass": "",
+    "projectValue": "AED 591,455.20",
+    "designApprovalDate": "2026-04-16",
+    "bondingRequired": "No",
+    "pendingActions": [
+      {
+        "id": "pa021",
+        "date": "2026-10-17",
+        "text": "No feedback form Lingson for replacement JUMBO sandblasted glass with stains.  Ed to chase Lingson.",
+        "source": "pending"
+      },
+      {
+        "id": "pa022",
+        "date": "2026-10-17",
+        "text": "Final cleaning  & Snags will start from 7th Oct and should be completed by 17th October",
+        "source": "install"
+      },
+      {
+        "id": "pa023",
+        "date": "2026-10-17",
+        "text": "No feedback form Lingson for replacement JUMBO sandblasted glass with stains.  Ed to chase Lingson. by 7th Oct",
+        "source": "remark"
+      }
+    ],
+    "hidden": false
+  },
+  {
+    "id": "pp031",
+    "isExample": false,
+    "name": "Villa 164, Golf Place, Dubai Hills",
+    "client": "Sirius Invest",
+    "scope": "Entrance Door",
+    "systemsSupplier": "Main door",
+    "frameDelivery": "",
+    "glassDelivery": "",
+    "start": "2026-08-03",
+    "finish": "",
+    "pct": 0,
+    "team": "",
+    "extraTeams": [],
+    "ralGlass": "",
+    "projectValue": "AED 230,000.00",
+    "designApprovalDate": "2026-03-17",
+    "bondingRequired": "No",
+    "pendingActions": [
+      {
+        "id": "pa025",
+        "date": "2026-10-17",
+        "text": "Entrance door confirmed with WA and ETA Oct 13.",
+        "source": "pending"
+      },
+      {
+        "id": "pa026",
+        "date": "2026-10-17",
+        "text": "HPL panel for front door - delivered to WA on Oct 2",
+        "source": "pending"
+      },
+      {
+        "id": "pa027",
+        "date": "2026-10-17",
+        "text": "5th October, x3 Flyscreens will be installed on 6th October",
+        "source": "install"
+      },
+      {
+        "id": "pa028",
+        "date": "2026-10-17",
+        "text": "Final cleaning will be scheduled after above works completed by 15th October",
+        "source": "install"
+      },
+      {
+        "id": "pa029",
+        "date": "2026-10-12",
+        "text": "the Front will be collected on 14th Oct and installed immeadiately",
+        "source": "remark"
+      },
+      {
+        "id": "pa030",
+        "date": "2026-10-05",
+        "text": "Installation is planned for 14th October.",
+        "source": "install"
+      }
+    ],
+    "hidden": false
+  },
+  {
+    "id": "pp039",
+    "isExample": false,
+    "name": "Meadows 9, Villa 15, Street 6",
+    "client": "JCT",
+    "scope": "4x ASE54 PD ME SLIDING DOOR\n3x ADS 65 HD SINGLE HINGED DOOR\n8x ASE 54 PD ME SLIDING WINDOW\n3x AWS 65 FIXED WINDOW\n6x AWS 65 TOP HUNG WINDOW",
+    "systemsSupplier": "Schuco",
+    "frameDelivery": "",
+    "glassDelivery": "",
+    "start": "2026-10-10",
+    "finish": "",
+    "pct": 0,
+    "team": "",
+    "extraTeams": [],
+    "ralGlass": "",
+    "projectValue": "AED 181,729.85",
+    "designApprovalDate": "2026-05-21",
+    "bondingRequired": "No",
+    "pendingActions": [
+      {
+        "id": "pa032",
+        "date": "2026-10-17",
+        "text": "4x top hung pending issue with lifting arm resolved by WA, awaiting collection at WA",
+        "source": "pending"
+      },
+      {
+        "id": "pa033",
+        "date": "2026-10-17",
+        "text": "1x 54PD (Item 3A) manufactured incorrectly; this will be delivered with the other x5, by End of October",
+        "source": "pending"
+      },
+      {
+        "id": "pa034",
+        "date": "2026-10-17",
+        "text": "5 set of 54PD on the way (Final ETA Oct 2nd week 15/10/26). Fadil sent MTO and cutting list to WA on Oct 1.",
+        "source": "pending"
+      },
+      {
+        "id": "pa035",
+        "date": "2026-10-17",
+        "text": "Glass order sent to GMI for 5 sets of 54PD. ETA Oct 16 (WO 15463)",
+        "source": "pending"
+      },
+      {
+        "id": "pa036",
+        "date": "2026-10-17",
+        "text": "5th Oct, x4 TH windows  is ready for collection , will be collected on 6th Oct and installed imeadiately.",
+        "source": "install"
+      },
+      {
+        "id": "pa037",
+        "date": "2026-10-14",
+        "text": "GF opening are not ready, so customer JCT said  do not install yet. FF, we do not have all the materials",
+        "source": "install"
+      },
+      {
+        "id": "pa038",
+        "date": "2026-10-12",
+        "text": "Ed to check status of (SO7035412 & SO7035413) from SCHUCO",
+        "source": "remark"
+      }
+    ],
+    "hidden": false
+  },
+  {
+    "id": "pp044",
+    "isExample": false,
+    "name": "MEADOWS 1, VILLA 3, STREET 14",
+    "client": "MACs",
+    "scope": "Schuco + EFP & Bettio",
+    "systemsSupplier": "Schuco + EFP",
+    "frameDelivery": "",
+    "glassDelivery": "",
+    "start": "2026-07-29",
+    "finish": "",
+    "pct": 0,
+    "team": "",
+    "extraTeams": [],
+    "ralGlass": "",
+    "projectValue": "AED 147,739.90",
+    "designApprovalDate": "2026-04-06",
+    "bondingRequired": "No",
+    "pendingActions": [
+      {
+        "id": "pa040",
+        "date": "2026-10-17",
+        "text": "Flyscreen delivered to the site on Sept 29. PO received and MAC s arrange payment",
+        "source": "pending"
+      },
+      {
+        "id": "pa041",
+        "date": "2026-10-17",
+        "text": "5th - Final snag and cleaning will be completed by 15th October",
+        "source": "install"
+      },
+      {
+        "id": "pa042",
+        "date": "2026-10-17",
+        "text": "Bettio Flyscreen to install on 12/10/2026 and start snagging and cleaning same day and complete on 15/10/2026.",
+        "source": "remark"
+      },
+      {
+        "id": "pa043",
+        "date": "2026-10-05",
+        "text": "Bettio screens to be installed on 8th October.",
+        "source": "install"
+      }
+    ],
+    "hidden": false
+  },
+  {
+    "id": "pp049",
+    "isExample": false,
+    "name": "MEADOWS 5, VILLA 43, STREET 3",
+    "client": "MACs",
+    "scope": "EFP + Vetromax",
+    "systemsSupplier": "EFP + Vetromax",
+    "frameDelivery": "",
+    "glassDelivery": "",
+    "start": "2026-08-20",
+    "finish": "",
+    "pct": 0,
+    "team": "",
+    "extraTeams": [],
+    "ralGlass": "",
+    "projectValue": "AED 137,529.00",
+    "designApprovalDate": "2026-06-26",
+    "bondingRequired": "No",
+    "pendingActions": [
+      {
+        "id": "pa045",
+        "date": "2026-10-17",
+        "text": "x1 Glass requires missing pressure plate , cover and Glazing beed for x2 TH windows, 7021 SHR, quote requested from WA on 1st Oct",
+        "source": "pending"
+      },
+      {
+        "id": "pa046",
+        "date": "2026-10-17",
+        "text": "Oct 12th - Snagging and final cleaning to start on 14/10/2026 and complete on 17/10/2026",
+        "source": "install"
+      },
+      {
+        "id": "pa047",
+        "date": "2026-10-05",
+        "text": "Farah will send out a Variation and include labour cost by 5th October.",
+        "source": "remark"
+      },
+      {
+        "id": "pa048",
+        "date": "2026-10-05",
+        "text": "Fadil to chase WA for parts quote",
+        "source": "remark"
+      }
+    ],
+    "hidden": false
+  },
+  {
+    "id": "pp063",
+    "isExample": false,
+    "name": "VILLA 3, DESERT LEAF 3, AL BARARI",
+    "client": "GTS",
+    "scope": "Vetromax + Deco",
+    "systemsSupplier": "Vetromax + Deco",
+    "frameDelivery": "",
+    "glassDelivery": "",
+    "start": "2026-08-14",
+    "finish": "",
+    "pct": 0,
+    "team": "",
+    "extraTeams": [],
+    "ralGlass": "",
+    "projectValue": "AED 571,145.22",
+    "designApprovalDate": "2026-07-03",
+    "bondingRequired": "No",
+    "pendingActions": [
+      {
+        "id": "pa050",
+        "date": "2026-10-17",
+        "text": "x1 Skylight not ready for measurement ATLAS it will be ready to measure by 14th October.",
+        "source": "pending"
+      },
+      {
+        "id": "pa051",
+        "date": "2026-10-17",
+        "text": "x1 SKylight DECOMASTER.1x site measurement taken, drawing sent GTS for review and approval on 16th Sept.",
+        "source": "pending"
+      },
+      {
+        "id": "pa052",
+        "date": "2026-10-17",
+        "text": "Item 23 & 46. Glass ordered on Sept 16. 110380-R1 (ready to collect).",
+        "source": "pending"
+      },
+      {
+        "id": "pa053",
+        "date": "2026-10-17",
+        "text": "\"* Frame & glass installation in progress with Albert's Team.",
+        "source": "install"
+      },
+      {
+        "id": "pa054",
+        "date": "2026-10-17",
+        "text": "Item 46 - mullion profiles to be replaced",
+        "source": "install"
+      },
+      {
+        "id": "pa055",
+        "date": "2026-10-17",
+        "text": "x1 Skylight not ready for measurement.",
+        "source": "install"
+      },
+      {
+        "id": "pa056",
+        "date": "2026-10-17",
+        "text": "3 top-hung glass panels for Project: Al Barari Desert Leaf 3 Villa 3 have been rejected due to the spacer being too short.",
+        "source": "remark"
+      },
+      {
+        "id": "pa057",
+        "date": "2026-10-17",
+        "text": "Rejected Glass Items:",
+        "source": "remark"
+      },
+      {
+        "id": "pa058",
+        "date": "2026-10-17",
+        "text": "Item 01",
+        "source": "remark"
+      },
+      {
+        "id": "pa059",
+        "date": "2026-10-17",
+        "text": "Item 14",
+        "source": "remark"
+      },
+      {
+        "id": "pa060",
+        "date": "2026-10-17",
+        "text": "Item 21",
+        "source": "remark"
+      },
+      {
+        "id": "pa061",
+        "date": "2026-10-12",
+        "text": "Farah will check with Mark G, if x5 openings are ready for installation and status of Skylight for measurement.,",
+        "source": "remark"
+      },
+      {
+        "id": "pa062",
+        "date": "2026-10-05",
+        "text": "x5 opening not available. Opening will be ready by 12th Oct, installation be be scheduled for the same date.",
+        "source": "remark"
+      }
+    ],
+    "hidden": false
+  },
+  {
+    "id": "pp074",
+    "isExample": false,
+    "name": "VILLA 10, DESERT LEAF 6, AL BARARI",
+    "client": "MACS",
+    "scope": "Vetromax + Skylight",
+    "systemsSupplier": "Vetromax + Deco",
+    "frameDelivery": "",
+    "glassDelivery": "",
+    "start": "2026-08-31",
+    "finish": "",
+    "pct": 0,
+    "team": "",
+    "extraTeams": [],
+    "ralGlass": "7021/…....",
+    "projectValue": "AED 168,778.94",
+    "designApprovalDate": "2026-07-29",
+    "bondingRequired": "No",
+    "pendingActions": [
+      {
+        "id": "pa064",
+        "date": "2026-10-17",
+        "text": "1. Front door Farah confirmed to BES to proceed with frame color RAL 7021 Black Gray Matt for the Curtain wall. Door Panel(ALuminium) is on hold by MACs).",
+        "source": "pending"
+      },
+      {
+        "id": "pa065",
+        "date": "2026-10-17",
+        "text": "2. x2 Samples received from FRS and issued Chelsea for review and confirmation.",
+        "source": "pending"
+      },
+      {
+        "id": "pa066",
+        "date": "2026-10-17",
+        "text": "3. Skylight  - Farah sent drawing on Sept 16 to MACS Awaiting size & configuration confirmation from MACS",
+        "source": "pending"
+      },
+      {
+        "id": "pa067",
+        "date": "2026-10-17",
+        "text": "4. Garage door glass size received but glass type is not clear. Farah iissues sample to MAC (Chelsea ) on 28th Sept, awaiting response",
+        "source": "pending"
+      },
+      {
+        "id": "pa068",
+        "date": "2026-10-13",
+        "text": "Skylight measurement taken by Mark G.",
+        "source": "remark"
+      },
+      {
+        "id": "pa069",
+        "date": "2026-10-13",
+        "text": "Quotation request sent to DECOMASTER, awaiting response.",
+        "source": "remark"
+      },
+      {
+        "id": "pa070",
+        "date": "2026-10-12",
+        "text": "LPO (Euro-LPO-1220)sent to BES for replacement of Bottom clips for ITEM 37 (7021) Fadil will request for delivery 19th October",
+        "source": "remark"
+      },
+      {
+        "id": "pa071",
+        "date": "2026-10-05",
+        "text": "Item 30, Roof top CW will be installed on 6th Oct.",
+        "source": "install"
+      },
+      {
+        "id": "pa072",
+        "date": "2026-10-05",
+        "text": "Item 37, bottom clips are missing on site, x6 pieces. this needs to be ordered if it was misplaced.",
+        "source": "install"
+      },
+      {
+        "id": "pa073",
+        "date": "2026-10-05",
+        "text": "Item 12, SH window Handle is broken, and requires replacement.",
+        "source": "install"
+      }
+    ],
+    "hidden": false
+  },
+  {
+    "id": "pp082",
+    "isExample": false,
+    "name": "VILLA C19, REDWOOD PARK, JGE",
+    "client": "MACs",
+    "scope": "5x ADS 65 HD SINGLE HINGED DOOR\n1x ASE 36 PD SLIDING WINDOW\n8x ASE 70 PD ME GEN2 SLIDING DOOR\n5x AWS 65 TOP HUNG WINDOW\n5x AWS 65 TOP HUNG WINDOW WITH FIXED PANEL BELOW\n12x SLIM 35 SERIES FIXED CURTAIN WALL WINDOW",
+    "systemsSupplier": "Schuco + Slim",
+    "frameDelivery": "",
+    "glassDelivery": "",
+    "start": "2026-11-10",
+    "finish": "",
+    "pct": 0,
+    "team": "",
+    "extraTeams": [],
+    "ralGlass": "9005/HP70",
+    "projectValue": "AED 683,706.62",
+    "designApprovalDate": "2026-09-15",
+    "bondingRequired": "No",
+    "pendingActions": [
+      {
+        "id": "pa075",
+        "date": "2026-10-17",
+        "text": "1. Design update again and Christine confirmed verbally on Sept 24, and will count installation date from here as we have to order 70PD as well. Needs to send final drawing asap.",
+        "source": "pending"
+      },
+      {
+        "id": "pa076",
+        "date": "2026-10-17",
+        "text": "3. 70PD (S+S) will be changed to F+S. MACs need to confirm the configuration -",
+        "source": "pending"
+      },
+      {
+        "id": "pa077",
+        "date": "2026-10-17",
+        "text": "4. Glass needs to be ordered after MTO is created and size received",
+        "source": "pending"
+      },
+      {
+        "id": "pa078",
+        "date": "2026-10-12",
+        "text": "All but x2 design elements confirmed, Fadil will issue the MTO by 13/10/26.",
+        "source": "install"
+      },
+      {
+        "id": "pa079",
+        "date": "2026-10-12",
+        "text": "x2 items require confiormation from MACS (Christine) size and configuration(Item 38 & Item 40)",
+        "source": "install"
+      },
+      {
+        "id": "pa080",
+        "date": "2026-10-12",
+        "text": "x2 still pending",
+        "source": "remark"
+      },
+      {
+        "id": "pa081",
+        "date": "2026-10-05",
+        "text": "Farah to confirm config for the S+F by 6th Oct. -",
+        "source": "remark"
+      }
+    ],
+    "hidden": false
+  },
+  {
+    "id": "pp087",
+    "isExample": false,
+    "name": "RASHA Villa 85, ARABIAN RANCHES 2",
+    "client": "Giovanni",
+    "scope": "4x ASE 54 PD ME SLIDING DOOR\n3x AWS 65 BOTTOM HUNG WINDOW WITH FIXED PANEL ABOVE\n6x AWS 65 SIDE HUNG WINDOW\n\nWA Tracker items: ASE 54 PD ME SLIDING DOOR; AWS 65 BOTTOM HUNG WINDOW WITH FIXED PANEL ABOVE; AWS 65 SIDE HUNG WINDOW",
+    "systemsSupplier": "Schuco",
+    "frameDelivery": "",
+    "glassDelivery": "",
+    "start": "2026-10-20",
+    "finish": "",
+    "pct": 0,
+    "team": "",
+    "extraTeams": [],
+    "ralGlass": "",
+    "projectValue": "AED 70,564.00",
+    "designApprovalDate": "2026-05-27",
+    "bondingRequired": "No",
+    "pendingActions": [
+      {
+        "id": "pa083",
+        "date": "2026-10-17",
+        "text": "1. Frames are ready to collect. Glass delivered for bonding and will take up to 3days to bond. Will collect all together once we have pass from client.",
+        "source": "pending"
+      },
+      {
+        "id": "pa084",
+        "date": "2026-10-17",
+        "text": "2. 54PD missing parts order (ETA 1st week of Oct). 277064 missing will come with UPS",
+        "source": "pending"
+      },
+      {
+        "id": "pa085",
+        "date": "2026-10-17",
+        "text": "3. Glass Bonding required glass collected and deliver to the WA on Oct 2. Site glass will be collect once the site is ready for installation.",
+        "source": "pending"
+      },
+      {
+        "id": "pa086",
+        "date": "2026-10-17",
+        "text": "5. 14/10/26: Access pass approved from Tuesday 21st Oct, Mark informed. x12 Pieces of Glass needs to be collected by 21/10/26",
+        "source": "remark"
+      }
+    ],
+    "hidden": false
+  },
+  {
+    "id": "pp095",
+    "isExample": false,
+    "name": "VILLA 8, DESERT LEAF 1, AL BARARI",
+    "client": "GTS",
+    "scope": "11x VETROMAX CW35 FIXED CURTAIN WALL WINDOW (JUMBO)\n16x VETROMAX F45 FIXED WINDOW\n6x VETROMAX S36 SLIDING DOOR\n1x VETROMAX S36 SLIDING DOOR WITH CW35 FIXED CURTAIN WALL WINDOW (JUMBO)\n6x VETROMAX SINGLE HINGED DOOR\n2x VETROMAX TOP HUNG WINDOW\n5x VETROSLIDE 36 SLIDING DOOR",
+    "systemsSupplier": "Vetromax",
+    "frameDelivery": "",
+    "glassDelivery": "",
+    "start": "2026-10-02",
+    "finish": "",
+    "pct": 0,
+    "team": "",
+    "extraTeams": [],
+    "ralGlass": "9005/HP70",
+    "projectValue": "AED 567,276.08",
+    "designApprovalDate": "2026-08-07",
+    "bondingRequired": "No",
+    "pendingActions": [
+      {
+        "id": "pa088",
+        "date": "2026-10-17",
+        "text": "1. Replacement glass 4pcs delivered to BES on Oct 5 for bonding.",
+        "source": "pending"
+      },
+      {
+        "id": "pa089",
+        "date": "2026-10-17",
+        "text": "2. 6th Oct - Item 22 Jumbo confirmed , it is on site. Lucito will arrange the installation once the opening is ready",
+        "source": "pending"
+      },
+      {
+        "id": "pa090",
+        "date": "2026-10-17",
+        "text": "Frame delivered on site except openable windows which having issues with powder  coating.",
+        "source": "install"
+      },
+      {
+        "id": "pa091",
+        "date": "2026-10-17",
+        "text": "Bonded glass collected from BES. 4pcs rejected for quality issue. Sejal delivered the replacement to BES for bonding.",
+        "source": "install"
+      },
+      {
+        "id": "pa092",
+        "date": "2026-10-17",
+        "text": "Item 18 frame delivered. Glass will be Oct 5. to check the status.",
+        "source": "install"
+      },
+      {
+        "id": "pa093",
+        "date": "2026-10-17",
+        "text": "Item 22 Jumbo glass delivered to site.",
+        "source": "install"
+      },
+      {
+        "id": "pa094",
+        "date": "2026-10-17",
+        "text": "Installation started on 07/10/2026",
+        "source": "install"
+      }
+    ],
+    "hidden": false
+  },
+  {
+    "id": "pp099",
+    "isExample": false,
+    "name": "VILLA 80, ESMERALDA, VICTORY HEIGHTS",
+    "client": "LCI",
+    "scope": "1x ADS 65 SINGLE HINGED ENTRANCE DOOR WITH FIXED PANEL\n5x ASE 36 PD ME SLIDING DOOR\n8x ASE 36 PD ME SLIDING WINDOW\n1x EFP F43 ARCHED FIXED WINDOW\n5x EFP F43 FIXED WINDOW\n4x EFP SINGLE HINGED DOOR\n2x EFP TOP HUNG WINDOW\n\nWA Tracker items: ASE 36 PD Sliding Units; EFP 65 HD Single Door (Open outside- R.Hs-1.No + LHs-3.Nos); EFP Arched Fixed unit; EFP Rectangle Fixed Unit; EFP TOP HUNG WINDOW",
+    "systemsSupplier": "Schuco + EFP",
+    "frameDelivery": "",
+    "glassDelivery": "",
+    "start": "2026-10-15",
+    "finish": "",
+    "pct": 0,
+    "team": "",
+    "extraTeams": [],
+    "ralGlass": "1303/HP70",
+    "projectValue": "AED 185,128.22",
+    "designApprovalDate": "2026-07-24",
+    "bondingRequired": "No",
+    "pendingActions": [
+      {
+        "id": "pa096",
+        "date": "2026-10-17",
+        "text": "1. 4 units of 36PD new order from Schuco & 1 additional. (Balance end of sept) to WA. To be ready on Oct 15 latest. (Anyhow, Adnan confirmed all are in coating and will be ready on Oct 6)",
+        "source": "pending"
+      },
+      {
+        "id": "pa097",
+        "date": "2026-10-17",
+        "text": "2. Glass 12pcs from GMI sent to WA on Oct 3 for bonding.",
+        "source": "pending"
+      },
+      {
+        "id": "pa098",
+        "date": "2026-10-17",
+        "text": "3. Front door RAL color is confirmed on sept 28, it is RAL 7021 SHR.WA informed. - ETA will be update on Oct 13 by WA.",
+        "source": "pending"
+      }
+    ],
+    "hidden": false
+  },
+  {
+    "id": "pp108",
+    "isExample": false,
+    "name": "VILLA D58, FLAME TREE RIDGE, JGE",
+    "client": "MACS",
+    "scope": "3x ADS 65 HD SINGLE HINGED DOOR\n2x AS FD 90 HI BI-FOLDING DOOR\n4x ASE 70 PD ME GEN2 SLIDING DOOR\n19x AWS 65 FIXED WINDOW\n7x AWS 65 TOP HUNG WINDOW\n1x FWS 35 PD LC ME FIXED CURTAIN WALL",
+    "systemsSupplier": "Schuco + Vetromax",
+    "frameDelivery": "",
+    "glassDelivery": "",
+    "start": "2026-10-30",
+    "finish": "",
+    "pct": 0,
+    "team": "",
+    "extraTeams": [],
+    "ralGlass": "….../HP+50",
+    "projectValue": "AED 484,559.64",
+    "designApprovalDate": "2026-08-19",
+    "bondingRequired": "No",
+    "pendingActions": [
+      {
+        "id": "pa100",
+        "date": "2026-10-17",
+        "text": "1. Stock items sent for production in Sept 16 and requested for Oct 28.",
+        "source": "pending"
+      },
+      {
+        "id": "pa101",
+        "date": "2026-10-17",
+        "text": "2. Missing 3items for AWS65 ordered from schuco on Sept 23. 8035795 (coming with UPS on sept 28)",
+        "source": "pending"
+      },
+      {
+        "id": "pa102",
+        "date": "2026-10-17",
+        "text": "3. Item 19 Fadil confirmed this on Sept 28. including size change item Bifolding.",
+        "source": "pending"
+      },
+      {
+        "id": "pa103",
+        "date": "2026-10-17",
+        "text": "4. New order for 70PD & 90HI, 36PD - 7pcs. ETA 2nd week of Oct (SO 7035461 & SO 7035462). Bi folding size changes to smaller. Fadil sent updated MTO to WA",
+        "source": "pending"
+      },
+      {
+        "id": "pa104",
+        "date": "2026-10-17",
+        "text": "5. Glass order done with GMI. (revise & update sent). ETA Oct 23.",
+        "source": "pending"
+      },
+      {
+        "id": "pa105",
+        "date": "2026-10-17",
+        "text": "6. x2 Skylight (ATLAS)  is still on HOLD with the customer, awaiting approval.",
+        "source": "pending"
+      },
+      {
+        "id": "pa106",
+        "date": "2026-10-17",
+        "text": "7. x1 Skylight VETROMAX, site survey pending opening are not ready, Lucito will check with MACS.",
+        "source": "pending"
+      },
+      {
+        "id": "pa107",
+        "date": "2026-10-05",
+        "text": "Luciti to confirm site access with by COP 6th Oct.",
+        "source": "remark"
+      }
+    ],
+    "hidden": false
+  },
+  {
+    "id": "pp114",
+    "isExample": false,
+    "name": "APARTMENT 606, DUBAI MARINA",
+    "client": "Nikki",
+    "scope": "1x ADS 65 HD SINGLE HINGED DOOR (WA)\n1x ASE 54 PD ME SLIDING WINDOW (Schuco)\n5x ASE 55 LIFT & SLIDE SLIDING DOOR (WA)\n3x AWS 65 TOP HUNG WINDOW (WA)\n1x AWS 65 TOP HUNG WINDOW WITH FIXED PANEL BELOW (WA)\n\nWA Tracker items: ADS-65 (HINGES DOOR); ASE-54 (SLIDING WINDOW); ASE-55 (LIFT & SLIDE); AWS-65 (TOP HUNG & BOTTOM FIX); AWS-65 (TOP HUNG WINDOW)",
+    "systemsSupplier": "Schuco",
+    "frameDelivery": "",
+    "glassDelivery": "",
+    "start": "2026-09-30",
+    "finish": "",
+    "pct": 0,
+    "team": "",
+    "extraTeams": [],
+    "ralGlass": "SD2902-copper/SN50.",
+    "projectValue": "AED 186,725.98",
+    "designApprovalDate": "2026-08-21",
+    "bondingRequired": "No",
+    "pendingActions": [
+      {
+        "id": "pa109",
+        "date": "2026-10-17",
+        "text": "1. All the frames ready to collect. Gate pass is approved. Lucito will arrange collection around Oct 8.",
+        "source": "pending"
+      },
+      {
+        "id": "pa110",
+        "date": "2026-10-17",
+        "text": "2. 54PD missing parts and handle order confrimed with Schuco. ETA 1st week of Oct (to follow up with Bowen)",
+        "source": "pending"
+      },
+      {
+        "id": "pa111",
+        "date": "2026-10-17",
+        "text": "4. 10pcs of glass collected from Suntech and delivered to WA for bonding. balance 8pcs to collect once the site is ready to deliver.",
+        "source": "pending"
+      },
+      {
+        "id": "pa112",
+        "date": "2026-10-17",
+        "text": "5th Oct , awaiting NOC for gate pass.",
+        "source": "remark"
+      },
+      {
+        "id": "pa113",
+        "date": "2026-10-05",
+        "text": "Delivery payment request needs to be confirmed, Ed will chase Loureaane by 6th Oct.",
+        "source": "remark"
+      }
+    ],
+    "hidden": false
+  },
+  {
+    "id": "pp118",
+    "isExample": false,
+    "name": "C35, DISTRICT 6, JUMEIRAH PARK",
+    "client": "MACS",
+    "scope": "1x ADS 65 HD ENTRANCE PIVOT DOOR\n1x ASE 54 PD ME SLIDING WINDOW\n1x ASE 54 SLIDING WINDOW WITH EFP CURTAIN WALL\n2x ASE 70 PD ME GEN2 POCKET SLIDING DOOR\n4x AWS 65 SIDE HUNG WINDOW WITH FIXED PANEL\n2x EFP 50 CURTAIN WALL WINDOW\n\nWA Tracker items: ASE 54 PD Sliding Window; ASE 54 Sliding ( 3 track) + combined with EFP curtainwall unit+ Glass Fixed Flat Bars (Ref: Drawing); ASE 70 PD ME POCKET SLIDING DOOR; EFP - Curtainwall Unit; EFP - Curtainwall Unit (BOTTOM OF SLIDING ASE 54); EFP - Curved Curtainwall Unit + Glass Fixed Flat Bars; Main Entrace Door – Schuco ( without smart lock)",
+    "systemsSupplier": "Schuco + EFP",
+    "frameDelivery": "",
+    "glassDelivery": "",
+    "start": "2026-10-09",
+    "finish": "",
+    "pct": 0,
+    "team": "",
+    "extraTeams": [],
+    "ralGlass": "9016/HP70",
+    "projectValue": "AED 210,896.00",
+    "designApprovalDate": "2026-07-02",
+    "bondingRequired": "No",
+    "pendingActions": [
+      {
+        "id": "pa115",
+        "date": "2026-10-17",
+        "text": "1. Pocket slider and Side Hung pending. (Pocket slider Frame will be ready on Oct 9. Side hung awaiting ETA)",
+        "source": "pending"
+      },
+      {
+        "id": "pa116",
+        "date": "2026-10-17",
+        "text": "2. When glass collect from Sejal. There is 1 glass for the site also delivered to WA together with other bonding required glasses and lucito confirmed this will be collect back upon bonded glass collection from WA.",
+        "source": "pending"
+      },
+      {
+        "id": "pa117",
+        "date": "2026-10-05",
+        "text": "Su Wai to chase WA for delivery ETA by 6th Oct",
+        "source": "remark"
+      }
+    ],
+    "hidden": false
+  },
+  {
+    "id": "pp127",
+    "isExample": false,
+    "name": "Villa 50, Hattan, Arabian Ranches",
+    "client": "Build Studio",
+    "scope": "1x CW35 FIXED CURTAIN WALL WINDOW\n16x F45 FIXED WINDOW\n5x S28 SLIDING DOOR\n4x SINGLE HINGED DOOR\n1x TILT & TURN WINDOW\n9x TILT & TURN WINDOW\n1x FLAT SKYLIGHT\n5x Freedom flyscreens (for all sliding doors)",
+    "systemsSupplier": "Vetromax",
+    "frameDelivery": "",
+    "glassDelivery": "",
+    "start": "2026-11-02",
+    "finish": "",
+    "pct": 0,
+    "team": "",
+    "extraTeams": [],
+    "ralGlass": "HP70",
+    "projectValue": "AED 354,479.88",
+    "designApprovalDate": "2026-08-31",
+    "bondingRequired": "No",
+    "pendingActions": [
+      {
+        "id": "pa119",
+        "date": "2026-10-17",
+        "text": "1. In production. Required date end of Oct",
+        "source": "pending"
+      },
+      {
+        "id": "pa120",
+        "date": "2026-10-17",
+        "text": "2. Freedom flyscreen ordered with Oryx. End of Oct ETA.",
+        "source": "pending"
+      },
+      {
+        "id": "pa121",
+        "date": "2026-10-17",
+        "text": "3. Quote received from Sejal. To confirm by Ed.",
+        "source": "pending"
+      },
+      {
+        "id": "pa122",
+        "date": "2026-10-17",
+        "text": "4. Skylight received setting out drawing on Sept 30 & needs some revision. Sent updated drawing to BES. Glass already orderd with Sejal. Channel needs to send to Sejal for the skylight glass manufacturing.",
+        "source": "pending"
+      },
+      {
+        "id": "pa123",
+        "date": "2026-10-17",
+        "text": "5. Box section order edwith sirajco and Lucito needs to send for powder coating.",
+        "source": "pending"
+      },
+      {
+        "id": "pa124",
+        "date": "2026-10-17",
+        "text": "6. SSF order - PO issued on Oct 7th, EURO-LPO-1207",
+        "source": "pending"
+      },
+      {
+        "id": "pa125",
+        "date": "2026-10-17",
+        "text": "7. All the glass ordered with Sejal. (Oct 27 requested)",
+        "source": "pending"
+      },
+      {
+        "id": "pa126",
+        "date": "2026-10-05",
+        "text": "Glass quote to be reviewed on both quotes received by 6th Oct.",
+        "source": "remark"
+      }
+    ],
+    "hidden": false
+  },
+  {
+    "id": "pp131",
+    "isExample": false,
+    "name": "Apartment 603, Kempinski, Palm Jumeirah",
+    "client": "Asaturov Igor",
+    "scope": "6x ASE 80 LC LIFT & SLIDE SLIDING DOOR WITH SCHUCO FWS 50 CURTAIN WALL\n1x ASE 80 LC LIFT & SLIDE SLIDING DOOR WITH ARCHED SCHUCO FWS 50 CURTAIN WALL\n3x Schuco FWS 50 CURTAIN WALL\n\nWA Tracker items: FWS-50 (CURVE CW FRAME) + ASE-80 (LIFT & SLIDE); FWS-50 (CW FRAME); FWS-50 (CW FRAME) + ASE-80 (LIFT & SLIDE)",
+    "systemsSupplier": "Schuco",
+    "frameDelivery": "",
+    "glassDelivery": "",
+    "start": "2027-01-01",
+    "finish": "",
+    "pct": 0,
+    "team": "",
+    "extraTeams": [],
+    "ralGlass": "9016/HP70",
+    "projectValue": "AED 346,097.44",
+    "designApprovalDate": "2026-07-17",
+    "bondingRequired": "No",
+    "pendingActions": [
+      {
+        "id": "pa128",
+        "date": "2026-10-17",
+        "text": "1. All material at WA. In production and Revised delivery date is 28/09/26. (* This job will not require to install until Jan already informed WA. )",
+        "source": "pending"
+      },
+      {
+        "id": "pa129",
+        "date": "2026-10-17",
+        "text": "2. Glass from WA ready to collect on Sept 30 but requested to keep it at their warehouse until the job is ready to install.",
+        "source": "pending"
+      },
+      {
+        "id": "pa130",
+        "date": "2026-10-05",
+        "text": "Steve would like us to install one of the ASE 80's in our showroom.",
+        "source": "remark"
+      }
+    ],
+    "hidden": false
+  },
+  {
+    "id": "pp137",
+    "isExample": false,
+    "name": "Marsa AL Arab, Villa 2",
+    "client": "Mat",
+    "scope": "5x SCHUCO ADS 65 HD DOUBLE HINGED DOOR WITH VETROMAX C35 CURTAIN WALL\n2x VETROMAX C35 CURTAIN WALL WINDOW\n4x SCHUCO ADS 65 HD SINGLE HINGED DOOR WITH VETROMAX C35 CURTAIN WALL\n\nWA Tracker items: ADS 65 (DOUBLE LEAF DOOR); ADS 65 (SINGLE LEAF DOOR)",
+    "systemsSupplier": "Schuco + Vetromax",
+    "frameDelivery": "",
+    "glassDelivery": "",
+    "start": "2026-09-30",
+    "finish": "",
+    "pct": 0,
+    "team": "",
+    "extraTeams": [],
+    "ralGlass": "7021/Sungu SN 50",
+    "projectValue": "AED 700,000.00",
+    "designApprovalDate": "2026-08-20",
+    "bondingRequired": "No",
+    "pendingActions": [
+      {
+        "id": "pa132",
+        "date": "2026-10-17",
+        "text": "1. WA In production - Will be ready on Oct 6. Only today informed by WA that material not yet received from coating. Manufacturing will be 5days after receive from coating",
+        "source": "pending"
+      },
+      {
+        "id": "pa133",
+        "date": "2026-10-17",
+        "text": "2. Glass is Double glazed with lamination awaiting ETA from Lingson.",
+        "source": "pending"
+      },
+      {
+        "id": "pa134",
+        "date": "2026-10-17",
+        "text": "3. 3pcs reordered and it will be ready by Oct 6 as per confirmation with Ed and technical glass.",
+        "source": "pending"
+      },
+      {
+        "id": "pa135",
+        "date": "2026-10-17",
+        "text": "4. EPDM rolls ordered from BES",
+        "source": "pending"
+      },
+      {
+        "id": "pa136",
+        "date": "2026-10-17",
+        "text": "12th October x2 Glass panels require replacment due to change in size. Fadil has requested revised glass sizes from BES, once received Ed will place an order for the Glass.",
+        "source": "install"
+      }
+    ],
+    "hidden": false
+  },
+  {
+    "id": "pp142",
+    "isExample": false,
+    "name": "Villa 27, Lunaria, Al Barari",
+    "client": "GTS",
+    "scope": "6x SLIM 35 SERIES FIXED CURTAIN WALL WINDOW\n2x SCHUCO ADS 65 HD SINGLE HINGED DOOR\n2x VETROMAX S36 SLIDING DOOR",
+    "systemsSupplier": "Schuco + Slim+ vetromax",
+    "frameDelivery": "",
+    "glassDelivery": "",
+    "start": "2026-10-20",
+    "finish": "",
+    "pct": 0,
+    "team": "",
+    "extraTeams": [],
+    "ralGlass": "9016/Sun HP 50",
+    "projectValue": "AED 172,993.84",
+    "designApprovalDate": "2026-08-12",
+    "bondingRequired": "No",
+    "pendingActions": [
+      {
+        "id": "pa138",
+        "date": "2026-10-17",
+        "text": "1. In production and required for Oct 20. (Both WA & BES) except item 4, which has now been changed from CW to Sliding door. Fadil sent the drawing and details to BES on Oct 7. awaiting CSD drawing and glass size",
+        "source": "pending"
+      },
+      {
+        "id": "pa139",
+        "date": "2026-10-17",
+        "text": "2. Glass Quotation received from Sejal on Oct 6. To send PO and advance payment.",
+        "source": "pending"
+      },
+      {
+        "id": "pa140",
+        "date": "2026-10-17",
+        "text": "3. SSF order requested Ate to send PO and payment on Oct 7.",
+        "source": "pending"
+      },
+      {
+        "id": "pa141",
+        "date": "2026-10-12",
+        "text": "Variation required for CW wjhich was change to slider as BES already coated the materials. Approx 2.5k Fadil will share this with Farah.",
+        "source": "remark"
+      }
+    ],
+    "hidden": false
+  },
+  {
+    "id": "pp149",
+    "isExample": false,
+    "name": "Apt 407, Palm, Golden Mile",
+    "client": "Venelin",
+    "scope": "2x AWS 65 TOP HUNG WINDOW \n1x ADS 65 HD SINGLE HINGED DOOR\n1x ASE 54 PD ME SLIDING DOOR\n1x AWS 65 FIXED WINDOW\n3x FWS 35 PD LC ME FIXED CURTAIN WALL",
+    "systemsSupplier": "Schuco + decomaster",
+    "frameDelivery": "",
+    "glassDelivery": "",
+    "start": "2026-10-15",
+    "finish": "",
+    "pct": 0,
+    "team": "",
+    "extraTeams": [],
+    "ralGlass": "8019/HP70",
+    "projectValue": "AED 80,014.01",
+    "designApprovalDate": "2026-08-18",
+    "bondingRequired": "No",
+    "pendingActions": [
+      {
+        "id": "pa143",
+        "date": "2026-10-17",
+        "text": "1. All item will be used from stock.Apart from c35 curtain wall. We will order this from DECOMASTER",
+        "source": "pending"
+      },
+      {
+        "id": "pa144",
+        "date": "2026-10-17",
+        "text": "2. Drawing was confirmed on Aug 18. (RAL 8014 & SunGuard HP Neutral 40) was confirmed",
+        "source": "pending"
+      },
+      {
+        "id": "pa145",
+        "date": "2026-10-17",
+        "text": "3. The customer is waiting for a response from Nakheel if the colour for the Frame & Glass is an approved to install.",
+        "source": "pending"
+      },
+      {
+        "id": "pa146",
+        "date": "2026-10-17",
+        "text": "12th Revised scope of works also sent to Venelin by Fadil",
+        "source": "install"
+      },
+      {
+        "id": "pa147",
+        "date": "2026-10-12",
+        "text": "Revised drawing sent to Venelin today , for a like for like replacement.",
+        "source": "install"
+      },
+      {
+        "id": "pa148",
+        "date": "2026-10-05",
+        "text": "Steve to chase Venelin re: colour and Glass spec approval by 6th Oct",
+        "source": "remark"
+      }
+    ],
+    "hidden": false
+  },
+  {
+    "id": "pp155",
+    "isExample": false,
+    "name": "Villa 24, Street 4, Savannah",
+    "client": "Neotech",
+    "scope": "1x 54 PD ME SLIDING DOOR\n2x ADS 65 HD DOUBLE HINGED DOOR\n2x ADS 65 HD SINGLE HINGED DOOR\n2x ADS 65 HD SINGLE HINGED DOOR WITH FIXED PANEL\n1x AS FD 90 HI BI-FOLDING DOOR\n12x AWS 65 FIXED WINDOW\n7x AWS 65 TOP HUNG WINDOW",
+    "systemsSupplier": "Schuco",
+    "frameDelivery": "",
+    "glassDelivery": "",
+    "start": "2026-10-15",
+    "finish": "",
+    "pct": 0,
+    "team": "",
+    "extraTeams": [],
+    "ralGlass": "7021/HP70",
+    "projectValue": "AED 220,012.74",
+    "designApprovalDate": "2026-08-15",
+    "bondingRequired": "No",
+    "pendingActions": [
+      {
+        "id": "pa150",
+        "date": "2026-10-17",
+        "text": "1. Bi folding door partially arrvied on Sept 11. Balance will arrive Oct 7 or 8. (SO 7035088)",
+        "source": "pending"
+      },
+      {
+        "id": "pa151",
+        "date": "2026-10-17",
+        "text": "2. Frame order sent confirmation on Sept 16 for production & request for Oct 5.",
+        "source": "pending"
+      },
+      {
+        "id": "pa152",
+        "date": "2026-10-17",
+        "text": "3. Glass order with GMI. ready to collect. Item 15 needs to send for bonding.",
+        "source": "pending"
+      },
+      {
+        "id": "pa153",
+        "date": "2026-10-17",
+        "text": "4. Box section & L angle sent order with Sirajco. awaiting update quo. Lucito needs to send for coating after",
+        "source": "pending"
+      },
+      {
+        "id": "pa154",
+        "date": "2026-10-17",
+        "text": "5th ETA required from WA ASAP.",
+        "source": "remark"
+      }
+    ],
+    "hidden": false
+  },
+  {
+    "id": "pp160",
+    "isExample": false,
+    "name": "Jubail Island Villa, Abu Dhabi",
+    "client": "Natalie",
+    "scope": "8x CW35 FIXED CURTAIN WALL WINDOW\n3x SIDE HUNG WINDOW WITH CW35 FIXED CURTAIN WALL WINDOW",
+    "systemsSupplier": "Vetromax",
+    "frameDelivery": "",
+    "glassDelivery": "",
+    "start": "2026-10-09",
+    "finish": "",
+    "pct": 0,
+    "team": "",
+    "extraTeams": [],
+    "ralGlass": "",
+    "projectValue": "AED 155,239.74",
+    "designApprovalDate": "2026-08-30",
+    "bondingRequired": "No",
+    "pendingActions": [
+      {
+        "id": "pa156",
+        "date": "2026-10-17",
+        "text": "1. Frame ready to collect on Oct 8.",
+        "source": "pending"
+      },
+      {
+        "id": "pa157",
+        "date": "2026-10-17",
+        "text": "2. Glass with GMI. ETA Oct 3. Ready to collect.",
+        "source": "pending"
+      },
+      {
+        "id": "pa158",
+        "date": "2026-10-17",
+        "text": "Installation should take 5-6 days",
+        "source": "install"
+      },
+      {
+        "id": "pa159",
+        "date": "2026-10-17",
+        "text": "SPYDER survey required for installation, Lucito to attend with AJI on 8th Oct.",
+        "source": "remark"
+      }
+    ],
+    "hidden": false
+  },
+  {
+    "id": "pp164",
+    "isExample": false,
+    "name": "Villa 190, Fairways, Dubai Hills",
+    "client": "JCT",
+    "scope": "Schuco Entrance Door\n\nWA Tracker items: ADS 65 (PIVOT DOOR) - HPL PANEL",
+    "systemsSupplier": "Schuco",
+    "frameDelivery": "",
+    "glassDelivery": "",
+    "start": "2026-10-15",
+    "finish": "",
+    "pct": 0,
+    "team": "",
+    "extraTeams": [],
+    "ralGlass": "",
+    "projectValue": "AED 49,970.98",
+    "designApprovalDate": "2026-08-25",
+    "bondingRequired": "No",
+    "pendingActions": [
+      {
+        "id": "pa161",
+        "date": "2026-10-17",
+        "text": "In production. ETA Oct 8 as per WA",
+        "source": "pending"
+      },
+      {
+        "id": "pa162",
+        "date": "2026-10-12",
+        "text": "* Material already delivered and installed.",
+        "source": "install"
+      },
+      {
+        "id": "pa163",
+        "date": "2026-10-12",
+        "text": "* 35x55 Door cylinder to provide Mark G checking with Lucito if this was procured",
+        "source": "install"
+      }
+    ],
+    "hidden": false
+  },
+  {
+    "id": "pp171",
+    "isExample": false,
+    "name": "Mirador, Villa 14, La Colleccion",
+    "client": "GTS",
+    "scope": "1x Thiral DOUBLE HINGED ENTRANCE DOOR WITH FIXED PANEL WITH CONCEALED HINGES\n2x ADS 65 DOUBLE HINGED DOOR WITH FIXED PANEL ON BOTH SIDES\n4x ADS 65 HD DOUBLE HINGED DOOR\n1x ADS 65 HD SINGLE HINGED DOOR\n6x AWS 65 ARCHED FIXED WINDOW\n14x AWS 65 FIXED WINDOW\n1x SKYLIGHT\nSSF",
+    "systemsSupplier": "Schuco + Thiral + Bettio",
+    "frameDelivery": "",
+    "glassDelivery": "",
+    "start": "2026-11-30",
+    "finish": "",
+    "pct": 0,
+    "team": "",
+    "extraTeams": [],
+    "ralGlass": "9003/HP70",
+    "projectValue": "AED 248,410.15",
+    "designApprovalDate": "2026-09-28",
+    "bondingRequired": "No",
+    "pendingActions": [
+      {
+        "id": "pa165",
+        "date": "2026-10-17",
+        "text": "1. All the hinged door materials (5set) delivered to WA",
+        "source": "pending"
+      },
+      {
+        "id": "pa166",
+        "date": "2026-10-17",
+        "text": "2. MTO and assembly list sent to bowen for 22sets of material order. SBS quotation needs to confirm.",
+        "source": "pending"
+      },
+      {
+        "id": "pa167",
+        "date": "2026-10-17",
+        "text": "3. Fadil sent Order to WA on Oct 5 for coating and fabrication only. Quotation needs to confirm",
+        "source": "pending"
+      },
+      {
+        "id": "pa168",
+        "date": "2026-10-17",
+        "text": "4. Front door variation and color not yet confirm by the client. Needs to order from Thiral after confirmation.",
+        "source": "pending"
+      },
+      {
+        "id": "pa169",
+        "date": "2026-10-17",
+        "text": "5. Glass/ Bettio once the size confirmation received from Fadil",
+        "source": "pending"
+      },
+      {
+        "id": "pa170",
+        "date": "2026-10-05",
+        "text": "Variation order required Front door & Arched Fixed windows  - Farah will send this by 6th Oct.",
+        "source": "remark"
+      }
+    ],
+    "hidden": false
+  },
+  {
+    "id": "pp175",
+    "isExample": false,
+    "name": "Villa 46, Novelia, Victory Heights",
+    "client": "GTS",
+    "scope": "4x ADS 65 HD SINGLE HINGED DOOR\n2x ASE 54 PD ME SLIDING DOOR\n5x AWS 65 FIXED WINDOW\n2x AWS 65 TILT & TURN WINDOW\n5x AWS 65 TOP HUNG WINDOW\n9x WA SLIM 35 SERIES FIXED CURTAIN WALL\n1x WA SLIM 35 SERIES FIXED CURTAIN WALL (JUMBO)\n1x FLAT SKYLIGHT",
+    "systemsSupplier": "Schuco",
+    "frameDelivery": "",
+    "glassDelivery": "",
+    "start": "2026-12-15",
+    "finish": "",
+    "pct": 0,
+    "team": "",
+    "extraTeams": [],
+    "ralGlass": "",
+    "projectValue": "AED 379,234.49",
+    "designApprovalDate": "",
+    "bondingRequired": "No",
+    "pendingActions": [
+      {
+        "id": "pa172",
+        "date": "2026-10-17",
+        "text": "1. Revised drawing sent on Sept 28. Delivery needs to be mid of Dec.",
+        "source": "pending"
+      },
+      {
+        "id": "pa173",
+        "date": "2026-10-17",
+        "text": "2. All from stock except Slim 35 from WA once the size available.",
+        "source": "pending"
+      },
+      {
+        "id": "pa174",
+        "date": "2026-10-05",
+        "text": "Steve to confirm by COP 6th Oct if the design has been reviewed and approved by Jerry.",
+        "source": "remark"
+      }
+    ],
+    "hidden": false
+  },
+  {
+    "id": "pp181",
+    "isExample": false,
+    "name": "Villa L30, Emirates Hills",
+    "client": "GTS",
+    "scope": "22x VETROMAX CW35 FIXED CURTAIN WALL WINDOW\n14x VETROMAX CW35 FIXED CURTAIN WALL WINDOW (JUMBO)\n8x VETROMAX S36 SLIDING DOOR\n2x VETROMAX S44 SLIDING DOOR\n7x VETROMAX SINGLE HINGED DOOR\n2x VETROMAX TOP HUNG WINDOW",
+    "systemsSupplier": "Vetromax",
+    "frameDelivery": "",
+    "glassDelivery": "",
+    "start": "",
+    "finish": "",
+    "pct": 0,
+    "team": "",
+    "extraTeams": [],
+    "ralGlass": "",
+    "projectValue": "AED 856,458",
+    "designApprovalDate": "",
+    "bondingRequired": "No",
+    "pendingActions": [
+      {
+        "id": "pa176",
+        "date": "2026-10-17",
+        "text": "Farah sent initial drawing to GTS on Aug 13. sign off pending.",
+        "source": "pending"
+      },
+      {
+        "id": "pa177",
+        "date": "2026-10-17",
+        "text": "5/10 - Awaiting Drawing approval and LPO - Farah will chase GTS Karen) for an update today.",
+        "source": "remark"
+      },
+      {
+        "id": "pa178",
+        "date": "2026-10-17",
+        "text": "Install Start Date (from tracker): 6 to 8 weeks",
+        "source": "pending"
+      },
+      {
+        "id": "pa179",
+        "date": "2026-10-02",
+        "text": "Sent breakdown of items quotation as per client request.",
+        "source": "pending"
+      },
+      {
+        "id": "pa180",
+        "date": "2026-09-28",
+        "text": "Update quotation with changes sent as per client request.",
+        "source": "pending"
+      }
+    ],
+    "hidden": false
+  },
+  {
+    "id": "pp189",
+    "isExample": false,
+    "name": "Villa 170, Sidra 2, Dubai Hills",
+    "client": "Bolsover",
+    "scope": "2x SCHUCO AS FD 90 HI FOLDING DOOR\n5x SCHÜCO FWS 35 PD LC ME FIXED CURTAIN WALL\n1x SCHÜCO FWS 35 PD LC ME FIXED CURTAIN WALL W/ SIDE HUNG WINDOW\n1x CURVED FIXED CURTAIN WALL\n2x Skylight - DECOMASTER\n2x Blackout films , Item 05 & Item 08.",
+    "systemsSupplier": "Schuco",
+    "frameDelivery": "",
+    "glassDelivery": "",
+    "start": "",
+    "finish": "",
+    "pct": 0,
+    "team": "",
+    "extraTeams": [],
+    "ralGlass": "",
+    "projectValue": "AED 175184.59",
+    "designApprovalDate": "",
+    "bondingRequired": "No",
+    "pendingActions": [
+      {
+        "id": "pa182",
+        "date": "2026-10-17",
+        "text": "1. Farah sent revised drawing on Sept 14. (Design approved in principle on 24th September. Glass & RAL submitted on Sept 28 and approved to Farah)",
+        "source": "pending"
+      },
+      {
+        "id": "pa183",
+        "date": "2026-10-17",
+        "text": "2. skylight is from Decomaster",
+        "source": "pending"
+      },
+      {
+        "id": "pa184",
+        "date": "2026-10-17",
+        "text": "3. Client wants tempered curved glass but this is not possible. Only clear glass is possible and Farah needs to communicate with client upon approval.",
+        "source": "pending"
+      },
+      {
+        "id": "pa185",
+        "date": "2026-10-17",
+        "text": "Lucitio will check by 6th Oct, with Jay (Bollsover) for confirmation regarding site access for survey.",
+        "source": "remark"
+      },
+      {
+        "id": "pa186",
+        "date": "2026-10-12",
+        "text": "Response from Engr Jay, all items are still not available to measure including the skylight. Only x3 items are ready and has been measured",
+        "source": "install"
+      },
+      {
+        "id": "pa187",
+        "date": "2026-10-05",
+        "text": "All items approved, but no site access. LPo received.",
+        "source": "remark"
+      },
+      {
+        "id": "pa188",
+        "date": "2026-10-05",
+        "text": "x2 Skylight openings are also not ready to survey, Lucito will check again by 6th Oct",
+        "source": "remark"
+      }
+    ],
+    "hidden": false
+  },
+  {
+    "id": "pp194",
+    "isExample": false,
+    "name": "Cluster 18, Villa 3, Jumeirah Islands",
+    "client": "MACS",
+    "scope": "1x FIXED CURTAIN WALL WINDOW - JUMBO\n9x CW35 FIXED CURTAIN WALL WINDOW\n3x CW35 FIXED CURTAIN WALL WINDOW - JUMBO\n1x PIVOT DOOR WITH CW35 FIXED CURTAIN WALL\n2x S36 SLIDING DOOR\n2x SINGLE HINGED DOOR\n3x TOP HUNG WINDOW",
+    "systemsSupplier": "Vetromax",
+    "frameDelivery": "",
+    "glassDelivery": "",
+    "start": "2026-11-25",
+    "finish": "",
+    "pct": 0,
+    "team": "",
+    "extraTeams": [],
+    "ralGlass": "SD2091 - Black SHR/HP+50",
+    "projectValue": "AED 500,348.66",
+    "designApprovalDate": "",
+    "bondingRequired": "No",
+    "pendingActions": [
+      {
+        "id": "pa190",
+        "date": "2026-10-17",
+        "text": "Drawing sent to Kalpita on Sept 12. awaiting confirmation.",
+        "source": "pending"
+      },
+      {
+        "id": "pa191",
+        "date": "2026-10-12",
+        "text": "Customer wants no handles on hinged door and smaller Mesh. Steve will untangle this with MACS(Kalpita).",
+        "source": "install"
+      },
+      {
+        "id": "pa192",
+        "date": "2026-10-10",
+        "text": "Opening are not ready for final measurments",
+        "source": "remark"
+      },
+      {
+        "id": "pa193",
+        "date": "2026-10-05",
+        "text": "All litems approved except the small window (Wellness window).",
+        "source": "pending"
+      }
+    ],
+    "hidden": false
+  },
+  {
+    "id": "pp197",
+    "isExample": false,
+    "name": "H37 Emirates Hills Villa",
+    "client": "Living Space",
+    "scope": "Schuco ADS 65 HD Double Leaf Hinged Door",
+    "systemsSupplier": "Schuco",
+    "frameDelivery": "",
+    "glassDelivery": "",
+    "start": "",
+    "finish": "",
+    "pct": 0,
+    "team": "",
+    "extraTeams": [],
+    "ralGlass": "",
+    "projectValue": "AED 89,397.00",
+    "designApprovalDate": "",
+    "bondingRequired": "No",
+    "pendingActions": [
+      {
+        "id": "pa195",
+        "date": "2026-10-17",
+        "text": "Fadil Sent revised drawing on Sept 19.",
+        "source": "pending"
+      },
+      {
+        "id": "pa196",
+        "date": "2026-10-17",
+        "text": "Client is awaiting confirmation from their client as per Oct 2 update. Client is on vacvation",
+        "source": "pending"
+      }
+    ],
+    "hidden": false
+  },
+  {
+    "id": "pp200",
+    "isExample": false,
+    "name": "Villa 1, Street 15, Meadows 2",
+    "client": "Hannah",
+    "scope": "6x ASE 55 LIFT & SLIDE SLIDING DOOR\n1x AWS 65 FIXED WINDOW",
+    "systemsSupplier": "Schuco",
+    "frameDelivery": "",
+    "glassDelivery": "",
+    "start": "",
+    "finish": "",
+    "pct": 0,
+    "team": "",
+    "extraTeams": [],
+    "ralGlass": "",
+    "projectValue": "AED 120,236.58",
+    "designApprovalDate": "",
+    "bondingRequired": "No",
+    "pendingActions": [
+      {
+        "id": "pa198",
+        "date": "2026-10-17",
+        "text": "Revised drawing with actual size measurement sent on Oct 2 to Steve. Awaiting confirmation",
+        "source": "pending"
+      },
+      {
+        "id": "pa199",
+        "date": "2026-10-17",
+        "text": "5th October, Steve to confirm Customer response by 7th October",
+        "source": "remark"
+      }
+    ],
+    "hidden": false
+  },
+  {
+    "id": "pp202",
+    "isExample": false,
+    "name": "VILLA 13, CLUSTER 28",
+    "client": "MAC",
+    "scope": "1x SCHUCO ADS 65 HD HINGED ENTRANCE DOOR A A WITH CONCEALED HINGES\n3x SCHUCO ADS 65 HD SINGLE HINGED DOOR\n5x SCHUCO ASE 54 PD ME SLIDING DOOR\n16x VETROMAX CW35 CURTAIN WALL WINDOW\n2x SCHÜCO AWS 65 TOP HUNG WINDOW\n2x VETROMAX CW35 ARCHED FIXED CURTAIN WALL WINDOW",
+    "systemsSupplier": "Schuco",
+    "frameDelivery": "",
+    "glassDelivery": "",
+    "start": "",
+    "finish": "",
+    "pct": 0,
+    "team": "",
+    "extraTeams": [],
+    "ralGlass": "",
+    "projectValue": "AED 336,081.07",
+    "designApprovalDate": "",
+    "bondingRequired": "No",
+    "pendingActions": [
+      {
+        "id": "pa201",
+        "date": "2026-10-17",
+        "text": "Initial drawing sent on Sept 9. Fadil sent revised drawing on Sept 30.",
+        "source": "pending"
+      }
+    ],
+    "hidden": false
+  },
+  {
+    "id": "pp204",
+    "isExample": false,
+    "name": "Villa D48, Palm Jumeirah",
+    "client": "GTS",
+    "scope": "22x CW35 FIXED CURTAIN WALL WINDOW\n5x S28 SLIDING DOOR\n3x S36 SLIDING DOOR\n1x SINGLE HINGED DOOR",
+    "systemsSupplier": "Vetromax",
+    "frameDelivery": "",
+    "glassDelivery": "",
+    "start": "",
+    "finish": "",
+    "pct": 0,
+    "team": "",
+    "extraTeams": [],
+    "ralGlass": "",
+    "projectValue": "AED 412,987.29",
+    "designApprovalDate": "",
+    "bondingRequired": "No",
+    "pendingActions": [
+      {
+        "id": "pa203",
+        "date": "2026-10-17",
+        "text": "Revise drawing sent on Sept 16. To follow up with Melanie",
+        "source": "pending"
+      }
+    ],
+    "hidden": false
+  },
+  {
+    "id": "pp208",
+    "isExample": false,
+    "name": "Villa 19, Carmen Village, Victory Heights",
+    "client": "GTS",
+    "scope": "4x SCHÜCO ADS 65 HD SINGLE HINGED DOOR\n3x SCHUCO ASE 54 PD ME SLIDING DOOR\n1x SCHUCO ASE 70 PD ME GEN2 SLIDING DOOR WITH VETROMAX C35 CURTAIN WALL\n7x SCHÜCO AWS 65 FIXED WINDOW\n1x SCHÜCO AWS 65 SIDE HUNG WINDOW\n5x SCHÜCO AWS 65 TOP HUNG WINDOW WITH FIXED PANEL BELOW\n2x VETROMAX CW35 FIXED CURTAIN WALL WINDOW",
+    "systemsSupplier": "Schuco+Vetromax",
+    "frameDelivery": "",
+    "glassDelivery": "",
+    "start": "",
+    "finish": "",
+    "pct": 0,
+    "team": "",
+    "extraTeams": [],
+    "ralGlass": "",
+    "projectValue": "AED 406,410.68",
+    "designApprovalDate": "",
+    "bondingRequired": "No",
+    "pendingActions": [
+      {
+        "id": "pa205",
+        "date": "2026-10-17",
+        "text": "Revised drawing sent on Oct 1. Awaiting confirmation",
+        "source": "pending"
+      },
+      {
+        "id": "pa206",
+        "date": "2026-10-17",
+        "text": "Install Start Date (from tracker): Dec",
+        "source": "pending"
+      },
+      {
+        "id": "pa207",
+        "date": "2026-10-12",
+        "text": "Fadil will chase Joyce for an update today.",
+        "source": "install"
+      }
+    ],
+    "hidden": false
+  },
+  {
+    "id": "pp211",
+    "isExample": false,
+    "name": "K37, WILDFLOWER, JGE",
+    "client": "MACS",
+    "scope": "Vetromax",
+    "systemsSupplier": "Vetromax",
+    "frameDelivery": "",
+    "glassDelivery": "",
+    "start": "",
+    "finish": "",
+    "pct": 0,
+    "team": "",
+    "extraTeams": [],
+    "ralGlass": "",
+    "projectValue": "AED 498,781.75",
+    "designApprovalDate": "",
+    "bondingRequired": "No",
+    "pendingActions": [
+      {
+        "id": "pa209",
+        "date": "2026-10-17",
+        "text": "Close Won",
+        "source": "pending"
+      },
+      {
+        "id": "pa210",
+        "date": "2026-10-17",
+        "text": "Install Start Date (from tracker): Dec",
+        "source": "pending"
+      }
+    ],
+    "hidden": false
+  },
+  {
+    "id": "pp213",
+    "isExample": false,
+    "name": "Villa 79, Alvorada 4, Arabian Ranches",
+    "client": "MACS",
+    "scope": "Schuco",
+    "systemsSupplier": "Schuco",
+    "frameDelivery": "",
+    "glassDelivery": "",
+    "start": "",
+    "finish": "",
+    "pct": 0,
+    "team": "",
+    "extraTeams": [],
+    "ralGlass": "",
+    "projectValue": "AED 234,387.60",
+    "designApprovalDate": "",
+    "bondingRequired": "No",
+    "pendingActions": [
+      {
+        "id": "pa212",
+        "date": "2026-10-17",
+        "text": "Close Won",
+        "source": "pending"
+      }
+    ],
+    "hidden": false
+  },
+  {
+    "id": "pp215",
+    "isExample": false,
+    "name": "Villa 40, Sanctuary Falls",
+    "client": "MAC",
+    "scope": "Schuco",
+    "systemsSupplier": "Schuco",
+    "frameDelivery": "",
+    "glassDelivery": "",
+    "start": "",
+    "finish": "",
+    "pct": 100,
+    "team": "",
+    "extraTeams": [],
+    "ralGlass": "",
+    "projectValue": "AED 57,132.23",
+    "designApprovalDate": "",
+    "bondingRequired": "No",
+    "pendingActions": [
+      {
+        "id": "pa214",
+        "date": "2026-10-17",
+        "text": "Close Won. * Awaiting for MACS to complete the extension and prepare all openings for re-installation of removed items.",
+        "source": "pending"
+      }
+    ],
+    "hidden": false
+  },
+  {
+    "id": "pp217",
+    "isExample": false,
+    "name": "VILLA 12, CLUSTER 48",
+    "client": "Rushab",
+    "scope": "Vetromax",
+    "systemsSupplier": "Vetromax",
+    "frameDelivery": "",
+    "glassDelivery": "",
+    "start": "",
+    "finish": "",
+    "pct": 0,
+    "team": "",
+    "extraTeams": [],
+    "ralGlass": "",
+    "projectValue": "AED 829,488.39",
+    "designApprovalDate": "",
+    "bondingRequired": "No",
+    "pendingActions": [
+      {
+        "id": "pa216",
+        "date": "2026-10-17",
+        "text": "Client will confirm with Steve for order. Measurement might be ready on Oct. This is not urgent",
+        "source": "pending"
+      }
+    ],
+    "hidden": false
+  }
+];
 
 
   var state = { projects: null, bannerDismissed:false, customTeams: [], waRows: [], dailyTasks: [] };
@@ -1135,13 +3189,40 @@
   // ---- column widths / details-panel width: a per-device display preference,
   // stored separately from project data (not synced to the shared backend). ----
   var UI_PREFS_KEY = "installPlanner.uiPrefs.v1";
-  var DEFAULT_COL_W = { name:195, client:108, scope:160, glassDelivery:124, glassDeliveryComments:150, frameDelivery:124, frameDeliveryComments:150, start:124, finish:124, pct:78, team:122, extraTeams:150, comments:175, bondingRequired:118 };
-  var COL_MIN_W = { name:110, client:60, scope:60, glassDelivery:90, glassDeliveryComments:60, frameDelivery:90, frameDeliveryComments:60, start:90, finish:90, pct:50, team:80, extraTeams:80, comments:60, bondingRequired:80 };
-  var COL_MAX_W = { name:420, client:260, scope:420, glassDelivery:170, glassDeliveryComments:420, frameDelivery:170, frameDeliveryComments:420, start:170, finish:170, pct:110, team:220, extraTeams:320, comments:420, bondingRequired:160 };
-  var SCALED_COLS = ["client","scope","glassDelivery","glassDeliveryComments","frameDelivery","frameDeliveryComments","start","finish","pct","comments"];
+  var DEFAULT_COL_W = { name:195, client:108, scope:180, pendingActions:280, frameDelivery:124, glassDelivery:124, start:136, finish:136, systemsSupplier:140, pct:78, team:122, extraTeams:150, ralGlass:120, projectValue:130, designApprovalDate:124, bondingRequired:118, projectStatus:170 };
+  var COL_MIN_W = { name:110, client:60, scope:60, pendingActions:140, frameDelivery:90, glassDelivery:90, start:90, finish:90, systemsSupplier:80, pct:50, team:80, extraTeams:80, ralGlass:70, projectValue:80, designApprovalDate:90, bondingRequired:80, projectStatus:110 };
+  var COL_MAX_W = { name:420, client:260, scope:460, pendingActions:600, frameDelivery:170, glassDelivery:170, start:190, finish:190, systemsSupplier:260, pct:110, team:220, extraTeams:320, ralGlass:260, projectValue:220, designApprovalDate:190, bondingRequired:160, projectStatus:260 };
+  var SCALED_COLS = ["client", "scope", "pendingActions", "frameDelivery", "glassDelivery", "start", "finish", "systemsSupplier", "pct", "ralGlass", "projectValue", "designApprovalDate"];
+  // Every meta column key, in display order (used by the Columns show/hide
+  // popover). "name" is intentionally excluded — the project name column
+  // can never be hidden, since it's the only way to identify a row.
+  var ALL_COL_KEYS = ["client","scope","pendingActions","frameDelivery","glassDelivery","start","finish","systemsSupplier","pct","team","extraTeams","ralGlass","projectValue","designApprovalDate","bondingRequired","projectStatus"];
+  var COL_LABELS = { client:"Client", scope:"Project scope", pendingActions:"Pending actions and remarks", frameDelivery:"Frame delivery date", glassDelivery:"Glass delivery date", start:"Install Start Date", finish:"Planned Finish Date", systemsSupplier:"Systems supplier", pct:"% complete", team:"Assigned team", extraTeams:"Helper teams", ralGlass:"RAL / Glass", projectValue:"Project value (AED)", designApprovalDate:"Design approval date", bondingRequired:"Bonding required", projectStatus:"Project status" };
   var colWidths = Object.assign({}, DEFAULT_COL_W);
   var detailScale = 1;
-  var clientHidden = false;
+  // Hidden columns (Columns popover) and hidden rows (per-project "hide on
+  // schedule" toggle) are both per-device display preferences — same prefs
+  // blob/localStorage key as colWidths/detailScale above, not synced to the
+  // shared backend. hiddenCols: array of column keys currently hidden.
+  // showHiddenRows: when true, hidden projects reappear (dimmed) in the
+  // plain Schedule list; when false (default) they're filtered out of that
+  // list only — Dashboard/Grid modal/Team Allocation always show them.
+  var hiddenCols = [];
+  var showHiddenRows = false;
+  // Normal / Compact row-density for the Schedule tab's plain list (see the
+  // #schedule-view.view-compact CSS block and the view-density-btn wiring
+  // further down) — persisted the same way as the other layout prefs below.
+  var viewDensity = "normal";
+
+  function isColHidden(key){ return hiddenCols.indexOf(key) !== -1; }
+  function toggleColHidden(key){
+    var idx = hiddenCols.indexOf(key);
+    if (idx === -1) hiddenCols.push(key); else hiddenCols.splice(idx, 1);
+    applyColumnVars();
+    saveUIPrefs();
+    renderColumnsPopup();
+    if (boardHScroll) boardHScroll.refresh();
+  }
 
   function loadUIPrefs(){
     try{
@@ -1150,63 +3231,183 @@
         var data = JSON.parse(raw);
         if (data && data.colWidths) colWidths = Object.assign({}, DEFAULT_COL_W, data.colWidths);
         if (data && typeof data.detailScale === "number") detailScale = data.detailScale;
-        if (data && typeof data.clientHidden === "boolean") clientHidden = data.clientHidden;
+        if (data && Array.isArray(data.hiddenCols)) hiddenCols = data.hiddenCols.filter(function(k){ return ALL_COL_KEYS.indexOf(k) !== -1; });
+        if (data && typeof data.showHiddenRows === "boolean") showHiddenRows = data.showHiddenRows;
+        if (data && (data.viewDensity === "normal" || data.viewDensity === "compact")) viewDensity = data.viewDensity;
       }
     } catch(e){ /* ignore corrupt/inaccessible prefs */ }
   }
   function saveUIPrefs(){
-    try{ localStorage.setItem(UI_PREFS_KEY, JSON.stringify({ colWidths:colWidths, detailScale:detailScale, clientHidden:clientHidden })); } catch(e){}
+    try{ localStorage.setItem(UI_PREFS_KEY, JSON.stringify({ colWidths:colWidths, detailScale:detailScale, hiddenCols:hiddenCols, showHiddenRows:showHiddenRows, viewDensity:viewDensity })); } catch(e){}
+  }
+  function applyHiddenColsClasses(){
+    var body = document.body;
+    ALL_COL_KEYS.concat(["name"]).forEach(function(k){
+      body.classList.toggle("col-hidden-"+k.toLowerCase(), isColHidden(k));
+    });
+    updateColumnsBtnState();
+  }
+  function updateColumnsBtnState(){
+    var btn = document.getElementById("columns-btn");
+    if (!btn) return;
+    var n = hiddenCols.length;
+    btn.classList.toggle("cols-hidden-active", n > 0);
+    btn.textContent = n > 0 ? ("Show/Hide Columns (" + n + " hidden)") : "Show/Hide Columns";
   }
   function applyColumnVars(){
     var root = document.documentElement.style;
-    root.setProperty("--w-name", colWidths.name+"px");
-    root.setProperty("--w-team", colWidths.team+"px");
-    root.setProperty("--w-extrateams", colWidths.extraTeams+"px");
-    root.setProperty("--w-bondingrequired", colWidths.bondingRequired+"px");
-    // Hiding the Client column collapses its grid track to 0 by forcing
-    // --base-w-client to 0px here (--w-client is calc(base * scale), so
-    // this overrides the stored width without losing it — colWidths.client
-    // itself is left untouched so the saved width comes right back when
-    // unhidden). document.body's "client-hidden" class (see CSS) then
-    // zeroes the cell's own padding/border so no sliver remains visible.
-    root.setProperty("--base-w-client", (clientHidden ? 0 : colWidths.client)+"px");
-    root.setProperty("--base-w-scope", colWidths.scope+"px");
-    root.setProperty("--base-w-glassdelivery", colWidths.glassDelivery+"px");
-    root.setProperty("--base-w-glassdeliverycomments", colWidths.glassDeliveryComments+"px");
-    root.setProperty("--base-w-framedelivery", colWidths.frameDelivery+"px");
-    root.setProperty("--base-w-framedeliverycomments", colWidths.frameDeliveryComments+"px");
-    root.setProperty("--base-w-start", colWidths.start+"px");
-    root.setProperty("--base-w-finish", colWidths.finish+"px");
-    root.setProperty("--base-w-pct", colWidths.pct+"px");
-    root.setProperty("--base-w-comments", colWidths.comments+"px");
+    root.setProperty("--w-name", (isColHidden("name")?0:colWidths.name)+"px");
+    root.setProperty("--base-w-client", (isColHidden("client")?0:colWidths.client)+"px");
+    root.setProperty("--base-w-scope", (isColHidden("scope")?0:colWidths.scope)+"px");
+    root.setProperty("--base-w-framedelivery", (isColHidden("frameDelivery")?0:colWidths.frameDelivery)+"px");
+    root.setProperty("--base-w-glassdelivery", (isColHidden("glassDelivery")?0:colWidths.glassDelivery)+"px");
+    root.setProperty("--base-w-start", (isColHidden("start")?0:colWidths.start)+"px");
+    root.setProperty("--base-w-finish", (isColHidden("finish")?0:colWidths.finish)+"px");
+    root.setProperty("--base-w-systemssupplier", (isColHidden("systemsSupplier")?0:colWidths.systemsSupplier)+"px");
+    root.setProperty("--base-w-pct", (isColHidden("pct")?0:colWidths.pct)+"px");
+    root.setProperty("--w-team", (isColHidden("team")?0:colWidths.team)+"px");
+    root.setProperty("--w-extrateams", (isColHidden("extraTeams")?0:colWidths.extraTeams)+"px");
+    root.setProperty("--base-w-ralglass", (isColHidden("ralGlass")?0:colWidths.ralGlass)+"px");
+    root.setProperty("--base-w-projectvalue", (isColHidden("projectValue")?0:colWidths.projectValue)+"px");
+    root.setProperty("--base-w-designapprovaldate", (isColHidden("designApprovalDate")?0:colWidths.designApprovalDate)+"px");
+    root.setProperty("--w-bondingrequired", (isColHidden("bondingRequired")?0:colWidths.bondingRequired)+"px");
+    root.setProperty("--base-w-pendingactions", (isColHidden("pendingActions")?0:colWidths.pendingActions)+"px");
+    root.setProperty("--w-projectstatus", (isColHidden("projectStatus")?0:colWidths.projectStatus)+"px");
     root.setProperty("--detail-scale", String(detailScale));
-    document.body.classList.toggle("client-hidden", clientHidden);
+    applyHiddenColsClasses();
   }
   function resetColumnLayout(){
     colWidths = Object.assign({}, DEFAULT_COL_W);
     detailScale = 1;
+    hiddenCols = [];
     applyColumnVars();
     saveUIPrefs();
+    renderColumnsPopup();
     if (boardHScroll) boardHScroll.refresh();
   }
-  function updateClientToggleBtnLabel(){
-    var btn = document.getElementById("toggle-client-btn");
-    if (btn) btn.textContent = clientHidden ? "Show Client" : "Hide Client";
+  // Columns show/hide popover: same anchor/open-state pattern as the Helper
+  // teams checklist (teamsPopupEl/teamsPopupState above) so it closes the
+  // same way on an outside click or Escape.
+  var columnsPopupEl = document.getElementById("columns-popup");
+  var columnsPopupOpen = false;
+  var columnsPopupAnchor = null;
+
+  function renderColumnsPopup(){
+    if (!columnsPopupEl) return;
+    var html = '<div class="teams-popup-head">Show / hide columns</div>';
+    html += '<div class="teams-popup-list">' + ALL_COL_KEYS.map(function(k){
+      var checked = isColHidden(k) ? "" : " checked";
+      return '<label class="teams-popup-row"><input type="checkbox" data-colcheck="'+k+'"'+checked+'> '+COL_LABELS[k]+'</label>';
+    }).join("") + '</div>';
+    html += '<div class="teams-popup-foot"><button type="button" id="columns-reset-btn" class="ghost-btn small">Reset columns</button>'+
+      '<button type="button" class="btn" id="columns-popup-done">Done</button></div>';
+    columnsPopupEl.innerHTML = html;
+  }
+  function openColumnsPopup(btn){
+    if (columnsPopupOpen && columnsPopupAnchor === btn){ closeColumnsPopup(); return; }
+    closeDatePopup();
+    closeExtraTeamsPopup();
+    closeColumnsPopup();
+    columnsPopupAnchor = btn;
+    columnsPopupOpen = true;
+    if (btn) btn.classList.add("active");
+    renderColumnsPopup();
+    if (columnsPopupEl){
+      columnsPopupEl.hidden = false;
+      if (btn){
+        var rect = btn.getBoundingClientRect();
+        var popW = columnsPopupEl.offsetWidth || 220;
+        var popH = columnsPopupEl.offsetHeight || 260;
+        var left = Math.min(rect.left, window.innerWidth - popW - 8);
+        left = Math.max(8, left);
+        var top = rect.bottom + 4;
+        if (top + popH > window.innerHeight - 8) top = rect.top - popH - 4;
+        if (top < 8) top = 8;
+        columnsPopupEl.style.left = left + "px";
+        columnsPopupEl.style.top = top + "px";
+      }
+    }
+  }
+  function closeColumnsPopup(){
+    if (columnsPopupAnchor) columnsPopupAnchor.classList.remove("active");
+    columnsPopupAnchor = null;
+    columnsPopupOpen = false;
+    if (columnsPopupEl) columnsPopupEl.hidden = true;
+  }
+  function toggleRowHidden(projectId){
+    var p = state.projects.find(function(x){ return x.id === projectId; });
+    if (!p) return;
+    p.hidden = !p.hidden;
+    scheduleSave();
+    render();
+  }
+  function toggleShowHiddenRows(){
+    showHiddenRows = !showHiddenRows;
+    saveUIPrefs();
+    updateShowHiddenBtnLabel();
+    render();
+  }
+  function updateShowHiddenBtnLabel(){
+    var btn = document.getElementById("toggle-hidden-rows-btn");
+    if (!btn) return;
+    btn.textContent = showHiddenRows ? "Hide hidden rows" : "Show hidden rows";
+    btn.classList.toggle("active", showHiddenRows);
+  }
+
+  function toggleViewDensity(){
+    viewDensity = (viewDensity === "compact") ? "normal" : "compact";
+    saveUIPrefs();
+    applyViewDensity();
+  }
+  function applyViewDensity(){
+    var sv = document.getElementById("schedule-view");
+    if (sv) sv.classList.toggle("view-compact", viewDensity === "compact");
+    var btn = document.getElementById("view-density-btn");
+    if (btn){
+      btn.textContent = (viewDensity === "compact") ? "Normal view" : "Compact view";
+      btn.classList.toggle("active", viewDensity === "compact");
+    }
+    // Row heights just changed, which affects the auto-growing Scope
+    // textareas' measured height.
+    if (boardEl) autosizeAllTextareas(boardEl);
   }
 
   function newProject(){
     return { id:"p"+Date.now().toString(36)+Math.random().toString(36).slice(2,7), isExample:false,
-      name:"", client:"", scope:"", glassDelivery:"", glassDeliveryComments:"", frameDelivery:"", frameDeliveryComments:"", start:"", finish:"", pct:0, team:"", extraTeams:[], comments:"", bondingRequired:"No" };
+      name:"", client:"", scope:"", systemsSupplier:"", frameDelivery:"", glassDelivery:"", start:"", finish:"",
+      pct:0, team:"", extraTeams:[], ralGlass:"", projectValue:"", designApprovalDate:"", bondingRequired:"No",
+      pendingActions:[], projectStatus:"", projectStatusOther:"", hidden:false };
+  }
+
+  function newPendingEntry(date, text, source){
+    return { id:"pa"+Date.now().toString(36)+Math.random().toString(36).slice(2,7),
+      date: date || TODAY_ISO, text: text||"", source: source||"manual" };
   }
 
   function normalizeProject(p){
     if (p.client==null) p.client = "";
-    if (p.glassDelivery==null) p.glassDelivery = "";
-    if (p.glassDeliveryComments==null) p.glassDeliveryComments = "";
+    if (p.systemsSupplier==null) p.systemsSupplier = "";
     if (p.frameDelivery==null) p.frameDelivery = "";
-    if (p.frameDeliveryComments==null) p.frameDeliveryComments = "";
+    if (p.glassDelivery==null) p.glassDelivery = "";
+    if (p.ralGlass==null) p.ralGlass = "";
+    if (p.projectValue==null) p.projectValue = "";
+    if (p.designApprovalDate==null) p.designApprovalDate = "";
     if (p.bondingRequired!=="Yes") p.bondingRequired = "No";
+    if (p.projectStatus==null) p.projectStatus = "";
+    if (p.projectStatusOther==null) p.projectStatusOther = "";
     if (!Array.isArray(p.extraTeams)) p.extraTeams = [];
+    if (!Array.isArray(p.pendingActions)) p.pendingActions = [];
+    // Migrate any pre-redesign "comments"/"glassDeliveryComments"/
+    // "frameDeliveryComments" free-text left over from an older saved
+    // state into a dated pending-action entry instead of discarding it.
+    ["comments","glassDeliveryComments","frameDeliveryComments"].forEach(function(oldKey){
+      if (p[oldKey]){
+        p.pendingActions.push({ id:"pa"+Date.now().toString(36)+Math.random().toString(36).slice(2,7),
+          date: new Date().toISOString().slice(0,10), text: p[oldKey], source:"migrated" });
+        delete p[oldKey];
+      }
+    });
+    if (typeof p.hidden !== "boolean") p.hidden = false;
     return p;
   }
 
@@ -1570,20 +3771,20 @@
     statRowEl.innerHTML = chips;
   }
 
-  var META_COL_COUNT = 15;    // the 15 project-detail columns (Helper teams added)
+  var META_COL_COUNT = 18;    // idx + the 17 project-detail columns
   var DIVIDER_COL = META_COL_COUNT + 1;   // the draggable divider between details and the day grid
-  var TOTAL_META_COLS = DIVIDER_COL;      // 16 — details + divider
+  var TOTAL_META_COLS = DIVIDER_COL;      // 18 — details + divider
   var DAY_COL_START = TOTAL_META_COLS + 1;
 
   // Full grid (meta + day columns): used only by the Schedule grid modal now
   // (see renderGridModal()) — the main Schedule tab shows the meta columns
   // only, via mainGridTemplateColumns()/renderMainList().
   function gridTemplateColumns(){
-    return "var(--w-idx) var(--w-name) var(--w-client) var(--w-scope) var(--w-glassdelivery) var(--w-glassdeliverycomments) var(--w-framedelivery) var(--w-framedeliverycomments) var(--w-start) var(--w-finish) var(--w-comments) var(--w-pct) var(--w-team) var(--w-extrateams) var(--w-bondingrequired) var(--w-divider) repeat("+DAYS.length+", var(--day))";
+    return "var(--w-idx) var(--w-name) var(--w-client) var(--w-scope) var(--w-pendingactions) var(--w-framedelivery) var(--w-glassdelivery) var(--w-start) var(--w-finish) var(--w-systemssupplier) var(--w-pct) var(--w-team) var(--w-extrateams) var(--w-ralglass) var(--w-projectvalue) var(--w-designapprovaldate) var(--w-bondingrequired) var(--w-projectstatus) var(--w-divider) repeat("+DAYS.length+", var(--day))";
   }
 
   function mainGridTemplateColumns(){
-    return "var(--w-idx) var(--w-name) var(--w-client) var(--w-scope) var(--w-glassdelivery) var(--w-glassdeliverycomments) var(--w-framedelivery) var(--w-framedeliverycomments) var(--w-start) var(--w-finish) var(--w-comments) var(--w-pct) var(--w-team) var(--w-extrateams) var(--w-bondingrequired)";
+    return "var(--w-idx) var(--w-name) var(--w-client) var(--w-scope) var(--w-pendingactions) var(--w-framedelivery) var(--w-glassdelivery) var(--w-start) var(--w-finish) var(--w-systemssupplier) var(--w-pct) var(--w-team) var(--w-extrateams) var(--w-ralglass) var(--w-projectvalue) var(--w-designapprovaldate) var(--w-bondingrequired) var(--w-projectstatus)";
   }
 
   var META_LABELS = [
@@ -1591,23 +3792,21 @@
     {cls:"c-name", txt:"Project name", key:"name"},
     {cls:"c-client", txt:"Client", key:"client"},
     {cls:"c-scope", txt:"Project scope", key:"scope"},
-    {cls:"c-glassdelivery", txt:"Glass delivery date", key:"glassDelivery"},
-    {cls:"c-glassdeliverycomments", txt:"Glass delivery comments", key:"glassDeliveryComments"},
+    {cls:"c-pendingactions", txt:"Pending actions and remarks", key:"pendingActions"},
     {cls:"c-framedelivery", txt:"Frame delivery date", key:"frameDelivery"},
-    {cls:"c-framedeliverycomments", txt:"Frame delivery comments", key:"frameDeliveryComments"},
-    {cls:"c-start", txt:"Start date", key:"start"},
-    {cls:"c-finish", txt:"Finish date", key:"finish"},
-    {cls:"c-comments", txt:"Comments", key:"comments"},
+    {cls:"c-glassdelivery", txt:"Glass delivery date", key:"glassDelivery"},
+    {cls:"c-start", txt:"Install Start Date", key:"start"},
+    {cls:"c-finish", txt:"Planned Finish Date", key:"finish"},
+    {cls:"c-systemssupplier", txt:"Systems supplier", key:"systemsSupplier"},
     {cls:"c-pct", txt:"% complete", key:"pct"},
     {cls:"c-team", txt:"Assigned team", key:"team"},
     {cls:"c-extrateams", txt:"Helper teams", key:"extraTeams"},
-    {cls:"c-bondingrequired", txt:"Bonding required", key:"bondingRequired"}
+    {cls:"c-ralglass", txt:"RAL / Glass", key:"ralGlass"},
+    {cls:"c-projectvalue", txt:"Project value (AED)", key:"projectValue"},
+    {cls:"c-designapprovaldate", txt:"Design approval date", key:"designApprovalDate"},
+    {cls:"c-bondingrequired", txt:"Bonding required", key:"bondingRequired"},
+    {cls:"c-projectstatus", txt:"Project status", key:"projectStatus"}
   ];
-
-  // WA production tracker's column labels, grid template, header and row
-  // rendering all now live in wa-shared.js (window.WA) — shared verbatim
-  // with the standalone factory page (wa-tracker.html) so the two never
-  // drift apart. See renderWaView() below for where it's used here.
 
   // Full grid header (meta + day columns) — used by the Schedule grid modal.
   function metaHeaderHTML(){
@@ -1658,11 +3857,43 @@
       '<button type="button" class="teams-btn" data-extra-teams-btn="1" data-id="'+p.id+'" aria-label="Helper teams">'+inner+'</button></div>';
   }
 
-  function projectRowHTML(p, rowIndex){
-    var row = 3 + rowIndex;
+  // Project status: a fixed set of stages plus a free-text "Other" fallback
+  // (p.projectStatusOther) for anything that doesn't fit the list — the
+  // select's value flips to "__other__" automatically whenever the saved
+  // status isn't one of the known stages, so older/imported data with no
+  // status set still renders sensibly (shows "—", not a dropdown with
+  // nothing selected).
+  var PROJECT_STATUS_OPTIONS = ["Installation in progress", "Completed", "Snagging in progress", "Snagging completed", "Awaiting handover to client", "Handed over"];
+  function projectStatusCellHTML(p, gridCol, row){
+    var known = PROJECT_STATUS_OPTIONS.indexOf(p.projectStatus) !== -1;
+    var isOther = !!p.projectStatus && !known;
+    var html = '<div class="cell c-projectstatus" style="grid-column:'+gridCol+'; grid-row:'+row+';">'+
+      '<select class="field" data-field="projectStatus" data-id="'+p.id+'" aria-label="Project status">'+
+      '<option value=""'+(!p.projectStatus?" selected":"")+'>—</option>'+
+      '<option value="Installation in progress"'+(p.projectStatus==="Installation in progress"?" selected":"")+'>Installation in progress</option>'+
+      '<option value="Completed"'+(p.projectStatus==="Completed"?" selected":"")+'>Completed</option>'+
+      '<option value="Snagging in progress"'+(p.projectStatus==="Snagging in progress"?" selected":"")+'>Snagging in progress</option>'+
+      '<option value="Snagging completed"'+(p.projectStatus==="Snagging completed"?" selected":"")+'>Snagging completed</option>'+
+      '<option value="Awaiting handover to client"'+(p.projectStatus==="Awaiting handover to client"?" selected":"")+'>Awaiting handover to client</option>'+
+      '<option value="Handed over"'+(p.projectStatus==="Handed over"?" selected":"")+'>Handed over</option>'+
+      '<option value="__other__"'+(isOther?" selected":"")+'>Other…</option>'+
+      '</select>';
+    if (isOther || (p.projectStatus === "__other__")){
+      html += '<input class="field projectstatus-other" data-field="projectStatusOther" data-id="'+p.id+'" value="'+escAttr(p.projectStatusOther||(isOther?p.projectStatus:""))+'" placeholder="Describe status" aria-label="Other project status" title="'+escAttr(p.projectStatusOther||"")+'">';
+    }
+    html += '</div>';
+    return html;
+  }
+
+
+  // Shared by both row renderers below: everything up to (but not including)
+  // Helper teams/Bonding/Pending actions, which differ slightly in textarea
+  // class (autosize in the plain list only) and are built by each caller.
+  function metaRowCellsCommonHTML(p, row, extraIdxControls){
     var html = "";
     html += '<div class="cell c-idx" style="grid-column:1; grid-row:'+row+';">'+
-      '<span class="row-num">'+(rowIndex+1)+'</span>'+
+      '<span class="row-num">'+extraIdxControls.rowNum+'</span>'+
+      (extraIdxControls.hideBtn||"")+
       '<button class="del-btn" type="button" data-action="delete" data-id="'+p.id+'" aria-label="Delete project" title="Delete project">✕</button></div>';
 
     html += '<div class="cell c-name" style="grid-column:2; grid-row:'+row+';">'+
@@ -1672,116 +3903,132 @@
     html += '<div class="cell c-client" style="grid-column:3; grid-row:'+row+';">'+
       '<input class="field" list="client-list" data-field="client" data-id="'+p.id+'" value="'+escAttr(p.client)+'" title="'+escAttr(p.client)+'" placeholder="Client" aria-label="Client"></div>';
 
+    return html;
+  }
+
+  function projectRowHTML(p, rowIndex){
+    var row = 3 + rowIndex;
+    var html = metaRowCellsCommonHTML(p, row, { rowNum: rowIndex+1 });
+
     html += '<div class="cell c-scope" style="grid-column:4; grid-row:'+row+';">'+
       '<textarea class="field" data-field="scope" data-id="'+p.id+'" placeholder="Scope of work" aria-label="Project scope">'+escText(p.scope)+'</textarea></div>';
 
-    html += '<div class="cell c-glassdelivery" style="grid-column:5; grid-row:'+row+';">'+
-      '<button type="button" class="date-btn'+(p.glassDelivery?"":" placeholder")+'" data-date-btn="glassDelivery" data-id="'+p.id+'" aria-label="Glass delivery date">'+(fmtDateDisplay(p.glassDelivery)||"d/mm/yyyy")+'</button></div>';
+    html += pendingActionsCellHTML(p, 5, row);
 
-    html += '<div class="cell c-glassdeliverycomments" style="grid-column:6; grid-row:'+row+';">'+
-      '<textarea class="field" data-field="glassDeliveryComments" data-id="'+p.id+'" placeholder="Glass delivery comments" aria-label="Glass delivery comments">'+escText(p.glassDeliveryComments)+'</textarea></div>';
-
-    html += '<div class="cell c-framedelivery" style="grid-column:7; grid-row:'+row+';">'+
+    html += '<div class="cell c-framedelivery" style="grid-column:6; grid-row:'+row+';">'+
       '<button type="button" class="date-btn'+(p.frameDelivery?"":" placeholder")+'" data-date-btn="frameDelivery" data-id="'+p.id+'" aria-label="Frame delivery date">'+(fmtDateDisplay(p.frameDelivery)||"d/mm/yyyy")+'</button></div>';
 
-    html += '<div class="cell c-framedeliverycomments" style="grid-column:8; grid-row:'+row+';">'+
-      '<textarea class="field" data-field="frameDeliveryComments" data-id="'+p.id+'" placeholder="Frame delivery comments" aria-label="Frame delivery comments">'+escText(p.frameDeliveryComments)+'</textarea></div>';
+    html += '<div class="cell c-glassdelivery" style="grid-column:7; grid-row:'+row+';">'+
+      '<button type="button" class="date-btn'+(p.glassDelivery?"":" placeholder")+'" data-date-btn="glassDelivery" data-id="'+p.id+'" aria-label="Glass delivery date">'+(fmtDateDisplay(p.glassDelivery)||"d/mm/yyyy")+'</button></div>';
 
-    html += '<div class="cell c-start" style="grid-column:9; grid-row:'+row+';">'+
-      '<button type="button" class="date-btn'+(p.start?"":" placeholder")+'" data-date-btn="start" data-id="'+p.id+'" aria-label="Start date">'+(fmtDateDisplay(p.start)||"d/mm/yyyy")+'</button></div>';
+    html += '<div class="cell c-start" style="grid-column:8; grid-row:'+row+';">'+
+      '<button type="button" class="date-btn'+(p.start?"":" placeholder")+'" data-date-btn="start" data-id="'+p.id+'" aria-label="Install Start Date">'+(fmtDateDisplay(p.start)||"d/mm/yyyy")+'</button></div>';
 
-    html += '<div class="cell c-finish" style="grid-column:10; grid-row:'+row+';">'+
-      '<button type="button" class="date-btn'+(p.finish?"":" placeholder")+'" data-date-btn="finish" data-id="'+p.id+'" aria-label="Finish date">'+(fmtDateDisplay(p.finish)||"d/mm/yyyy")+'</button></div>';
+    html += '<div class="cell c-finish" style="grid-column:9; grid-row:'+row+';">'+
+      '<button type="button" class="date-btn'+(p.finish?"":" placeholder")+'" data-date-btn="finish" data-id="'+p.id+'" aria-label="Planned Finish Date">'+(fmtDateDisplay(p.finish)||"d/mm/yyyy")+'</button></div>';
 
-    html += '<div class="cell c-comments" style="grid-column:11; grid-row:'+row+';">'+
-      '<textarea class="field" data-field="comments" data-id="'+p.id+'" placeholder="Comments" aria-label="Comments">'+escText(p.comments)+'</textarea></div>';
+    html += '<div class="cell c-systemssupplier" style="grid-column:10; grid-row:'+row+';">'+
+      '<input class="field" data-field="systemsSupplier" data-id="'+p.id+'" value="'+escAttr(p.systemsSupplier)+'" title="'+escAttr(p.systemsSupplier)+'" placeholder="Systems supplier" aria-label="Systems supplier"></div>';
 
-    html += '<div class="cell c-pct" style="grid-column:12; grid-row:'+row+';">'+
+    html += '<div class="cell c-pct" style="grid-column:11; grid-row:'+row+';">'+
       '<input class="field pct-text" type="number" min="0" max="100" step="5" data-field="pct" data-id="'+p.id+'" value="'+p.pct+'" aria-label="Percent complete">'+
       '<span class="pct-text" style="color:var(--text-faint)">%</span></div>';
 
     var teamColorStyle = p.team ? ' style="color:'+teamColorValue(p.team)+';"' : "";
-    html += '<div class="cell c-team" style="grid-column:13; grid-row:'+row+';">'+
+    html += '<div class="cell c-team" style="grid-column:12; grid-row:'+row+';">'+
       '<select class="field" data-field="team" data-id="'+p.id+'" data-team="'+escAttr(p.team)+'" aria-label="Assigned team"'+teamColorStyle+'>'+
       '<option value=""'+(p.team===""?" selected":"")+'>—</option>'+
       allTeamNames().map(function(t){ return '<option value="'+escAttr(t)+'"'+(p.team===t?" selected":"")+'>'+escText(t)+'</option>'; }).join("")+
       '<option value="__add_new__">+ Add new team…</option>'+
       '</select></div>';
 
-    html += extraTeamsCellHTML(p, 14, row);
+    html += extraTeamsCellHTML(p, 13, row);
 
-    html += '<div class="cell c-bondingrequired" style="grid-column:15; grid-row:'+row+';">'+
+    html += '<div class="cell c-ralglass" style="grid-column:14; grid-row:'+row+';">'+
+      '<input class="field" data-field="ralGlass" data-id="'+p.id+'" value="'+escAttr(p.ralGlass)+'" title="'+escAttr(p.ralGlass)+'" placeholder="RAL / Glass" aria-label="RAL / Glass"></div>';
+
+    html += '<div class="cell c-projectvalue" style="grid-column:15; grid-row:'+row+';">'+
+      '<input class="field" data-field="projectValue" data-id="'+p.id+'" value="'+escAttr(p.projectValue)+'" title="'+escAttr(p.projectValue)+'" placeholder="Project value (AED)" aria-label="Project value (AED)"></div>';
+
+    html += '<div class="cell c-designapprovaldate" style="grid-column:16; grid-row:'+row+';">'+
+      '<button type="button" class="date-btn'+(p.designApprovalDate?"":" placeholder")+'" data-date-btn="designApprovalDate" data-id="'+p.id+'" aria-label="Design approval date">'+(fmtDateDisplay(p.designApprovalDate)||"d/mm/yyyy")+'</button></div>';
+
+    html += '<div class="cell c-bondingrequired" style="grid-column:17; grid-row:'+row+';">'+
       '<select class="field" data-field="bondingRequired" data-id="'+p.id+'" aria-label="Bonding required">'+
       '<option value="No"'+(p.bondingRequired!=="Yes"?" selected":"")+'>No</option>'+
       '<option value="Yes"'+(p.bondingRequired==="Yes"?" selected":"")+'>Yes</option>'+
       '</select></div>';
+
+    html += projectStatusCellHTML(p, 18, row);
 
     html += dayCellsHTML(p, row);
     return html;
   }
 
   // Main-list row (Schedule tab): the same meta fields, but no day cells, and
-  // Scope/Comments use the auto-growing "autosize-field" textarea so their
-  // full text is always visible without an internal scrollbar (see
-  // autosizeTextarea()). Row height is "auto" (see renderMainList()), so
-  // there's no fixed 64px cap to fight against.
+  // Scope uses the auto-growing "autosize-field" textarea so its full text is
+  // always visible without an internal scrollbar (see autosizeTextarea()).
+  // Row height is "auto" (see renderMainList()), so there's no fixed 64px
+  // cap to fight against. A hidden project (p.hidden) only ever reaches this
+  // renderer when "Show hidden rows" is on (see visibleProjects filtering in
+  // render()) — shown dimmed via the "row-dimmed" class, same cells, so it
+  // can still be edited/unhidden right there.
   function mainRowHTML(p, rowIndex){
     var row = 2 + rowIndex; // main list has a single header row
-    var html = "";
-    html += '<div class="cell c-idx" style="grid-column:1; grid-row:'+row+';">'+
-      '<span class="row-num">'+(rowIndex+1)+'</span>'+
-      '<button class="del-btn" type="button" data-action="delete" data-id="'+p.id+'" aria-label="Delete project" title="Delete project">✕</button></div>';
+    var dimCls = p.hidden ? " row-dimmed" : "";
+    var hideBtn = '<button class="hide-row-btn" type="button" data-action="togglehide" data-id="'+p.id+'" aria-label="'+(p.hidden?"Unhide this row":"Hide this row from the Schedule list")+'" title="'+(p.hidden?"Unhide this row":"Hide this row from the Schedule list")+'">'+(p.hidden?"⊘":"◉")+'</button>';
+    var html = metaRowCellsCommonHTML(p, row, { rowNum: rowIndex+1, hideBtn: hideBtn }).replace(/class="cell /g, 'class="cell'+dimCls+' ');
 
-    html += '<div class="cell c-name" style="grid-column:2; grid-row:'+row+';">'+
-      '<div class="row-name-wrap">' + (p.isExample ? '<span class="example-badge" data-owner="'+p.id+'">Example</span>' : '') +
-      '<textarea class="field name-field" data-field="name" data-id="'+p.id+'" title="'+escAttr(p.name)+'" placeholder="Project name" aria-label="Project name">'+escText(p.name)+'</textarea></div></div>';
-
-    html += '<div class="cell c-client" style="grid-column:3; grid-row:'+row+';">'+
-      '<input class="field" list="client-list" data-field="client" data-id="'+p.id+'" value="'+escAttr(p.client)+'" title="'+escAttr(p.client)+'" placeholder="Client" aria-label="Client"></div>';
-
-    html += '<div class="cell c-scope" style="grid-column:4; grid-row:'+row+';">'+
+    html += '<div class="cell'+dimCls+' c-scope" style="grid-column:4; grid-row:'+row+';">'+
       '<textarea class="field autosize-field" data-field="scope" data-id="'+p.id+'" placeholder="Scope of work" aria-label="Project scope">'+escText(p.scope)+'</textarea></div>';
 
-    html += '<div class="cell c-glassdelivery" style="grid-column:5; grid-row:'+row+';">'+
-      '<button type="button" class="date-btn'+(p.glassDelivery?"":" placeholder")+'" data-date-btn="glassDelivery" data-id="'+p.id+'" aria-label="Glass delivery date">'+(fmtDateDisplay(p.glassDelivery)||"d/mm/yyyy")+'</button></div>';
+    html += pendingActionsCellHTML(p, 5, row).replace(/class="cell /, 'class="cell'+dimCls+' ');
 
-    html += '<div class="cell c-glassdeliverycomments" style="grid-column:6; grid-row:'+row+';">'+
-      '<textarea class="field autosize-field" data-field="glassDeliveryComments" data-id="'+p.id+'" placeholder="Glass delivery comments" aria-label="Glass delivery comments">'+escText(p.glassDeliveryComments)+'</textarea></div>';
-
-    html += '<div class="cell c-framedelivery" style="grid-column:7; grid-row:'+row+';">'+
+    html += '<div class="cell'+dimCls+' c-framedelivery" style="grid-column:6; grid-row:'+row+';">'+
       '<button type="button" class="date-btn'+(p.frameDelivery?"":" placeholder")+'" data-date-btn="frameDelivery" data-id="'+p.id+'" aria-label="Frame delivery date">'+(fmtDateDisplay(p.frameDelivery)||"d/mm/yyyy")+'</button></div>';
 
-    html += '<div class="cell c-framedeliverycomments" style="grid-column:8; grid-row:'+row+';">'+
-      '<textarea class="field autosize-field" data-field="frameDeliveryComments" data-id="'+p.id+'" placeholder="Frame delivery comments" aria-label="Frame delivery comments">'+escText(p.frameDeliveryComments)+'</textarea></div>';
+    html += '<div class="cell'+dimCls+' c-glassdelivery" style="grid-column:7; grid-row:'+row+';">'+
+      '<button type="button" class="date-btn'+(p.glassDelivery?"":" placeholder")+'" data-date-btn="glassDelivery" data-id="'+p.id+'" aria-label="Glass delivery date">'+(fmtDateDisplay(p.glassDelivery)||"d/mm/yyyy")+'</button></div>';
 
-    html += '<div class="cell c-start" style="grid-column:9; grid-row:'+row+';">'+
-      '<button type="button" class="date-btn'+(p.start?"":" placeholder")+'" data-date-btn="start" data-id="'+p.id+'" aria-label="Start date">'+(fmtDateDisplay(p.start)||"d/mm/yyyy")+'</button></div>';
+    html += '<div class="cell'+dimCls+' c-start" style="grid-column:8; grid-row:'+row+';">'+
+      '<button type="button" class="date-btn'+(p.start?"":" placeholder")+'" data-date-btn="start" data-id="'+p.id+'" aria-label="Install Start Date">'+(fmtDateDisplay(p.start)||"d/mm/yyyy")+'</button></div>';
 
-    html += '<div class="cell c-finish" style="grid-column:10; grid-row:'+row+';">'+
-      '<button type="button" class="date-btn'+(p.finish?"":" placeholder")+'" data-date-btn="finish" data-id="'+p.id+'" aria-label="Finish date">'+(fmtDateDisplay(p.finish)||"d/mm/yyyy")+'</button></div>';
+    html += '<div class="cell'+dimCls+' c-finish" style="grid-column:9; grid-row:'+row+';">'+
+      '<button type="button" class="date-btn'+(p.finish?"":" placeholder")+'" data-date-btn="finish" data-id="'+p.id+'" aria-label="Planned Finish Date">'+(fmtDateDisplay(p.finish)||"d/mm/yyyy")+'</button></div>';
 
-    html += '<div class="cell c-comments" style="grid-column:11; grid-row:'+row+';">'+
-      '<textarea class="field autosize-field" data-field="comments" data-id="'+p.id+'" placeholder="Comments" aria-label="Comments">'+escText(p.comments)+'</textarea></div>';
+    html += '<div class="cell'+dimCls+' c-systemssupplier" style="grid-column:10; grid-row:'+row+';">'+
+      '<input class="field" data-field="systemsSupplier" data-id="'+p.id+'" value="'+escAttr(p.systemsSupplier)+'" title="'+escAttr(p.systemsSupplier)+'" placeholder="Systems supplier" aria-label="Systems supplier"></div>';
 
-    html += '<div class="cell c-pct" style="grid-column:12; grid-row:'+row+';">'+
+    html += '<div class="cell'+dimCls+' c-pct" style="grid-column:11; grid-row:'+row+';">'+
       '<input class="field pct-text" type="number" min="0" max="100" step="5" data-field="pct" data-id="'+p.id+'" value="'+p.pct+'" aria-label="Percent complete">'+
       '<span class="pct-text" style="color:var(--text-faint)">%</span></div>';
 
     var teamColorStyle = p.team ? ' style="color:'+teamColorValue(p.team)+';"' : "";
-    html += '<div class="cell c-team" style="grid-column:13; grid-row:'+row+';">'+
+    html += '<div class="cell'+dimCls+' c-team" style="grid-column:12; grid-row:'+row+';">'+
       '<select class="field" data-field="team" data-id="'+p.id+'" data-team="'+escAttr(p.team)+'" aria-label="Assigned team"'+teamColorStyle+'>'+
       '<option value=""'+(p.team===""?" selected":"")+'>—</option>'+
       allTeamNames().map(function(t){ return '<option value="'+escAttr(t)+'"'+(p.team===t?" selected":"")+'>'+escText(t)+'</option>'; }).join("")+
       '<option value="__add_new__">+ Add new team…</option>'+
       '</select></div>';
 
-    html += extraTeamsCellHTML(p, 14, row);
+    html += extraTeamsCellHTML(p, 13, row).replace(/class="cell /, 'class="cell'+dimCls+' ');
 
-    html += '<div class="cell c-bondingrequired" style="grid-column:15; grid-row:'+row+';">'+
+    html += '<div class="cell'+dimCls+' c-ralglass" style="grid-column:14; grid-row:'+row+';">'+
+      '<input class="field" data-field="ralGlass" data-id="'+p.id+'" value="'+escAttr(p.ralGlass)+'" title="'+escAttr(p.ralGlass)+'" placeholder="RAL / Glass" aria-label="RAL / Glass"></div>';
+
+    html += '<div class="cell'+dimCls+' c-projectvalue" style="grid-column:15; grid-row:'+row+';">'+
+      '<input class="field" data-field="projectValue" data-id="'+p.id+'" value="'+escAttr(p.projectValue)+'" title="'+escAttr(p.projectValue)+'" placeholder="Project value (AED)" aria-label="Project value (AED)"></div>';
+
+    html += '<div class="cell'+dimCls+' c-designapprovaldate" style="grid-column:16; grid-row:'+row+';">'+
+      '<button type="button" class="date-btn'+(p.designApprovalDate?"":" placeholder")+'" data-date-btn="designApprovalDate" data-id="'+p.id+'" aria-label="Design approval date">'+(fmtDateDisplay(p.designApprovalDate)||"d/mm/yyyy")+'</button></div>';
+
+    html += '<div class="cell'+dimCls+' c-bondingrequired" style="grid-column:17; grid-row:'+row+';">'+
       '<select class="field" data-field="bondingRequired" data-id="'+p.id+'" aria-label="Bonding required">'+
       '<option value="No"'+(p.bondingRequired!=="Yes"?" selected":"")+'>No</option>'+
       '<option value="Yes"'+(p.bondingRequired==="Yes"?" selected":"")+'>Yes</option>'+
       '</select></div>';
+
+    html += projectStatusCellHTML(p, 18, row).replace(/class="cell /, 'class="cell'+dimCls+' ');
 
     return html;
   }
@@ -2000,7 +4247,14 @@
     computeConflicts();
     renderConflictNotif();
 
-    visibleProjects = state.projects.filter(matchesFilter);
+    // Row hide/unhide (see toggleRowHidden()/showHiddenRows above) only ever
+    // affects this plain Schedule-list array — the Schedule grid modal,
+    // Dashboard and Team Allocation all render from state.projects directly
+    // (see renderGridModal()/renderDashboard()/renderAllocation()), so a
+    // hidden project keeps counting normally there regardless of this flag.
+    visibleProjects = state.projects.filter(function(p){
+      return matchesFilter(p) && (showHiddenRows || !p.hidden);
+    });
 
     renderMainList();
 
@@ -2520,22 +4774,10 @@
   // wa-shared.js. Same refresh-on-every-change wiring as dueBanner above.
   var editBanner = WA.wireFieldEditBanner(document.getElementById("wa-edit-banner"), function(){ return state.waRows||[]; });
 
-  // ---- WA tab: search + group by project ----
-  var waSearchInputEl = document.getElementById("wa-search-input");
-  var waSearchClearBtn = document.getElementById("wa-search-clear-btn");
-  function updateWaSearchClearVisibility(){ waSearchClearBtn.hidden = !waSearchInputEl.value; }
-  waSearchInputEl.addEventListener("input", function(){
-    waSearchQuery = String(waSearchInputEl.value||"").trim().toLowerCase();
-    updateWaSearchClearVisibility();
-    renderWaView();
-  });
-  waSearchClearBtn.addEventListener("click", function(){
-    waSearchInputEl.value = "";
-    waSearchQuery = "";
-    updateWaSearchClearVisibility();
-    waSearchInputEl.focus();
-    renderWaView();
-  });
+  // ---- WA tab: group by project ----
+  // Search for this tab is handled by the single shared #search-input in
+  // the main toolbar (see searchCapableViews / updateToolbarForView and the
+  // branching in the #search-input listener) rather than a tab-local field.
   var waGroupToggleBtn = document.getElementById("wa-group-toggle-btn");
   function updateWaGroupToggleBtn(){
     waGroupToggleBtn.textContent = waGroupByProject ? "Ungroup" : "Group by project";
@@ -2937,40 +5179,52 @@
     {key:"name", label:"Project Name"},
     {key:"client", label:"Client"},
     {key:"scope", label:"Project Scope"},
-    {key:"glassDelivery", label:"Glass Delivery Date"},
-    {key:"glassDeliveryComments", label:"Glass Delivery Comments"},
+    {key:"pendingActions", label:"Pending Actions and Remarks"},
     {key:"frameDelivery", label:"Frame Delivery Date"},
-    {key:"frameDeliveryComments", label:"Frame Delivery Comments"},
-    {key:"start", label:"Start Date"},
-    {key:"finish", label:"Finish Date"},
+    {key:"glassDelivery", label:"Glass Delivery Date"},
+    {key:"start", label:"Install Start Date"},
+    {key:"finish", label:"Planned Finish Date"},
+    {key:"systemsSupplier", label:"Systems Supplier"},
     {key:"pct", label:"% Complete"},
     {key:"team", label:"Assigned Team"},
     {key:"extraTeams", label:"Helper Teams"},
+    {key:"ralGlass", label:"RAL / Glass"},
+    {key:"projectValue", label:"Project Value (AED)"},
+    {key:"designApprovalDate", label:"Design Approval Date"},
     {key:"bondingRequired", label:"Bonding Required"},
-    {key:"comments", label:"Comments"}
+    {key:"projectStatus", label:"Project Status"}
   ];
   var REPORT_COLUMNS_DATE_FILTER = [
     {key:"name", label:"Project Name"},
     {key:"team", label:"Assigned Team"},
-    {key:"start", label:"Start Date"},
-    {key:"finish", label:"Finish Date"},
-    {key:"comments", label:"Comments"}
+    {key:"start", label:"Install Start Date"},
+    {key:"finish", label:"Planned Finish Date"},
+    {key:"projectStatus", label:"Project Status"},
+    {key:"pendingActions", label:"Pending Actions and Remarks"}
   ];
   function reportCellHTML(p, key){
     if (key==="name") return escText(p.name||"Untitled");
     if (key==="client") return escText(p.client||"—");
     if (key==="scope") return escText(p.scope||"—");
-    if (key==="glassDelivery") return fmtDateDisplay(p.glassDelivery)||"—";
-    if (key==="glassDeliveryComments") return escText(p.glassDeliveryComments||"—");
+    if (key==="systemsSupplier") return escText(p.systemsSupplier||"—");
     if (key==="frameDelivery") return fmtDateDisplay(p.frameDelivery)||"—";
-    if (key==="frameDeliveryComments") return escText(p.frameDeliveryComments||"—");
+    if (key==="glassDelivery") return fmtDateDisplay(p.glassDelivery)||"—";
     if (key==="start") return fmtDateDisplay(p.start)||"—";
     if (key==="finish") return fmtDateDisplay(p.finish)||"—";
     if (key==="pct") return (Number(p.pct)||0)+"%";
     if (key==="team") return escText(p.team||"—");
     if (key==="extraTeams") return (Array.isArray(p.extraTeams) && p.extraTeams.length) ? escText(p.extraTeams.join(", ")) : "—";
+    if (key==="ralGlass") return escText(p.ralGlass||"—");
+    if (key==="projectValue") return escText(p.projectValue||"—");
+    if (key==="designApprovalDate") return fmtDateDisplay(p.designApprovalDate)||"—";
     if (key==="bondingRequired") return escText(p.bondingRequired||"No");
-    if (key==="comments") return escText(p.comments||"—");
+    if (key==="projectStatus") return escText(p.projectStatus==="__other__" ? (p.projectStatusOther||"Other") : (p.projectStatus||"—"));
+    if (key==="pendingActions"){
+      var entries = Array.isArray(p.pendingActions) ? p.pendingActions : [];
+      if (!entries.length) return "—";
+      var sorted = entries.slice().sort(function(a,b){ return (a.date<b.date)?1:((a.date>b.date)?-1:0); });
+      return escText(sorted.map(function(e){ return (fmtDateDisplay(e.date)||"")+": "+e.text; }).join(" | "));
+    }
     return "";
   }
   function reportRowHTML(p, columns){
@@ -3342,7 +5596,10 @@
     var p = findProject(t.dataset.id);
     if (!p) return;
     var field = t.dataset.field;
-    var needsGridUpdate = (field==="pct"||field==="team");
+    // projectStatus also needs a full render: picking "Other…" reveals a
+    // free-text field that only exists in the HTML when isOther is true
+    // (see projectStatusCellHTML()), so the cell has to be rebuilt.
+    var needsGridUpdate = (field==="pct"||field==="team"||field==="projectStatus");
     if (field==="team" && t.value === "__add_new__"){
       var newTeam = promptAddTeam();
       if (newTeam){
@@ -3458,6 +5715,14 @@
     if (!t.matches("[data-teams-check]")) return;
     if (!teamsPopupState) return;
     toggleExtraTeam(teamsPopupState.projectId, t.dataset.teamsCheck, t.checked);
+  });
+
+  // ---- Columns show/hide popover checklist — same "change" event reasoning
+  // as the helper-teams checklist above.
+  document.addEventListener("change", function(e){
+    var t = e.target;
+    if (!t.matches("[data-colcheck]")) return;
+    toggleColHidden(t.dataset.colcheck);
   });
 
   // ---- Daily Schedule: support teams checklist — same "change" event
@@ -3641,6 +5906,90 @@
       var banner = document.getElementById("example-banner");
       if (!state.bannerDismissed) banner.hidden = true;
     }
+    scheduleSave();
+  }
+
+  // ---- "Pending actions and remarks": a dated, multi-entry log per project
+  // (see newPendingEntry() above). Shown via a small summary button in the
+  // Schedule grid (see pendingActionsCellHTML()) that opens this modal for
+  // the full dated history and an "add a dated note" form. ----
+  var pendingModalState = null; // { projectId } while open, else null
+
+  function pendingActionsCellHTML(p, gridCol, row){
+    var entries = Array.isArray(p.pendingActions) ? p.pendingActions : [];
+    var sorted = entries.slice().sort(function(a,b){ return (a.date<b.date) ? 1 : ((a.date>b.date) ? -1 : 0); });
+    var latest = sorted[0];
+    var preview = latest
+      ? '<span class="pending-date">'+(fmtDateDisplay(latest.date)||"")+'</span> '+escText((latest.text||"").slice(0,120))
+      : '<span class="placeholder-text">+ Add entry</span>';
+    var countBadge = entries.length ? '<span class="pending-count">'+entries.length+'</span>' : "";
+    return '<div class="cell c-pendingactions" style="grid-column:'+gridCol+'; grid-row:'+row+';">'+
+      '<button type="button" class="pending-btn" data-pending-btn="1" data-id="'+p.id+'" aria-label="Pending actions and remarks">'+countBadge+'<span class="pending-preview">'+preview+'</span></button></div>';
+  }
+
+  function renderPendingModal(){
+    if (!pendingModalState) return;
+    var p = findProject(pendingModalState.projectId);
+    if (!p){ closePendingModal(); return; }
+    document.getElementById("pending-modal-title").textContent = "Pending actions and remarks — "+(p.name||"Untitled");
+    var entries = Array.isArray(p.pendingActions) ? p.pendingActions : [];
+    var sorted = entries.slice().sort(function(a,b){ return (a.date<b.date) ? 1 : ((a.date>b.date) ? -1 : 0); });
+    var bodyEl = document.getElementById("pending-modal-body");
+    bodyEl.innerHTML = sorted.length
+      ? sorted.map(function(en){
+          return '<div class="pending-entry">'+
+            '<span class="pending-entry-date">'+(fmtDateDisplay(en.date)||"—")+'</span>'+
+            '<span class="pending-entry-text">'+escText(en.text)+'</span>'+
+            '<button type="button" class="pending-entry-del" data-pending-del="'+en.id+'" aria-label="Delete this entry" title="Delete this entry">✕</button>'+
+            '</div>';
+        }).join("")
+      : '<div class="pending-empty">No pending actions or remarks logged yet — add the first one below.</div>';
+    var addDateBtn = document.getElementById("pending-add-date-btn");
+    addDateBtn.textContent = fmtDateDisplay(pendingModalState.addDate) || "d/mm/yyyy";
+    addDateBtn.classList.toggle("placeholder", !pendingModalState.addDate);
+  }
+
+  function openPendingModal(projectId){
+    var p = findProject(projectId);
+    if (!p) return;
+    if (!Array.isArray(p.pendingActions)) p.pendingActions = [];
+    pendingModalState = { projectId: projectId, addDate: TODAY_ISO };
+    document.getElementById("pending-add-text").value = "";
+    renderPendingModal();
+    document.getElementById("pending-modal-backdrop").hidden = false;
+  }
+  function closePendingModal(){
+    pendingModalState = null;
+    document.getElementById("pending-modal-backdrop").hidden = true;
+  }
+  function addPendingEntry(){
+    if (!pendingModalState) return;
+    var p = findProject(pendingModalState.projectId);
+    if (!p) return;
+    var textEl = document.getElementById("pending-add-text");
+    var text = textEl.value.trim();
+    if (!text){ showToast("Type a note before adding it.", null, null); return; }
+    if (!Array.isArray(p.pendingActions)) p.pendingActions = [];
+    p.pendingActions.push(newPendingEntry(pendingModalState.addDate || TODAY_ISO, text, "manual"));
+    if (p.isExample){
+      p.isExample = false;
+      var banner = document.getElementById("example-banner");
+      if (!state.bannerDismissed) banner.hidden = true;
+    }
+    textEl.value = "";
+    renderPendingModal();
+    render();
+    scheduleSave();
+  }
+  function deletePendingEntry(entryId){
+    if (!pendingModalState) return;
+    var p = findProject(pendingModalState.projectId);
+    if (!p || !Array.isArray(p.pendingActions)) return;
+    var idx = p.pendingActions.findIndex(function(e){ return e.id === entryId; });
+    if (idx === -1) return;
+    p.pendingActions.splice(idx, 1);
+    renderPendingModal();
+    render();
     scheduleSave();
   }
 
@@ -3830,6 +6179,27 @@
       if (teamsPath.indexOf(teamsPopupEl) === -1) closeExtraTeamsPopup();
     }
 
+    var columnsBtn = e.target.closest("#columns-btn");
+    if (columnsBtn){ openColumnsPopup(columnsBtn); return; }
+    if (columnsPopupOpen){
+      if (e.target.id === "columns-popup-done"){ closeColumnsPopup(); return; }
+      if (e.target.id === "columns-reset-btn"){ resetColumnLayout(); showToast("Column widths and hidden columns reset to defaults.", null, null); return; }
+      var colPath = typeof e.composedPath === "function" ? e.composedPath() : [];
+      if (colPath.indexOf(columnsPopupEl) === -1) closeColumnsPopup();
+    }
+
+    var hiddenRowsBtn = e.target.closest("#toggle-hidden-rows-btn");
+    if (hiddenRowsBtn){ toggleShowHiddenRows(); return; }
+
+    var densityBtn = e.target.closest("#view-density-btn");
+    if (densityBtn){ toggleViewDensity(); return; }
+
+    var hideRowBtn = e.target.closest("[data-action=\"togglehide\"]");
+    if (hideRowBtn){ toggleRowHidden(hideRowBtn.dataset.id); return; }
+
+    var pendingBtn = e.target.closest("[data-pending-btn]");
+    if (pendingBtn){ openPendingModal(pendingBtn.dataset.id); return; }
+
     var dailySupportBtn = e.target.closest("[data-daily-support-btn]");
     if (dailySupportBtn){ openDailySupportPopup(dailySupportBtn); return; }
     if (dailySupportPopupState){
@@ -4003,6 +6373,20 @@
       closeReport();
       return;
     }
+    if (e.target.id === "pending-modal-close" || e.target.id === "pending-modal-backdrop"){
+      closePendingModal();
+      return;
+    }
+    var pendingDelBtn = e.target.closest("[data-pending-del]");
+    if (pendingDelBtn){ deletePendingEntry(pendingDelBtn.dataset.pendingDel); return; }
+    if (e.target.id === "pending-add-btn"){ addPendingEntry(); return; }
+    if (e.target.id === "pending-add-date-btn"){
+      openDatePopupGeneric(e.target, pendingModalState ? pendingModalState.addDate : "", function(isoVal){
+        if (pendingModalState) pendingModalState.addDate = isoVal;
+        renderPendingModal();
+      });
+      return;
+    }
     if (e.target.id === "grid-modal-close" || e.target.id === "grid-modal-backdrop"){
       closeGridModal();
       return;
@@ -4030,6 +6414,7 @@
     if (e.key === "Escape"){
       if (datePopupState){ closeDatePopup(); return; }
       if (teamsPopupState){ closeExtraTeamsPopup(); return; }
+      if (columnsPopupOpen){ closeColumnsPopup(); return; }
       if (dailySupportPopupState){ closeDailySupportPopup(); return; }
       if (!dateFilterPopupEl.hidden){ closeDateFilterPopup(); return; }
       if (pasteModalBackdropEl && !pasteModalBackdropEl.hidden){ closePasteModal(); return; }
@@ -4040,7 +6425,9 @@
       var backdrop = document.getElementById("report-modal-backdrop");
       if (backdrop && !backdrop.hidden){ closeReport(); return; }
       var conflictBackdrop = document.getElementById("conflict-modal-backdrop");
-      if (conflictBackdrop && !conflictBackdrop.hidden) closeConflictModal();
+      if (conflictBackdrop && !conflictBackdrop.hidden){ closeConflictModal(); return; }
+      var pendingBackdrop = document.getElementById("pending-modal-backdrop");
+      if (pendingBackdrop && !pendingBackdrop.hidden) closePendingModal();
       return;
     }
     if (e.key === "Enter" || e.key === " "){
@@ -4052,8 +6439,15 @@
   // Close the popup on scroll/resize rather than trying to keep it glued to
   // its anchor — the anchor can scroll under a sticky column or off-screen
   // entirely, and closing is simpler and more predictable than chasing it.
+  // Columns popover is deliberately NOT auto-closed on scroll here (unlike
+  // the teams/date popups above): it's anchored to a fixed toolbar button
+  // rather than a row that can scroll away, and toggling a column inside it
+  // triggers the board's own horizontal-scrollbar sync (boardHScroll.refresh()
+  // in toggleColHidden(), via requestAnimationFrame) which fires its own
+  // native "scroll" event a moment later — auto-closing on that would close
+  // the popover right after its first checkbox click.
   window.addEventListener("scroll", function(){ if (datePopupState) closeDatePopup(); if (teamsPopupState) closeExtraTeamsPopup(); if (!dateFilterPopupEl.hidden) closeDateFilterPopup(); }, true);
-  window.addEventListener("resize", function(){ if (datePopupState) closeDatePopup(); if (teamsPopupState) closeExtraTeamsPopup(); if (!dateFilterPopupEl.hidden) closeDateFilterPopup(); });
+  window.addEventListener("resize", function(){ if (datePopupState) closeDatePopup(); if (teamsPopupState) closeExtraTeamsPopup(); if (columnsPopupOpen) closeColumnsPopup(); if (!dateFilterPopupEl.hidden) closeDateFilterPopup(); });
 
   // "Compact view" only affects the day-by-day Gantt columns, which now live
   // exclusively in the Schedule grid modal — see openGridModal().
@@ -4068,14 +6462,10 @@
     showToast("Column widths reset to defaults.", null, null);
   });
 
-  document.getElementById("toggle-client-btn").addEventListener("click", function(){
-    clientHidden = !clientHidden;
-    applyColumnVars();
-    saveUIPrefs();
-    updateClientToggleBtnLabel();
-    if (boardHScroll) boardHScroll.refresh();
-    showToast(clientHidden ? "Client column hidden." : "Client column shown.", null, null);
-  });
+  // "Columns" (openColumnsPopup) and "Show hidden rows" (toggleShowHiddenRows)
+  // are wired through the delegated document click listener above, since
+  // both are dispatched from [data-*] attributes / ids rather than needing
+  // their own direct listener.
 
   document.getElementById("sync-now-btn").addEventListener("click", syncNowClicked);
 
@@ -4084,14 +6474,28 @@
   // listener above rather than bound directly here.
 
   // ---- search by project name ----
+  // One shared search field drives whichever tab currently owns it
+  // (Schedule or WA Tracker — see searchCapableViews / updateToolbarForView).
   document.getElementById("search-input").addEventListener("input", function(e){
-    setSearchFilter(e.target.value);
+    if (currentView === "wa"){
+      waSearchQuery = String(e.target.value||"").trim().toLowerCase();
+      document.getElementById("search-clear-btn").hidden = !e.target.value;
+      renderWaView();
+    } else {
+      setSearchFilter(e.target.value);
+    }
   });
   document.getElementById("search-clear-btn").addEventListener("click", function(){
     var searchInput = document.getElementById("search-input");
     searchInput.value = "";
     searchInput.focus();
-    setSearchFilter("");
+    if (currentView === "wa"){
+      waSearchQuery = "";
+      document.getElementById("search-clear-btn").hidden = true;
+      renderWaView();
+    } else {
+      setSearchFilter("");
+    }
   });
 
   // ---- column resize + details-panel divider drag (pointer events cover mouse & touch) ----
@@ -4181,6 +6585,32 @@
     // layout, so scrollHeight reads as 0) — e.g. importing or clearing
     // projects while viewing the Dashboard. Re-measure now that it's visible.
     if (view === "schedule") autosizeAllTextareas(boardEl);
+    updateToolbarForView(view);
+  }
+
+  // Controls that only make sense on specific tabs — the Show/Hide Columns
+  // family (column hiding only applies to the Schedule grid) and the single
+  // shared search box (which should only ever appear on the one tab it's
+  // actively filtering, never stacked with a second search field). This is
+  // the one place that decides what's visible, so any new per-tab-only
+  // toolbar control should be added here rather than left shown everywhere.
+  var searchCapableViews = { schedule:true, wa:true };
+  function updateToolbarForView(view){
+    var showColsControls = (view === "schedule");
+    ["reset-cols-btn","columns-btn","toggle-hidden-rows-btn","view-density-btn"].forEach(function(id){
+      var el = document.getElementById(id);
+      if (el) el.hidden = !showColsControls;
+    });
+    var searchBox = document.getElementById("search-input").closest(".search-box");
+    var showSearch = !!searchCapableViews[view];
+    if (searchBox) searchBox.hidden = !showSearch;
+    var searchInput = document.getElementById("search-input");
+    var searchClearBtn = document.getElementById("search-clear-btn");
+    if (showSearch){
+      searchInput.placeholder = (view === "wa") ? "Search project name…" : "Search project name…";
+      searchInput.value = (view === "wa") ? waSearchQuery : filterState.search;
+      searchClearBtn.hidden = !searchInput.value;
+    }
   }
   document.getElementById("tab-schedule").addEventListener("click", function(){ switchView("schedule"); });
   document.getElementById("tab-allocation").addEventListener("click", function(){ switchView("allocation"); });
@@ -4293,17 +6723,26 @@
     name: ["projectname","name","project"],
     client: ["client","customer","clientname","account"],
     scope: ["projectscope","scope","description","desc"],
-    glassDelivery: ["glassdeliverydate","glassdelivery"],
-    glassDeliveryComments: ["glassdeliverycomments","glasscomments","glassdeliverycomment"],
+    systemsSupplier: ["systemssupplier","supplier"],
     frameDelivery: ["framedeliverydate","framedelivery"],
-    frameDeliveryComments: ["framedeliverycomments","framecomments","framedeliverycomment"],
-    start: ["startdate","start"],
-    finish: ["finishdate","finish","enddate","end","completiondate"],
+    glassDelivery: ["glassdeliverydate","glassdelivery"],
+    start: ["installstartdate","startdate","start"],
+    finish: ["plannedfinishdate","finishdate","finish","enddate","end","completiondate"],
     pct: ["completed","percentcompleted","pctcompleted","progress","percentcomplete","complete"],
     team: ["assignedteam","team","installationteam","installer","assignedto"],
     extraTeams: ["helperteams","extrateams","additionalteams","otherteams"],
-    comments: ["comments","comment","notes","note"],
-    bondingRequired: ["bondingrequired","bonding"]
+    ralGlass: ["ralglass","ral","glasscolour","ralcolour"],
+    projectValue: ["projectvalueaed","projectvalue","value","contractvalue"],
+    designApprovalDate: ["designapprovaldate","designapproval"],
+    bondingRequired: ["bondingrequired","bonding"],
+    projectStatus: ["projectstatus","status"],
+    // Any of these three columns found on import becomes one dated entry
+    // (dated with today's date — see mapRows() below) in the new
+    // pendingActions log, same merge the office's "Pending project" tracker
+    // went through at setup (see EXAMPLE_PROJECTS above).
+    pendingAndStatus: ["pendingstatus","pending"],
+    installationPending: ["installationpending"],
+    remark: ["remark","remarks","comments","comment","notes","note"]
   };
 
   function parseDateFlexible(v){
@@ -4326,6 +6765,38 @@
     return "";
   }
 
+  // Splits one imported cell (Pending & Status / Installation Pending /
+  // Remark, etc.) into one Pending-actions entry per line, instead of
+  // dumping the whole cell in as a single entry. Handles the office's own
+  // note style: a bullet ("* ") with no date (dated with today's date, same
+  // as before), or a line that starts with the date it was written on —
+  // "12 Oct - text", "15th Oct: text", "9/10/26: text" — in which case that
+  // leading date becomes the entry's date and is stripped from its text.
+  // Month-only dates (no year) assume the current year, matching how this
+  // same office tracker's notes were hand-reviewed when first imported.
+  function splitPendingNoteLines(text){
+    var lines = String(text||"").split(/\r?\n/).map(function(l){ return l.trim(); }).filter(Boolean);
+    return lines.map(function(line){
+      var stripped = line.replace(/^[•●▪‣◦⁃*\-]\s*/, "");
+      var date = "";
+      var rest = stripped;
+      var m = stripped.match(/^(\d{1,2})(?:st|nd|rd|th)?\s+([A-Za-z]{3,9})\.?\s*[-:–—]\s*(.+)$/);
+      if (m && MONTH_NAMES[m[2].toLowerCase()]){
+        date = isoFromYMD(+TODAY_ISO.slice(0,4), MONTH_NAMES[m[2].toLowerCase()], +m[1]) || "";
+        rest = m[3].trim();
+      } else {
+        m = stripped.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})\s*[-:–—]?\s*(.+)$/);
+        if (m){
+          var yy = +m[3]; if (yy < 100) yy += 2000;
+          date = isoFromYMD(yy, +m[2], +m[1]) || "";
+          rest = m[4].trim();
+        }
+      }
+      if (!date || !rest) { date = TODAY_ISO; rest = stripped; }
+      return { date: date, text: rest };
+    });
+  }
+
   function mapRows(rows){
     if (!rows.length) return [];
     var headerRow = rows[0].map(normHeader);
@@ -4346,9 +6817,10 @@
       var get = function(key){ return colIndex[key]>-1 ? row[colIndex[key]] : ""; };
       var rawTeam = String(get("team")||"").trim();
       var matchedTeam = allTeamNames().find(function(t){ return t.toLowerCase()===rawTeam.toLowerCase(); }) || "";
-      var comments = String(get("comments")||"").trim();
+      var importPendingActions = [];
+      var noteFromUnmatchedTeam = "";
       if (rawTeam && !matchedTeam){
-        comments = (comments ? comments+" " : "") + "(Team: "+rawTeam+")";
+        noteFromUnmatchedTeam = "(Team: "+rawTeam+")";
       }
       var pctRaw = get("pct");
       var pct = Math.max(0, Math.min(100, Math.round(Number(String(pctRaw).replace(/[^0-9.\-]/g,""))||0)));
@@ -4358,34 +6830,59 @@
       // Glass and Frame delivery dates have no restriction — imported as-is, whatever they are.
       var importGlassDelivery = parseDateFlexible(get("glassDelivery"));
       var importFrameDelivery = parseDateFlexible(get("frameDelivery"));
-      var importGlassDeliveryComments = String(get("glassDeliveryComments")||"").trim();
-      var importFrameDeliveryComments = String(get("frameDeliveryComments")||"").trim();
       var bondingRaw = String(get("bondingRequired")||"").trim().toLowerCase();
       var importBondingRequired = ["yes","y","true","1"].indexOf(bondingRaw) !== -1 ? "Yes" : "No";
       var rawExtraTeams = String(get("extraTeams")||"").split(/[,;]/).map(function(s){ return s.trim(); }).filter(Boolean);
       var importExtraTeams = [];
+      var notesFromUnmatchedHelpers = [];
       rawExtraTeams.forEach(function(rt){
         var matched = allTeamNames().find(function(t){ return t.toLowerCase()===rt.toLowerCase(); });
         if (matched && matched !== matchedTeam && importExtraTeams.indexOf(matched)===-1) importExtraTeams.push(matched);
-        else if (!matched) comments = (comments ? comments+" " : "") + "(Helper team: "+rt+")";
+        else if (!matched) notesFromUnmatchedHelpers.push("(Helper team: "+rt+")");
       });
+      // Pending & Status / Installation Pending / Remark: same three-column
+      // merge the initial "Pending project" import used (see EXAMPLE_PROJECTS
+      // above) — split line by line (splitPendingNoteLines()) rather than
+      // dumped in as one entry per field, so a multi-line cell becomes one
+      // dated entry per line/bullet, with any leading "12 Oct -" style date
+      // on a line kept as that entry's date instead of collapsing everything
+      // onto today's import date.
+      [["pendingAndStatus","pending"], ["installationPending","install"], ["remark","remark"]].forEach(function(pair){
+        var text = String(get(pair[0])||"").trim();
+        if (!text) return;
+        splitPendingNoteLines(text).forEach(function(entry){
+          importPendingActions.push(newPendingEntry(entry.date, entry.text, pair[1]));
+        });
+      });
+      [noteFromUnmatchedTeam].concat(notesFromUnmatchedHelpers).forEach(function(note){
+        if (note) importPendingActions.push(newPendingEntry(TODAY_ISO, note, "manual"));
+      });
+      var rawStatus = String(get("projectStatus")||"").trim();
+      var matchedStatus = PROJECT_STATUS_OPTIONS.find(function(s){ return s.toLowerCase()===rawStatus.toLowerCase(); }) || "";
+      var importProjectStatus = matchedStatus || (rawStatus ? "__other__" : "");
+      var importProjectStatusOther = (!matchedStatus && rawStatus) ? rawStatus : "";
       out.push({
         id:"p"+Date.now().toString(36)+Math.random().toString(36).slice(2,7)+r,
         isExample:false,
         name:name,
         client:String(get("client")||"").trim(),
         scope:String(get("scope")||"").trim(),
-        glassDelivery:importGlassDelivery,
-        glassDeliveryComments:importGlassDeliveryComments,
+        systemsSupplier:String(get("systemsSupplier")||"").trim(),
         frameDelivery:importFrameDelivery,
-        frameDeliveryComments:importFrameDeliveryComments,
+        glassDelivery:importGlassDelivery,
         start:importStart,
         finish:parseDateFlexible(get("finish")),
         pct:pct,
         team:matchedTeam,
         extraTeams:importExtraTeams,
-        comments:comments,
-        bondingRequired:importBondingRequired
+        ralGlass:String(get("ralGlass")||"").trim(),
+        projectValue:String(get("projectValue")||"").trim(),
+        designApprovalDate:parseDateFlexible(get("designApprovalDate")),
+        bondingRequired:importBondingRequired,
+        projectStatus:importProjectStatus,
+        projectStatusOther:importProjectStatusOther,
+        pendingActions:importPendingActions,
+        hidden:false
       });
     }
     return out;
@@ -4418,20 +6915,23 @@
     if (fLabel) doc.text("Filtered by: "+fLabel, 40, 72);
 
     var body = rows.map(function(p){
+      var entries = Array.isArray(p.pendingActions) ? p.pendingActions.slice().sort(function(a,b){ return (a.date<b.date)?1:((a.date>b.date)?-1:0); }) : [];
+      var pendingSummary = entries.length ? ((fmtDateDisplay(entries[0].date)||"")+": "+entries[0].text).slice(0,70) : "—";
       return [
-        p.name || "Untitled", p.client || "—",
-        fmtDateDisplay(p.glassDelivery) || "—", (p.glassDeliveryComments||"").slice(0,60) || "—",
-        fmtDateDisplay(p.frameDelivery) || "—", (p.frameDeliveryComments||"").slice(0,60) || "—",
+        p.name || "Untitled", p.client || "—", (p.scope||"").slice(0,60),
+        fmtDateDisplay(p.frameDelivery) || "—", fmtDateDisplay(p.glassDelivery) || "—",
         fmtDateDisplay(p.start) || "—", fmtDateDisplay(p.finish) || "—",
+        p.systemsSupplier || "—",
         (Number(p.pct)||0)+"%", p.team || "—",
         (Array.isArray(p.extraTeams) && p.extraTeams.length) ? p.extraTeams.join(", ") : "—",
         p.bondingRequired || "No",
-        (p.scope||"").slice(0,60), (p.comments||"").slice(0,60)
+        p.projectStatus === "__other__" ? (p.projectStatusOther||"Other") : (p.projectStatus || "—"),
+        pendingSummary
       ];
     });
     doc.autoTable({
       startY: fLabel ? 84 : 72,
-      head: [["Project","Client","Glass Delivery","Glass Delivery Comments","Frame Delivery","Frame Delivery Comments","Start","Finish","%","Team","Helper Teams","Bonding Required","Scope","Comments"]],
+      head: [["Project","Client","Scope","Frame Delivery","Glass Delivery","Start","Finish","Supplier","%","Team","Helper Teams","Bonding","Status","Latest pending action"]],
       body: body,
       styles:{ fontSize:8, cellPadding:4, overflow:"linebreak" },
       headStyles:{ fillColor:[46,92,138], textColor:255 },
@@ -4459,7 +6959,9 @@
 
     loadUIPrefs();
     applyColumnVars();
-    updateClientToggleBtnLabel();
+    updateShowHiddenBtnLabel();
+    applyViewDensity();
+    updateToolbarForView(currentView);
     waControls.init();
     document.getElementById("wa-rowheight-select").value = waControls.getRowHeight();
     loadWaGroupPrefs();
