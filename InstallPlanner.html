@@ -410,6 +410,14 @@
   .row-name-wrap{ display:flex; flex-direction:column; gap:1px; min-width:0; }
   .example-badge{ font-size:9px; font-weight:700; letter-spacing:.04em; text-transform:uppercase; color:var(--accent); background:var(--accent-soft); border-radius:4px; padding:1px 5px; width:fit-content; }
 
+  /* Opens the full-page, single-project detail view (see #detail-view /
+     openProjectDetail()) — a small corner button on the name cell, same
+     hover-to-reveal language as the row's delete "✕" button, so it's
+     discoverable without adding visual noise to every row all the time. */
+  .open-detail-btn{ position:absolute; top:2px; right:2px; width:16px; height:16px; line-height:1; font-size:11px; border-radius:4px; border:1px solid var(--border); background:var(--surface); color:var(--text-faint); opacity:0; cursor:pointer; display:flex; align-items:center; justify-content:center; padding:0; transition:opacity .1s ease; z-index:2; }
+  .c-name:hover .open-detail-btn, .c-name .open-detail-btn:focus-visible{ opacity:1; }
+  .open-detail-btn:hover{ background:var(--accent-soft); color:var(--accent); border-color:var(--accent); }
+
   /* The idx column shows a plain row number by default (so it's obvious at
      a glance how many projects are in the list — the last number IS the
      count), and swaps to the delete "✕" button on hover/focus so deleting
@@ -805,6 +813,25 @@
   .pending-entry-del{ flex:0 0 auto; background:transparent; border:none; color:var(--text-faint); cursor:pointer; font-size:14px; padding:0 4px; }
   .pending-entry-del:hover{ color:var(--danger); }
   .pending-empty{ color:var(--text-faint); font-style:italic; padding:12px 0; }
+
+  /* Single-project detail page (see #detail-view / renderDetailView()). Its
+     fields reuse the exact same .field/.date-btn/.teams-btn controls as the
+     Schedule grid, just laid out as full-width labeled rows instead of
+     narrow grid cells, and its Pending actions and remarks list is the
+     complete log with nothing truncated (unlike the grid cell's one-line
+     preview) or height-capped (unlike the popup modal's 60vh scroll box). */
+  #detail-view{ max-width:960px; margin:0 auto; padding:22px 20px 60px; }
+  .detail-topbar{ display:flex; align-items:center; gap:16px; margin-bottom:22px; flex-wrap:wrap; }
+  .detail-title{ font-size:1.25rem; font-weight:700; margin:0; color:var(--text); word-break:break-word; }
+  .detail-fields{ display:grid; grid-template-columns:repeat(auto-fit, minmax(240px, 1fr)); gap:16px 20px; margin-bottom:30px; }
+  .detail-field{ display:flex; flex-direction:column; gap:5px; min-width:0; }
+  .detail-field.detail-field-wide{ grid-column:1 / -1; }
+  .detail-field-label{ font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.04em; color:var(--text-muted); }
+  .detail-field .field, .detail-field .date-btn, .detail-field .teams-btn{ width:100%; box-sizing:border-box; min-height:36px; }
+  .detail-field textarea.field{ min-height:84px; resize:vertical; }
+  .detail-pending-section{ border-top:1px solid var(--border-strong); padding-top:20px; }
+  .detail-pending-section h3{ margin:0 0 10px; font-size:1rem; }
+  .detail-pending-list{ display:flex; flex-direction:column; margin-bottom:6px; }
   .pending-add-row{ display:flex; gap:8px; align-items:center; padding-top:10px; border-top:1px solid var(--border-strong); margin-top:4px; }
   .pending-add-row input[type="text"]{ flex:1 1 auto; padding:6px 8px; border:1px solid var(--border); border-radius:var(--radius); background:var(--surface); color:var(--text); font-size:13px; }
 
@@ -898,6 +925,31 @@
     <div class="wa-hbar" id="board-hbar" title="Drag to scroll across all columns"><div class="wa-hbar-inner" id="board-hbar-inner"></div></div>
     <div class="board-scroll" id="board-scroll">
       <div class="board" id="board"></div>
+    </div>
+  </div>
+
+  <!-- Single-project detail page — opened from the small ⤢ button on a
+       project's name cell (see metaRowCellsCommonHTML()). Shows every field
+       for just that one project, full-size and editable, plus the complete
+       Pending actions and remarks log with nothing truncated — the Schedule
+       grid's own cell for that only ever shows a one-line preview. Fields
+       here share the exact same data-field/data-date-btn/data-id attributes
+       as the grid's cells, so the same global edit handlers apply to both
+       without any extra wiring — see openProjectDetail()/renderDetailView(). -->
+  <div id="detail-view" hidden>
+    <div class="detail-topbar">
+      <button type="button" class="btn" id="detail-back-btn">← Back to schedule</button>
+      <h2 class="detail-title" id="detail-title"></h2>
+    </div>
+    <div class="detail-fields" id="detail-fields"></div>
+    <div class="detail-pending-section">
+      <h3>Pending actions and remarks</h3>
+      <div class="detail-pending-list" id="detail-pending-body"></div>
+      <div class="pending-add-row">
+        <button type="button" class="date-btn" id="detail-pending-add-date-btn"></button>
+        <input type="text" id="detail-pending-add-text" placeholder="Add a dated note…" aria-label="New pending action or remark">
+        <button type="button" class="btn primary" id="detail-pending-add-btn">Add</button>
+      </div>
     </div>
   </div>
 
@@ -4195,6 +4247,7 @@
       '<button class="del-btn" type="button" data-action="delete" data-id="'+p.id+'" aria-label="Delete project" title="Delete project">✕</button></div>';
 
     html += '<div class="cell c-name" style="grid-column:2; grid-row:'+row+';">'+
+      '<button type="button" class="open-detail-btn" data-open-detail="1" data-id="'+p.id+'" aria-label="Open full project details page" title="Open full project details page">⤢</button>'+
       '<div class="row-name-wrap">' + (p.isExample ? '<span class="example-badge" data-owner="'+p.id+'">Example</span>' : '') +
       '<textarea class="field name-field" data-field="name" data-id="'+p.id+'" title="'+escAttr(p.name)+'" placeholder="Project name" aria-label="Project name">'+escText(p.name)+'</textarea></div></div>';
 
@@ -4521,7 +4574,19 @@
         : info.attr === "data-daily-field"
         ? '[data-daily-field="'+info.field+'"][data-id="'+info.id+'"]'
         : '[data-field="'+info.field+'"][data-id="'+info.id+'"]';
-      var again = document.querySelector(selector);
+      // The single-project detail page (see #detail-view) renders the same
+      // data-field/data-id on its own copy of a field whenever that
+      // project's row also exists in the Schedule grid — normally hidden
+      // behind the other, but still a real match for this selector. Prefer
+      // whichever copy is actually visible (offsetParent is null on a
+      // display:none one) so a rebuild while editing in the detail view
+      // doesn't refocus its hidden grid twin instead.
+      var candidates = document.querySelectorAll(selector);
+      var again = null;
+      for (var i=0; i<candidates.length; i++){
+        if (candidates[i].offsetParent !== null){ again = candidates[i]; break; }
+      }
+      if (!again) again = candidates[0];
       if (!again) return;
       again.focus();
       if (info.selStart !== null && again.setSelectionRange){
@@ -4562,6 +4627,12 @@
     if (currentView === "daily") renderDailyView();
     var gridBackdrop = document.getElementById("grid-modal-backdrop");
     if (gridBackdrop && !gridBackdrop.hidden) renderGridModal();
+    // The single-project detail page (see #detail-view below) is reached
+    // from the grid but isn't one of the currentView tabs, so it's not in
+    // the list above — it needs refreshing any time render() runs while
+    // it's open (editing a date/team/% complete/status there goes through
+    // the exact same code paths as the grid and ends up here too).
+    if (detailViewProjectId) renderDetailView();
 
     restoreFocusInfo(focusInfo);
   }
@@ -6291,6 +6362,156 @@
     scheduleSave();
   }
 
+  // ---- Single-project detail page: a full page (not a popup) for one
+  // project at a time, reached via the small ⤢ button on its name cell
+  // (see metaRowCellsCommonHTML()) and left via "← Back to schedule". Exists
+  // because the Schedule grid's own Pending actions cell only ever shows a
+  // one-line preview, and the popup modal above caps itself at 60vh with a
+  // scrollbar — neither shows everything logged on a busy project at a
+  // glance. Every field here shares the same data-field/data-date-btn/
+  // data-id attributes as the grid's own cells, so typing, picking a date,
+  // or changing a dropdown goes through the exact same handlers as the grid
+  // (see the global [data-field] "input" listener and openDatePopup()) with
+  // no extra wiring — render() already knows to refresh this page too (see
+  // the detailViewProjectId check near the end of render()), and
+  // restoreFocusInfo() was taught to prefer whichever copy of a field is
+  // actually visible, so editing here never fights the grid's hidden twin
+  // of the same field for focus. ----
+  var detailViewProjectId = null; // project id while the detail page is open, else null
+  var detailPendingAddDate = TODAY_ISO; // date picked for the next note added from this page
+
+  function openProjectDetail(projectId){
+    var p = findProject(projectId);
+    if (!p) return;
+    closeDatePopup(); closeExtraTeamsPopup();
+    detailViewProjectId = projectId;
+    detailPendingAddDate = TODAY_ISO;
+    renderDetailView();
+    switchView("detail");
+  }
+
+  function closeProjectDetail(){
+    detailViewProjectId = null;
+    switchView("schedule");
+    render(); // picks up anything edited on the detail page into the grid
+  }
+
+  // One labeled field row — shared layout for every plain input/select on
+  // the detail page, so adding one more field later is a single line.
+  function detailFieldRow(labelText, innerHTML, wide){
+    return '<div class="detail-field'+(wide?" detail-field-wide":"")+'">'+
+      '<label class="detail-field-label">'+escText(labelText)+'</label>'+innerHTML+'</div>';
+  }
+
+  function detailFieldsHTML(p){
+    var html = "";
+    html += detailFieldRow("Client", '<input class="field" list="client-list" data-field="client" data-id="'+p.id+'" value="'+escAttr(p.client)+'" placeholder="Client" aria-label="Client">');
+    html += detailFieldRow("Systems supplier", '<input class="field" data-field="systemsSupplier" data-id="'+p.id+'" value="'+escAttr(p.systemsSupplier)+'" placeholder="Systems supplier" aria-label="Systems supplier">');
+    html += detailFieldRow("RAL / Glass", '<input class="field" data-field="ralGlass" data-id="'+p.id+'" value="'+escAttr(p.ralGlass)+'" placeholder="RAL / Glass" aria-label="RAL / Glass">');
+    html += detailFieldRow("Project value (AED)", '<input class="field" data-field="projectValue" data-id="'+p.id+'" value="'+escAttr(p.projectValue)+'" placeholder="Project value (AED)" aria-label="Project value (AED)">');
+    html += detailFieldRow("% complete", '<input class="field" type="number" min="0" max="100" step="5" data-field="pct" data-id="'+p.id+'" value="'+p.pct+'" aria-label="Percent complete">');
+
+    var teamColorStyle = p.team ? ' style="color:'+teamColorValue(p.team)+';"' : "";
+    html += detailFieldRow("Assigned team", '<select class="field" data-field="team" data-id="'+p.id+'" data-team="'+escAttr(p.team)+'" aria-label="Assigned team"'+teamColorStyle+'>'+
+      '<option value=""'+(p.team===""?" selected":"")+'>—</option>'+
+      allTeamNames().map(function(t){ return '<option value="'+escAttr(t)+'"'+(p.team===t?" selected":"")+'>'+escText(t)+'</option>'; }).join("")+
+      '<option value="__add_new__">+ Add new team…</option>'+
+      '</select>');
+
+    var extraNames = Array.isArray(p.extraTeams) ? p.extraTeams : [];
+    var extraInner = extraNames.length
+      ? extraNames.map(function(t){ return '<span class="teams-chip" style="color:'+teamColorValue(t)+';">'+escText(t)+'</span>'; }).join("")
+      : '<span class="placeholder-text">—</span>';
+    html += detailFieldRow("Helper teams", '<button type="button" class="teams-btn" data-extra-teams-btn="1" data-id="'+p.id+'" aria-label="Helper teams">'+extraInner+'</button>');
+
+    html += detailFieldRow("Frame delivery date", '<button type="button" class="date-btn'+(p.frameDelivery?"":" placeholder")+'" data-date-btn="frameDelivery" data-id="'+p.id+'" aria-label="Frame delivery date">'+(fmtDateDisplay(p.frameDelivery)||"d/mm/yyyy")+'</button>');
+    html += detailFieldRow("Glass delivery date", '<button type="button" class="date-btn'+(p.glassDelivery?"":" placeholder")+'" data-date-btn="glassDelivery" data-id="'+p.id+'" aria-label="Glass delivery date">'+(fmtDateDisplay(p.glassDelivery)||"d/mm/yyyy")+'</button>');
+    html += detailFieldRow("Install Start Date", '<button type="button" class="date-btn'+(p.start?"":" placeholder")+'" data-date-btn="start" data-id="'+p.id+'" aria-label="Install Start Date">'+(fmtDateDisplay(p.start)||"d/mm/yyyy")+'</button>');
+    html += detailFieldRow("Planned Finish Date", '<button type="button" class="date-btn'+(p.finish?"":" placeholder")+'" data-date-btn="finish" data-id="'+p.id+'" aria-label="Planned Finish Date">'+(fmtDateDisplay(p.finish)||"d/mm/yyyy")+'</button>');
+    html += detailFieldRow("Design approval date", '<button type="button" class="date-btn'+(p.designApprovalDate?"":" placeholder")+'" data-date-btn="designApprovalDate" data-id="'+p.id+'" aria-label="Design approval date">'+(fmtDateDisplay(p.designApprovalDate)||"d/mm/yyyy")+'</button>');
+
+    html += detailFieldRow("Bonding required", '<select class="field" data-field="bondingRequired" data-id="'+p.id+'" aria-label="Bonding required">'+
+      '<option value="No"'+(p.bondingRequired!=="Yes"?" selected":"")+'>No</option>'+
+      '<option value="Yes"'+(p.bondingRequired==="Yes"?" selected":"")+'>Yes</option>'+
+      '</select>');
+
+    var known = PROJECT_STATUS_OPTIONS.indexOf(p.projectStatus) !== -1;
+    var isOther = !!p.projectStatus && !known;
+    var statusHTML = '<select class="field" data-field="projectStatus" data-id="'+p.id+'" aria-label="Project status">'+
+      '<option value=""'+(!p.projectStatus?" selected":"")+'>—</option>'+
+      PROJECT_STATUS_OPTIONS.map(function(s){ return '<option value="'+escAttr(s)+'"'+(p.projectStatus===s?" selected":"")+'>'+escText(s)+'</option>'; }).join("")+
+      '<option value="__other__"'+(isOther?" selected":"")+'>Other…</option>'+
+      '</select>';
+    if (isOther || p.projectStatus === "__other__"){
+      statusHTML += '<input class="field" style="margin-top:6px;" data-field="projectStatusOther" data-id="'+p.id+'" value="'+escAttr(p.projectStatusOther||(isOther?p.projectStatus:""))+'" placeholder="Describe status" aria-label="Other project status">';
+    }
+    html += detailFieldRow("Project status", statusHTML);
+
+    html += detailFieldRow("Project scope", '<textarea class="field" data-field="scope" data-id="'+p.id+'" placeholder="Scope of work" aria-label="Project scope">'+escText(p.scope)+'</textarea>', true);
+
+    return html;
+  }
+
+  var PENDING_SOURCE_LABELS = { pending:"Pending status", install:"Installation pending", remark:"Remark", handover:"SuWai handover", manual:"Manual", migrated:"Manual" };
+
+  function renderDetailPendingList(p){
+    var entries = Array.isArray(p.pendingActions) ? p.pendingActions : [];
+    var sorted = entries.slice().sort(function(a,b){ return (a.date<b.date) ? 1 : ((a.date>b.date) ? -1 : 0); });
+    var bodyEl = document.getElementById("detail-pending-body");
+    bodyEl.innerHTML = sorted.length
+      ? sorted.map(function(en){
+          return '<div class="pending-entry">'+
+            '<span class="pending-entry-date">'+(fmtDateDisplay(en.date)||"—")+'</span>'+
+            '<span class="pending-entry-text">'+escText(en.text)+'</span>'+
+            '<span class="pending-entry-source">'+escText(PENDING_SOURCE_LABELS[en.source]||"")+'</span>'+
+            '<button type="button" class="pending-entry-del" data-detail-pending-del="'+en.id+'" aria-label="Delete this entry" title="Delete this entry">✕</button>'+
+            '</div>';
+        }).join("")
+      : '<div class="pending-empty">No pending actions or remarks logged yet — add the first one below.</div>';
+    var addDateBtn = document.getElementById("detail-pending-add-date-btn");
+    addDateBtn.textContent = fmtDateDisplay(detailPendingAddDate) || "d/mm/yyyy";
+    addDateBtn.classList.toggle("placeholder", !detailPendingAddDate);
+  }
+
+  function renderDetailView(){
+    if (!detailViewProjectId) return;
+    var p = findProject(detailViewProjectId);
+    if (!p){ closeProjectDetail(); return; } // the project was deleted while its detail page was open
+    document.getElementById("detail-title").textContent = p.name || "Untitled project";
+    document.getElementById("detail-fields").innerHTML = detailFieldsHTML(p);
+    renderDetailPendingList(p);
+  }
+
+  function addDetailPendingEntry(){
+    if (!detailViewProjectId) return;
+    var p = findProject(detailViewProjectId);
+    if (!p) return;
+    var textEl = document.getElementById("detail-pending-add-text");
+    var text = textEl.value.trim();
+    if (!text){ showToast("Type a note before adding it.", null, null); return; }
+    if (!Array.isArray(p.pendingActions)) p.pendingActions = [];
+    p.pendingActions.push(newPendingEntry(detailPendingAddDate || TODAY_ISO, text, "manual"));
+    if (p.isExample){
+      p.isExample = false;
+      var banner = document.getElementById("example-banner");
+      if (!state.bannerDismissed) banner.hidden = true;
+    }
+    textEl.value = "";
+    renderDetailPendingList(p);
+    scheduleSave();
+  }
+
+  function deleteDetailPendingEntry(entryId){
+    if (!detailViewProjectId) return;
+    var p = findProject(detailViewProjectId);
+    if (!p || !Array.isArray(p.pendingActions)) return;
+    var idx = p.pendingActions.findIndex(function(e){ return e.id === entryId; });
+    if (idx === -1) return;
+    p.pendingActions.splice(idx, 1);
+    renderDetailPendingList(p);
+    scheduleSave();
+  }
+
   // ---- date filter: search for projects by any custom start/finish date range ----
   var dateFilterPopupEl = document.getElementById("datefilter-popup");
   // Each key holds "" (no bound) or an ISO date. From/To bounds are inclusive,
@@ -6685,6 +6906,21 @@
       });
       return;
     }
+
+    var openDetailBtn = e.target.closest("[data-open-detail]");
+    if (openDetailBtn){ openProjectDetail(openDetailBtn.dataset.id); return; }
+    if (e.target.id === "detail-back-btn"){ closeProjectDetail(); return; }
+    var detailPendingDelBtn = e.target.closest("[data-detail-pending-del]");
+    if (detailPendingDelBtn){ deleteDetailPendingEntry(detailPendingDelBtn.dataset.detailPendingDel); return; }
+    if (e.target.id === "detail-pending-add-btn"){ addDetailPendingEntry(); return; }
+    if (e.target.id === "detail-pending-add-date-btn"){
+      openDatePopupGeneric(e.target, detailPendingAddDate, function(isoVal){
+        detailPendingAddDate = isoVal;
+        var p = findProject(detailViewProjectId);
+        if (p) renderDetailPendingList(p);
+      });
+      return;
+    }
     if (e.target.id === "grid-modal-close" || e.target.id === "grid-modal-backdrop"){
       closeGridModal();
       return;
@@ -6864,6 +7100,7 @@
     document.getElementById("dashboard-view").hidden = (view !== "dashboard");
     document.getElementById("wa-view").hidden = (view !== "wa");
     document.getElementById("daily-view").hidden = (view !== "daily");
+    document.getElementById("detail-view").hidden = (view !== "detail");
     document.getElementById("tab-schedule").classList.toggle("active", view==="schedule");
     document.getElementById("tab-schedule").setAttribute("aria-selected", view==="schedule");
     document.getElementById("tab-allocation").classList.toggle("active", view==="allocation");
