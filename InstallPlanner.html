@@ -5,43 +5,42 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <title>Eurolux Doors and Windows, Installation Planner</title>
 <meta name="description" content="Installation planner with client, scope, dates, progress and team tracking.">
-<meta name="theme-color" content="#000000">
+<meta name="theme-color" content="#183a5a">
 <link rel="manifest" href="./manifest.json">
 <link rel="icon" href="./icon-192.png" type="image/png">
 <link rel="apple-touch-icon" href="./icon-192.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Install Planner">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg:#F7F7F7;
+    --font-sans: system-ui,-apple-system,"Segoe UI",sans-serif;
+    --bg:#F3F6F9;
     --surface:#FFFFFF;
-    --surface-2:#F0F0F0;
-    --border:#E5E5E5;
-    --border-strong:#CCCCCC;
-    --text:#1A1A1A;
-    --text-muted:#3D3D3D;
-    --text-faint:#6B6B6B;
-    --accent:#000000;
-    --accent-soft:#F0F0F0;
-    --accent-strong:#333333;
+    --surface-2:#EEF4F9;
+    --border:#D8E0E8;
+    --border-strong:#C7D2DE;
+    --text:#1D2935;
+    --text-muted:#657586;
+    --text-faint:#8A98A6;
+    --accent:#2368A0;
+    --accent-soft:#E7F0F8;
+    --accent-strong:#1C5687;
     --accent-ink:#FFFFFF;
     --danger:#B91C1C;
     --danger-soft:#FEE2E2;
-    --success:#15803D;
+    --success:#18794E;
     --success-soft:#DCFCE7;
-    --warning:#B45309;
+    --warning:#9A6700;
     --warning-soft:#FEF3C7;
     --warning-border:#F59E0B;
     --edit:#1D4ED8;
     --edit-soft:#DBEAFE;
     --edit-border:#93C5FD;
-    --shadow:0 2px 8px rgba(0,0,0,.08);
-    --shadow-lg:0 6px 24px rgba(0,0,0,.12);
-    --radius:4px;
-    --nav-bg:#000000;
+    --shadow:0 2px 8px rgba(24,58,90,.10);
+    --shadow-lg:0 6px 24px rgba(24,58,90,.16);
+    --radius:8px;
+    --nav-bg:#183A5A;
+    --nav-bg-2:#214A70;
     --nav-text:#FFFFFF;
     --nav-border:rgba(255,255,255,.25);
     --nav-hover:rgba(255,255,255,.12);
@@ -84,33 +83,33 @@
   }
   @media (prefers-color-scheme: dark){
     :root:not([data-theme="light"]){
-      --bg:#121212; --surface:#1C1C1C; --surface-2:#262626;
-      --border:#333333; --border-strong:#454545;
-      --text:#EDEDED; --text-muted:#C4C4C4; --text-faint:#949494;
-      --accent:#FFFFFF; --accent-soft:#2A2A2A; --accent-strong:#CCCCCC; --accent-ink:#000000;
+      --bg:#0F1A24; --surface:#16232F; --surface-2:#1C2E3D;
+      --border:#2A3F52; --border-strong:#3C5872;
+      --text:#E7EEF5; --text-muted:#AEBDC9; --text-faint:#7E8FA0;
+      --accent:#4F9FE0; --accent-soft:#1C3A52; --accent-strong:#76B8EA; --accent-ink:#0B1722;
       --danger:#FF6B6B; --danger-soft:#4A2020;
       --success:#4ADE80; --success-soft:#173B26;
       --warning:#FBBF24; --warning-soft:#453611; --warning-border:#B45309;
       --edit:#93C5FD; --edit-soft:#1E3A5F; --edit-border:#2563EB;
       --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 20px rgba(0,0,0,.35);
       --shadow-lg:0 6px 24px rgba(0,0,0,.5);
-      --nav-bg:#000000; --nav-text:#FFFFFF; --nav-border:rgba(255,255,255,.25); --nav-hover:rgba(255,255,255,.12); --nav-active:rgba(255,255,255,.16);
+      --nav-bg:#0C1F30; --nav-bg-2:#142B3D; --nav-text:#FFFFFF; --nav-border:rgba(255,255,255,.25); --nav-hover:rgba(255,255,255,.12); --nav-active:rgba(255,255,255,.16);
       --team-mark:#6FA8DB; --team-alex:#5FBB9B; --team-angelo:#E3AC55;
       --team-albert:#D4805C; --team-norberto:#A488C7; --team-sammy:#8AAD5F; --team-edson:#4FB8B8; --team-none:#9AA3B4;
     }
   }
   :root[data-theme="dark"]{
-    --bg:#121212; --surface:#1C1C1C; --surface-2:#262626;
-    --border:#333333; --border-strong:#454545;
-    --text:#EDEDED; --text-muted:#C4C4C4; --text-faint:#949494;
-    --accent:#FFFFFF; --accent-soft:#2A2A2A; --accent-strong:#CCCCCC; --accent-ink:#000000;
+    --bg:#0F1A24; --surface:#16232F; --surface-2:#1C2E3D;
+    --border:#2A3F52; --border-strong:#3C5872;
+    --text:#E7EEF5; --text-muted:#AEBDC9; --text-faint:#7E8FA0;
+    --accent:#4F9FE0; --accent-soft:#1C3A52; --accent-strong:#76B8EA; --accent-ink:#0B1722;
     --danger:#FF6B6B; --danger-soft:#4A2020;
     --success:#4ADE80; --success-soft:#173B26;
     --warning:#FBBF24; --warning-soft:#453611; --warning-border:#B45309;
     --edit:#93C5FD; --edit-soft:#1E3A5F; --edit-border:#2563EB;
     --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 20px rgba(0,0,0,.35);
     --shadow-lg:0 6px 24px rgba(0,0,0,.5);
-    --nav-bg:#000000; --nav-text:#FFFFFF; --nav-border:rgba(255,255,255,.25); --nav-hover:rgba(255,255,255,.12); --nav-active:rgba(255,255,255,.16);
+    --nav-bg:#0C1F30; --nav-bg-2:#142B3D; --nav-text:#FFFFFF; --nav-border:rgba(255,255,255,.25); --nav-hover:rgba(255,255,255,.12); --nav-active:rgba(255,255,255,.16);
     --team-mark:#6FA8DB; --team-alex:#5FBB9B; --team-angelo:#E3AC55;
     --team-albert:#D4805C; --team-norberto:#A488C7; --team-sammy:#8AAD5F; --team-edson:#4FB8B8; --team-none:#9AA3B4;
   }
@@ -120,21 +119,23 @@
   [hidden]{ display:none !important; }
   body{
     background:var(--bg); color:var(--text);
-    font-family:"Montserrat",system-ui,-apple-system,sans-serif;
+    font-family:var(--font-sans);
     font-size:13px; line-height:1.4;
     -webkit-font-smoothing:antialiased;
     /* A global zoom:1.15 briefly lived here to make text bigger everywhere
        at once, but it made the app look worse overall (everything just
        slightly oversized/blurry rather than genuinely easier to read), so
-       it's reverted back to the original 1:1 size/theme/font. The
-       popup-positioning helpers below (pageZoomFactor()/
-       positionZoomedPopup()) were written to work correctly at any zoom
-       level, 1 included, so they're left in place rather than unwound —
-       harmless now, and ready if a real per-element font bump is wanted
-       later without the whole-page side effects this had. */
+       it's reverted back to the original 1:1 size. The popup-positioning
+       helpers below (pageZoomFactor()/positionZoomedPopup()) were written
+       to work correctly at any zoom level, 1 included, so they're left in
+       place rather than unwound — harmless now, and ready if a real
+       per-element font bump is wanted later without the whole-page side
+       effects this had. The theme itself (navy/blue palette, system font,
+       8px rounded corners below) was switched over to match the look of
+       the Installation Status module, at the user's request. */
   }
-  h1{font-family:"Playfair Display",Georgia,serif; text-wrap:balance; margin:0;}
-  h2{font-family:"Montserrat",sans-serif; font-weight:700; text-wrap:balance; margin:0;}
+  h1{font-family:var(--font-sans); font-weight:700; text-wrap:balance; margin:0;}
+  h2{font-family:var(--font-sans); font-weight:700; text-wrap:balance; margin:0;}
   ::selection{background:var(--accent-soft);}
   button{font-family:inherit;}
   input[type="checkbox"],input[type="radio"]{ accent-color:var(--accent); }
@@ -142,18 +143,17 @@
 
   .app{ max-width:100%; padding:20px 24px 32px; display:flex; flex-direction:column; gap:16px; }
 
-  /* ---- Toolbar: styled after the black top nav bar used across Eurolux's
-     other in-house apps (Playfair Display brand title, pill-outline
-     controls, solid-white primary CTA). ---- */
+  /* ---- Toolbar: navy top nav bar, system-font brand title, pill-outline
+     controls. ---- */
   .toolbar{
     display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:14px 24px;
     background:var(--nav-bg); color:var(--nav-text);
     padding:14px 20px; border-radius:6px; box-shadow:var(--shadow);
   }
   .toolbar h1{ font-size:19px; font-weight:700; letter-spacing:-0.01em; color:var(--nav-text); }
-  .toolbar .range{ font-family:"Montserrat",sans-serif; font-size:12px; color:rgba(255,255,255,.6); margin-top:4px; }
+  .toolbar .range{ font-family:var(--font-sans); font-size:12px; color:rgba(255,255,255,.6); margin-top:4px; }
   .toolbar-actions{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
-  .stat-row{ display:flex; gap:8px; align-items:center; flex-wrap:wrap; font-size:12px; color:var(--text-muted); font-family:"Montserrat",sans-serif; }
+  .stat-row{ display:flex; gap:8px; align-items:center; flex-wrap:wrap; font-size:12px; color:var(--text-muted); font-family:var(--font-sans); }
   .stat-pill{ background:var(--surface); border:none; border-radius:var(--radius); padding:5px 12px; box-shadow:var(--shadow); }
   .stat-pill.clickable{ cursor:pointer; }
   .stat-pill.clickable:hover{ box-shadow:var(--shadow-lg); color:var(--text); }
@@ -161,7 +161,7 @@
   .filter-clear{ background:none; border:none; color:var(--text); font-family:inherit; font-size:12px; font-weight:600; cursor:pointer; padding:3px 6px; text-decoration:underline; }
 
   .view-tabs{ display:flex; background:transparent; border:1px solid var(--nav-border); border-radius:999px; padding:3px; gap:2px; }
-  .tab-btn{ border:none; background:transparent; color:rgba(255,255,255,.7); font-family:"Montserrat",sans-serif; font-size:12px; font-weight:600; padding:7px 14px; border-radius:999px; cursor:pointer; }
+  .tab-btn{ border:none; background:transparent; color:rgba(255,255,255,.7); font-family:var(--font-sans); font-size:12px; font-weight:600; padding:7px 14px; border-radius:999px; cursor:pointer; }
   .tab-btn:hover{ color:#fff; background:var(--nav-hover); }
   .tab-btn.active{ background:#fff; color:#000; box-shadow:none; }
 
@@ -191,7 +191,7 @@
   .import-merge-label:hover{ opacity:1; }
   .import-merge-label input{ margin:0; }
 
-  .sync-status{ display:flex; align-items:center; gap:7px; font-size:12px; color:var(--text-muted); font-family:"Montserrat",sans-serif; padding:7px 12px; border:1px solid var(--border); border-radius:100px; background:var(--surface); white-space:nowrap; }
+  .sync-status{ display:flex; align-items:center; gap:7px; font-size:12px; color:var(--text-muted); font-family:var(--font-sans); padding:7px 12px; border:1px solid var(--border); border-radius:100px; background:var(--surface); white-space:nowrap; }
   .sync-dot{ width:8px; height:8px; border-radius:50%; flex:none; background:var(--text-faint); }
   .sync-status.state-synced{ border-color:#15803D; color:var(--text); }
   .sync-status.state-synced .sync-dot{ background:#15803D; }
@@ -309,14 +309,14 @@
   .col-handle:hover, .col-handle.dragging{ background:var(--text-faint); opacity:.7; }
 
   .row-head{ position:sticky; top:0; z-index:6; }
-  .row-head.month{ top:0; z-index:7; font-family:"Montserrat",sans-serif; font-weight:600; font-size:11.5px; letter-spacing:.02em; color:rgba(255,255,255,.7); background:#000000; justify-content:flex-start; padding-left:10px; border-bottom:1px solid #000000; }
-  .row-head.day{ top:30px; z-index:6; flex-direction:column; align-items:center; justify-content:center; gap:1px; font-family:"Montserrat",sans-serif; font-size:10.5px; color:rgba(255,255,255,.7); padding:2px 0; background:#1a1a1a; }
-  .row-head.day.weekend{ background:#000000; }
+  .row-head.month{ top:0; z-index:7; font-family:var(--font-sans); font-weight:600; font-size:11.5px; letter-spacing:.02em; color:rgba(255,255,255,.7); background:var(--nav-bg); justify-content:flex-start; padding-left:10px; border-bottom:1px solid var(--nav-bg); }
+  .row-head.day{ top:30px; z-index:6; flex-direction:column; align-items:center; justify-content:center; gap:1px; font-family:var(--font-sans); font-size:10.5px; color:rgba(255,255,255,.7); padding:2px 0; background:var(--nav-bg-2); }
+  .row-head.day.weekend{ background:var(--nav-bg); }
   .row-head.day .dow{ font-size:8.5px; letter-spacing:.03em; color:rgba(255,255,255,.5); text-transform:uppercase; }
-  .row-head.day .num{ font-weight:600; color:#ffffff; font-variant-numeric:tabular-nums; }
-  .row-head.day.today{ box-shadow: inset 0 0 0 1.5px #ffffff; }
+  .row-head.day .num{ font-weight:600; color:var(--nav-text); font-variant-numeric:tabular-nums; }
+  .row-head.day.today{ box-shadow: inset 0 0 0 1.5px var(--nav-text); }
 
-  .meta-head{ position:sticky; top:0; z-index:9; background:#000000; font-size:10.5px; font-weight:600; text-transform:uppercase; letter-spacing:.04em; color:#ffffff; border-bottom:1px solid #000000; }
+  .meta-head{ position:sticky; top:0; z-index:9; background:var(--nav-bg); font-size:10.5px; font-weight:600; text-transform:uppercase; letter-spacing:.04em; color:var(--nav-text); border-bottom:1px solid var(--nav-bg); }
 
   .day-cell{ padding:0; border-right:1px solid var(--border); background:var(--surface); position:relative; }
   .day-cell.weekend{ background:var(--surface-2); }
@@ -342,7 +342,7 @@
   /* Scope & Comments in the main list auto-grow to fit their full text (see
      autosizeTextarea()) instead of clipping/scrolling inside a fixed box. */
   textarea.field.autosize-field{ height:auto; min-height:44px; overflow:hidden; }
-  input[type="number"].field{ font-family:"Montserrat",sans-serif; }
+  input[type="number"].field{ font-family:var(--font-sans); }
   select.field{ font-size:12px; font-weight:600; padding:5px 4px; cursor:pointer; }
 
   /* Start/Finish date cells: a plain button showing our own d/mm/yyyy format
@@ -352,7 +352,7 @@
      columns). Clicking the button opens our own calendar dropdown, built
      entirely in-page (see .date-popup), so both the format and the picker
      behavior are identical and reliable in every browser. */
-  .date-btn{ width:100%; height:100%; border:1px solid transparent; background:transparent; color:var(--text); font-family:"Montserrat",sans-serif; font-size:11.5px; padding:6px 4px; border-radius:6px; text-align:left; cursor:pointer; }
+  .date-btn{ width:100%; height:100%; border:1px solid transparent; background:transparent; color:var(--text); font-family:var(--font-sans); font-size:11.5px; padding:6px 4px; border-radius:6px; text-align:left; cursor:pointer; }
   .date-btn:hover{ background:var(--surface-2); }
   .date-btn.active, .date-btn:focus-visible{ background:var(--surface); box-shadow:inset 0 0 0 1px var(--accent); outline:none; }
   .date-btn.placeholder{ color:var(--text-faint); }
@@ -400,7 +400,7 @@
   .datefilter-section{ margin-bottom:12px; }
   .datefilter-section label{ display:block; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.03em; color:var(--text-muted); margin-bottom:5px; }
   .datefilter-range{ display:flex; align-items:center; gap:6px; }
-  .filter-date-btn{ flex:1; min-width:0; border:1px solid var(--border-strong); background:var(--surface); color:var(--text); font-family:"Montserrat",sans-serif; font-size:12px; padding:7px 8px; border-radius:7px; text-align:left; cursor:pointer; }
+  .filter-date-btn{ flex:1; min-width:0; border:1px solid var(--border-strong); background:var(--surface); color:var(--text); font-family:var(--font-sans); font-size:12px; padding:7px 8px; border-radius:7px; text-align:left; cursor:pointer; }
   .filter-date-btn:hover{ background:var(--surface-2); }
   .filter-date-btn.active, .filter-date-btn:focus-visible{ outline:none; box-shadow:inset 0 0 0 1px var(--accent); }
   .filter-date-btn.placeholder{ color:var(--text-faint); }
@@ -431,13 +431,13 @@
      a glance how many projects are in the list — the last number IS the
      count), and swaps to the delete "✕" button on hover/focus so deleting
      still only takes one click. */
-  .row-num{ font-family:"Montserrat",sans-serif; font-size:11.5px; font-weight:600; color:var(--text-faint); transition:opacity .1s ease; }
+  .row-num{ font-family:var(--font-sans); font-size:11.5px; font-weight:600; color:var(--text-faint); transition:opacity .1s ease; }
   .c-idx:hover .row-num, .c-idx:focus-within .row-num{ opacity:0; }
   .del-btn{ position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:22px; height:22px; border-radius:6px; border:1px solid transparent; background:transparent; color:var(--text-faint); cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:13px; opacity:0; pointer-events:none; transition:opacity .1s ease; }
   .del-btn:hover{ background:var(--danger-soft); color:var(--danger); border-color:var(--danger); }
   .c-idx:hover .del-btn, .c-idx .del-btn:focus-visible{ opacity:1; pointer-events:auto; }
 
-  .pct-text{ font-family:"Montserrat",sans-serif; }
+  .pct-text{ font-family:var(--font-sans); }
 
   .empty-state{ padding:40px 20px; text-align:center; color:var(--text-muted); font-size:13px; }
 
@@ -450,8 +450,8 @@
   .dash-grid{ display:grid; grid-template-columns:repeat(4, 1fr); gap:12px; }
   .kpi-card{ background:var(--surface); border:1px solid var(--border); border-radius:6px; padding:14px 16px; box-shadow:var(--shadow); display:flex; flex-direction:column; gap:4px; }
   .kpi-label{ font-size:11px; text-transform:uppercase; letter-spacing:.04em; color:var(--text-muted); font-weight:600; }
-  .kpi-value{ font-family:"Playfair Display",Georgia,serif; font-size:26px; font-weight:700; color:var(--text); }
-  .kpi-sub{ font-size:11px; color:var(--text-faint); font-family:"Montserrat",sans-serif; }
+  .kpi-value{ font-family:var(--font-sans); font-size:26px; font-weight:700; color:var(--text); }
+  .kpi-sub{ font-size:11px; color:var(--text-faint); font-family:var(--font-sans); }
 
   .dash-panels{ display:grid; grid-template-columns:1.1fr 1fr; gap:12px; align-items:start; }
   .panel{ background:var(--surface); border:1px solid var(--border); border-radius:6px; padding:16px 18px; box-shadow:var(--shadow); }
@@ -460,7 +460,7 @@
   .bar-row .bar-label{ color:var(--text-muted); font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
   .bar-track{ height:14px; background:var(--surface-2); border-radius:4px; overflow:hidden; display:block; }
   .bar-fill{ display:block; height:100%; border-radius:4px; }
-  .bar-row .bar-value{ font-family:"Montserrat",sans-serif; color:var(--text-muted); text-align:right; white-space:nowrap; }
+  .bar-row .bar-value{ font-family:var(--font-sans); color:var(--text-muted); text-align:right; white-space:nowrap; }
 
   .status-donut-wrap{ display:flex; align-items:center; gap:20px; }
   .status-legend{ display:flex; flex-direction:column; gap:8px; font-size:12px; }
@@ -476,8 +476,8 @@
 
   /* ---- Team allocation (3-month Gantt) view ---- */
   .alloc-toolbar{ display:flex; align-items:center; gap:10px; margin-bottom:10px; }
-  .alloc-range{ font-family:"Montserrat",sans-serif; font-size:12.5px; font-weight:600; color:var(--text); min-width:170px; text-align:center; }
-  .alloc-meta-head{ position:sticky; left:0; top:0; z-index:9; background:#000000; font-size:10.5px; font-weight:600; text-transform:uppercase; letter-spacing:.04em; color:#ffffff; border-bottom:1px solid #000000; width:var(--w-alloc-team); }
+  .alloc-range{ font-family:var(--font-sans); font-size:12.5px; font-weight:600; color:var(--text); min-width:170px; text-align:center; }
+  .alloc-meta-head{ position:sticky; left:0; top:0; z-index:9; background:var(--nav-bg); font-size:10.5px; font-weight:600; text-transform:uppercase; letter-spacing:.04em; color:var(--nav-text); border-bottom:1px solid var(--nav-bg); width:var(--w-alloc-team); }
   .alloc-team-label{ position:sticky; left:0; z-index:4; width:var(--w-alloc-team); background:var(--surface); font-weight:700; font-size:12.5px; display:flex; align-items:center; gap:8px; border-right:2px solid var(--border-strong); box-shadow:2px 0 4px rgba(0,0,0,.05); }
   .alloc-day-cell{ padding:0; border-right:1px solid var(--border); border-bottom:1px solid var(--border); background:var(--surface); }
   .alloc-day-cell.weekend{ background:var(--surface-2); }
@@ -692,7 +692,7 @@
   /* ---- Daily Schedule tab ---- */
   .daily-toolbar{ align-items:center; }
   .daily-date-nav{ display:flex; align-items:center; gap:4px; }
-  .daily-date-btn{ font-family:"Playfair Display",Georgia,serif; font-weight:600; font-size:14.5px; padding:8px 14px; border:1px solid var(--border-strong); background:var(--surface); border-radius:var(--radius); min-width:210px; text-align:center; }
+  .daily-date-btn{ font-family:var(--font-sans); font-weight:600; font-size:14.5px; padding:8px 14px; border:1px solid var(--border-strong); background:var(--surface); border-radius:var(--radius); min-width:210px; text-align:center; }
   .daily-date-btn:hover{ background:var(--surface-2); }
   .daily-board-wrap{ padding:16px; max-width:980px; margin:0 auto; }
   .daily-empty{ padding:60px 20px; text-align:center; color:var(--text-muted); font-size:13.5px; }
@@ -700,7 +700,7 @@
   .daily-group.unassigned{ border-style:dashed; border-color:var(--border-strong); box-shadow:none; }
   .daily-group-header{ display:flex; align-items:center; gap:10px; padding:12px 16px; border-bottom:1px solid var(--border); background:var(--surface-2); }
   .daily-group-dot{ width:11px; height:11px; border-radius:50%; flex:none; }
-  .daily-group-name{ font-family:"Playfair Display",Georgia,serif; font-weight:700; font-size:15px; }
+  .daily-group-name{ font-family:var(--font-sans); font-weight:700; font-size:15px; }
   .daily-group-count{ margin-left:auto; font-size:11px; color:var(--text-muted); font-weight:600; background:var(--surface); border:1px solid var(--border-strong); border-radius:100px; padding:2px 9px; flex:none; }
   .daily-task{ display:flex; gap:12px; padding:14px 16px; border-bottom:1px solid var(--border); position:relative; }
   .daily-task:last-child{ border-bottom:none; }
@@ -709,7 +709,7 @@
   .daily-task-main{ flex:1; min-width:0; display:flex; flex-direction:column; gap:6px; padding-right:26px; }
   .daily-task-row1{ display:flex; gap:8px; flex-wrap:wrap; }
   .daily-task-team{ font-size:12px; font-weight:600; padding:6px 8px; border-radius:6px; border:1px solid var(--border-strong); background:var(--surface); color:var(--text); min-width:130px; }
-  .daily-task-project{ flex:1; min-width:180px; font-family:"Playfair Display",Georgia,serif; font-weight:600; font-size:14px; border:1px solid transparent; background:transparent; color:var(--text); padding:6px 4px; border-radius:6px; }
+  .daily-task-project{ flex:1; min-width:180px; font-family:var(--font-sans); font-weight:600; font-size:14px; border:1px solid transparent; background:transparent; color:var(--text); padding:6px 4px; border-radius:6px; }
   .daily-task-project:hover, .daily-task-project:focus{ border-color:var(--border-strong); background:var(--surface); }
   .daily-task-row2{ display:flex; }
   .daily-support-btn{ width:auto; min-height:0; min-width:0; padding:3px 6px; }
@@ -739,11 +739,42 @@
   .paste-preview-team{ flex:none; width:120px; font-size:12px; font-weight:700; }
   .paste-preview-team .new-tag{ display:block; font-size:9.5px; font-weight:700; color:var(--accent); text-transform:uppercase; letter-spacing:.03em; margin-top:2px; }
   .paste-preview-main{ flex:1; min-width:0; }
-  .paste-preview-project{ font-family:"Playfair Display",Georgia,serif; font-weight:600; font-size:13px; }
+  .paste-preview-project{ font-family:var(--font-sans); font-weight:600; font-size:13px; }
   .paste-preview-task{ font-size:12.5px; color:var(--text-muted); margin-top:2px; }
   .paste-preview-support{ font-size:11.5px; color:var(--text-faint); margin-top:3px; }
   .paste-preview-unassigned{ color:var(--text-faint); font-style:italic; }
   .paste-modal-actions{ display:flex; justify-content:flex-end; gap:8px; }
+
+  /* ---- Installation Status tab: list view (card rows, grouped into Current
+     / Upcoming sections) + a detail page that reuses .detail-fields/
+     .detail-field from the single-project detail page below. See
+     renderInstallStatusView()/installStatusRowSummaryHTML() in the script. ---- */
+  .installstatus-toolbar{ margin-bottom:10px; }
+  .installstatus-status-filter{ width:auto; min-width:150px; }
+  .installstatus-stats{ display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-bottom:14px; }
+  .installstatus-board{ max-width:1100px; margin:0 auto; }
+  .installstatus-section-head{ font-family:var(--font-sans); font-weight:700; font-size:13.5px; color:var(--text-muted); text-transform:uppercase; letter-spacing:.03em; padding:16px 4px 8px; }
+  .installstatus-section-head:first-child{ padding-top:0; }
+  .installstatus-empty{ padding:24px; text-align:center; color:var(--text-muted); font-size:13px; background:var(--surface); border:1px dashed var(--border-strong); border-radius:8px; }
+  .installstatus-row{ display:flex; align-items:flex-start; gap:8px; background:var(--surface); border:1px solid var(--border); border-radius:8px; box-shadow:var(--shadow); margin-bottom:8px; position:relative; }
+  .installstatus-row-main{ flex:1; min-width:0; display:flex; flex-direction:column; gap:6px; padding:12px 14px; cursor:pointer; border-radius:8px; }
+  .installstatus-row-main:hover{ background:var(--surface-2); }
+  .installstatus-row-main:focus-visible{ outline:2px solid var(--accent); outline-offset:-2px; }
+  .installstatus-row-top{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+  .installstatus-row-site{ font-family:var(--font-sans); font-weight:700; font-size:14px; color:var(--text); }
+  .installstatus-row-contractor{ font-size:12px; color:var(--text-muted); }
+  .installstatus-status-pill{ margin-left:auto; font-size:11px; font-weight:700; padding:3px 10px; border-radius:100px; background:var(--surface-2); color:var(--text-muted); white-space:nowrap; }
+  .installstatus-status-pill.is-inprogress{ background:var(--edit-soft); color:var(--edit); }
+  .installstatus-status-pill.is-onhold{ background:var(--warning-soft); color:var(--warning); }
+  .installstatus-status-pill.is-completed{ background:var(--success-soft); color:var(--success); }
+  .installstatus-status-pill.is-notstarted{ background:var(--surface-2); color:var(--text-faint); }
+  .installstatus-status-pill.is-tbc{ background:var(--surface-2); color:var(--text-faint); }
+  .installstatus-status-pill.is-closewon{ background:var(--success-soft); color:var(--success); }
+  .installstatus-row-sub{ display:flex; gap:14px; flex-wrap:wrap; font-size:12px; color:var(--text-muted); }
+  .installstatus-row-date{ white-space:nowrap; }
+  .installstatus-row-preview{ flex:1; min-width:160px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:var(--text-faint); font-style:italic; }
+  .installstatus-del{ flex:none; width:24px; height:24px; margin:12px 10px 0 0; border-radius:6px; border:1px solid transparent; background:transparent; color:var(--text-faint); cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:13px; }
+  .installstatus-del:hover{ background:var(--surface-2); color:var(--danger); border-color:var(--border-strong); }
 
   /* ---- Main list (Schedule tab): meta columns only, no day grid — see
      mainRowHTML()/renderMainList(). Rows auto-grow to fit Scope/Comments. ---- */
@@ -848,7 +879,7 @@
      width:100% up front means there's no spare width left for the auto
      margins to eat — they're left with only whatever's beyond max-width, so
      centering on a very wide screen still works exactly as before. */
-  #detail-view{ width:100%; max-width:1400px; margin:0 auto; padding:22px 24px 60px; box-sizing:border-box; }
+  #detail-view, #installstatus-detail-view{ width:100%; max-width:1400px; margin:0 auto; padding:22px 24px 60px; box-sizing:border-box; }
   /* Sticky, not just top-of-page: a busy project's Pending actions and
      remarks log (the whole point of this page — see detailPendingList())
      can run long enough that the page scrolls well past where this bar
@@ -938,6 +969,7 @@
         <button class="tab-btn" id="tab-dashboard" type="button" role="tab" aria-selected="false">Dashboard</button>
         <button class="tab-btn" id="tab-wa" type="button" role="tab" aria-selected="false">WA Tracker</button>
         <button class="tab-btn" id="tab-daily" type="button" role="tab" aria-selected="false">Daily Schedule</button>
+        <button class="tab-btn" id="tab-installstatus" type="button" role="tab" aria-selected="false">Installation Status</button>
       </div>
       <button class="btn" id="view-density-btn" type="button" title="Switch between normal and compact row height">Compact view</button>
       <button class="btn" id="reset-cols-btn" type="button" title="Reset column widths and the details panel back to defaults">Reset columns</button>
@@ -1083,7 +1115,41 @@
     </div>
   </div>
 
-  <div class="app-footer">Developed with love by Uncle Ed, Version 4.20</div>
+  <!-- Installation Status: Steve's own site-by-site tracker (contractor,
+       scope, install/target-finish dates, status, a running "Installation
+       update" log and "Remarks / actions"), split into Current and Upcoming
+       projects — ported in from a standalone module he had ChatGPT build,
+       rebuilt here as a real tab sharing this app's data/save/theme instead
+       of a separate linked page. List view below (see
+       renderInstallStatusView()); clicking a row's name opens the full-size
+       editor, reusing the same .detail-fields/.detail-field classes as the
+       single-project detail page (see openInstallStatusDetail()/
+       renderInstallStatusDetailView()). -->
+  <div id="installstatus-view" hidden>
+    <div class="wa-toolbar installstatus-toolbar">
+      <div class="search-box installstatus-search-box">
+        <input type="search" class="search-field" id="installstatus-search-input" placeholder="Search contractor, site, scope…" aria-label="Search installation status entries">
+        <button type="button" class="search-clear" id="installstatus-search-clear-btn" hidden aria-label="Clear search">×</button>
+      </div>
+      <select class="field installstatus-status-filter" id="installstatus-status-filter" aria-label="Filter by status">
+        <option value="">All statuses</option>
+      </select>
+      <button class="btn" id="installstatus-add-current-btn" type="button">+ Add current project</button>
+      <button class="btn" id="installstatus-add-upcoming-btn" type="button">+ Add upcoming project</button>
+    </div>
+    <div class="installstatus-stats" id="installstatus-stats"></div>
+    <div class="installstatus-board" id="installstatus-board"></div>
+  </div>
+
+  <div id="installstatus-detail-view" hidden>
+    <div class="detail-topbar">
+      <button type="button" class="btn" id="installstatus-detail-back-btn">← Back to Installation Status</button>
+      <textarea class="field detail-title-field autosize-field" id="installstatus-detail-title" rows="1" aria-label="Project / site name" placeholder="Project / site name"></textarea>
+    </div>
+    <div class="detail-fields" id="installstatus-detail-fields"></div>
+  </div>
+
+  <div class="app-footer">Created with Love By Uncle Ed, Version 4.20, 2026年9月 - タイガ 🏌🏿‍♂️</div>
 </div>
 
 <div class="toast" id="toast"></div>
@@ -3565,8 +3631,618 @@
   }
 ];
 
+var INSTALLATION_STATUS_SEED_RAW = [
+  {
+    "section": "current",
+    "contractor": "GTS",
+    "site": "Cluster 25, V10",
+    "scope": "10 CW\n3 hinge door SP - Frames installed.\n9 VS-28\" - Panels balance.\nORIGIN 10x OW70 top Hung windows, 1x OW80 Double hinged window.\nx19 Bettio screens\nSSF - OC issued",
+    "installDate": "2025-11-20",
+    "targetFinish": "2026-12-10",
+    "update": "* Flyscreen installation finished on 7 small windows. 9pcs on hold as cutomer request\n* Additional flat trims for 3sliding doors RFQ request by client.\n* Final Cleaning outside completed.\n* Georgian bars at garage door to be installed.",
+    "status": "",
+    "remarks": ""
+  },
+  {
+    "section": "current",
+    "contractor": "GTS",
+    "site": "Sobha Hartland Villa 37",
+    "scope": "x1 Entrance Door with Fixed Window\nx1 Single Door\nx2 Top Hung window\nx3 Fixed Window\nx7 Sliding Door\nx1 Skylight",
+    "installDate": "2026-04-21",
+    "targetFinish": "2026-10-15",
+    "update": "* Garage doors is delivered but site not ready for installation. Awaiting for GTS.\n* Final cleaning and snagging to be done. (Awaiting for access from GTS)",
+    "status": "In Progress",
+    "remarks": "To be completed on 15/10/2026. \nGTS handing over date on 21/10/2026"
+  },
+  {
+    "section": "current",
+    "contractor": "GTS",
+    "site": "Sobha Hartland Villa 38",
+    "scope": "x1 Entrance Door with Fixed Window\nx1 Single Door\nx2 Top Hung window\nx3 Fixed Window\nx7 Sliding Door\nx1 Skylight",
+    "installDate": "2026-07-27",
+    "targetFinish": "2026-10-15",
+    "update": "* Garage doors is delivered but site not ready for installation. Awaiting for GTS.\n* Final cleaning and snagging to be done. (Awaiting for access from GTS)",
+    "status": "In Progress",
+    "remarks": "To be completed on 15/10/2026. \nGTS handing over date on 26/12/2026"
+  },
+  {
+    "section": "current",
+    "contractor": "GTS",
+    "site": "Sobha Hartland Villa 39",
+    "scope": "x1 Entrance Door with Fixed Window\nx1 Single Door\nx2 Top Hung window\nx3 Fixed Window\nx7 Sliding Door\nx1 Skylight",
+    "installDate": "2026-09-21",
+    "targetFinish": "2026-10-24",
+    "update": "* Frame & glass installation in progress.\n* Front door & aluminium cladding to check the measurement and place the order.",
+    "status": "In Progress",
+    "remarks": "Installation to be completed on 20/10/2026. \nGTS handing over date on 18/01/2027"
+  },
+  {
+    "section": "current",
+    "contractor": "GTS",
+    "site": "Sobha Hartland Villa 40",
+    "scope": "x1 Entrance Door with Fixed Window\nx1 Single Door\nx2 Top Hung window\nx3 Fixed Window\nx7 Sliding Door\nx1 Skylight",
+    "installDate": "TBC",
+    "targetFinish": "TBC",
+    "update": "Site Not Ready for Measurement - to follow up with GTS",
+    "status": "",
+    "remarks": "Openings will be ready by 31/10/2026\nGTS handing over date on 04/02/2027"
+  },
+  {
+    "section": "current",
+    "contractor": "GTS",
+    "site": "Sobha Hartland Villa 41",
+    "scope": "x1 Entrance Door with Fixed Window\nx1 Single Door\nx2 Top Hung window\nx3 Fixed Window\nx7 Sliding Door\nx1 Skylight",
+    "installDate": "TBC",
+    "targetFinish": "TBC",
+    "update": "Site Not Ready for Measurement - to follow up with GTS",
+    "status": "",
+    "remarks": "Openings will be ready by 31/10/2026\nGTS handing over date on 25/02/2027"
+  },
+  {
+    "section": "current",
+    "contractor": "GTS",
+    "site": "Sobha Hartland Villa 42",
+    "scope": "x1 Entrance Door with Fixed Window\nx1 Single Door\nx2 Top Hung window\nx3 Fixed Window\nx7 Sliding Door\nx1 Skylight",
+    "installDate": "2026-04-21",
+    "targetFinish": "TBC",
+    "update": "* Front Door, Front Façade, Kitchen Window, Laundry Door, Maid's Room window, Garage door not ready for measurement. (GF - PMK & GTS temporary office)\n* All the glass and frame installation done on the first floor.",
+    "status": "In Progress",
+    "remarks": "* Not Ready to complete. Temporary office of PMK & GTS. Remaining openings will be ready to measure on 15/10/2026.  \n* GTS handing over date on 25/02/2027."
+  },
+  {
+    "section": "current",
+    "contractor": "GTS",
+    "site": "Sobha Hartland Villa 43\n(TYPE 2)",
+    "scope": "x1 Entrance Door with Fixed Window\nx1 Single Door\nx2 Top Hung window\nx3 Fixed Window\nx7 Sliding Door\nx1 Skylight",
+    "installDate": "2026-11-03",
+    "targetFinish": "2026-10-31",
+    "update": "* Garage doors is delivered but site not ready for installation. Awaiting for GTS.\n* Snagging of all installation hasn't commenced due to ongoing Reno works by GTS as frames are all protected.",
+    "status": "In Progress",
+    "remarks": "* GTS handing over date on 05/12/2026."
+  },
+  {
+    "section": "current",
+    "contractor": "GTS",
+    "site": "Sobha Hartland Villa 44\n(TYPE 2)",
+    "scope": "x1 Entrance Door with Fixed Window\nx1 Single Door\nx2 Top Hung window\nx3 Fixed Window\nx7 Sliding Door\nx1 Skylight",
+    "installDate": "2026-11-03",
+    "targetFinish": "2026-10-31",
+    "update": "* Garage doors is delivered but site not ready for installation. Awaiting for GTS.\n* Snagging of all installation hasn't commenced due to ongoing Reno works by GTS as frames are all protected.",
+    "status": "In Progress",
+    "remarks": "* GTS handing over date on 16/10/2026."
+  },
+  {
+    "section": "current",
+    "contractor": "MACS",
+    "site": "Meadows 6 V2",
+    "scope": "Front door - Shaoki - Production in progress\nx5 SCHUCO Sliding doors and x3 schuco Sliding windows , x3 EFP Single doors,  x6 EFP Fixed Windows. x4 EFP Top Hung windows.\nBettio Flyscreens\nx13 Screens (x6 Neoscenica - V1 standard – grey mesh – Color RAL7016 MATT – finished dimensions – 1 Door/2Doors – equipped with sliding profile & x7 Estetica - Anima21 – grey mesh – Color RAL7016 MATT – finished dimensions – with brake).",
+    "installDate": "2025-03-12",
+    "targetFinish": "2026-12-10",
+    "update": "* x1 garage door already installed and x1 garage door opening not ready.",
+    "status": "On Hold",
+    "remarks": "To complete the installation on 12/10/2026"
+  },
+  {
+    "section": "current",
+    "contractor": "MACS",
+    "site": "Meadows 2 - V6",
+    "scope": "5 Fixed window - Installed\n4 T&T - Installed\n6 VS-28 (I slider and x5 sliding windows). Installed - End caps for Interlock balance\nx1 Front door with Bar Handles and Biometric. Outside is HPL, inside is Aluminium panel (RAL 1013) - Pending\nx1 EFP Single door with Sandwich Panel. Pending , this will be ready for collection on 11/12/25",
+    "installDate": "2025-12-12",
+    "targetFinish": "2026-10-12",
+    "update": "* Main door installed but flat trims are not installed yet. Awaiting for access from the client.",
+    "status": "In Progress",
+    "remarks": "*To book the installation of flat trims on 26/10/2026 as discussed with Steve & client."
+  },
+  {
+    "section": "current",
+    "contractor": "MACS",
+    "site": "Palm Jumeirah - A6",
+    "scope": "x20 Schuco Curtain Wall\nx1 Schuco Curtain Wall with Jumbo Glass\nx1 Schuco Curtain Wall with Smart Film\nx2 Top Hung Window with Clear Glass\nx3 Top Hung Window with Smart Film\nx1 Top Hung Window with Frosted Glass\nx5 Single Door with Clear Glass\nx1 Single Door with Frosted Glass\nx1 Sliding Window\nx2 Sliding Door",
+    "installDate": "2026-03-30",
+    "targetFinish": "2026-10-10",
+    "update": "* 1pcs of glass scratch will be replace by WA. Awaiting ETA.\n* Maid's Room & Laundry Area flyscreen not ready to install. Awaiting for flooring to be done.\n* Snagging and cleaning in progress. To be completed on 10/10/2026.",
+    "status": "In Progress",
+    "remarks": "ETA for glass to be confirmed by Suwai on 05/10/2026\nx2 Flyscreens yet to be installed, No access to openings . Lucito will check with Haider by 5th Oct."
+  },
+  {
+    "section": "current",
+    "contractor": "GTS",
+    "site": "Mansion - Villa 15",
+    "scope": "11x S28 Sliding door\n1x CW35 Fixed CW with Pivot door\n1x CW35 Fixed CW (Jumbo) (on hold)\n1x S36 Sliding door\n8x CW35 Fixed CW window\n2x Single-hinged door\n6x T&T window\n1x skylight (on hold)",
+    "installDate": "2026-01-05",
+    "targetFinish": "2026-10-17",
+    "update": "* Main door RAL color powder issue with WA coating. Client will wait the original color only.\n* Customized Bar handle collect on Oct 2 from Hidayath and send to WA.\n* Skylight Flashing pending delivery. Adnan confirmed that will be ready by 10/10/2026.\n* Snagging and final cleaning to be done.",
+    "status": "In Progress",
+    "remarks": "Glass & Flashing will be installed once the Flashing is delivered from WA"
+  },
+  {
+    "section": "current",
+    "contractor": "GTS",
+    "site": "Jasmine Leaf 3, Villa 9",
+    "scope": "32x Fixed CW Window (WA)\n5x Single Hinged Door (WA)\n7x sliding door (BES)\n1x Motorized Sliding door (BES)",
+    "installDate": "2026-06-19",
+    "targetFinish": "2026-10-17",
+    "update": "* Snagging and final cleaning in progress.",
+    "status": "In Progress",
+    "remarks": ""
+  },
+  {
+    "section": "current",
+    "contractor": "Sirius Invest",
+    "site": "Villa 164, Golf Place",
+    "scope": "Schuco (RAl 7006)\n5x ASE 54 PD MM Sliding Door\n3x AWS 65 Top Hung Window\n1x Schuco ADS 65 HD Single Hinged Door  With Fixed Side Panel\n1x AWS 65 Top Hung Window With Fixed Panel Below",
+    "installDate": "2026-08-03",
+    "targetFinish": "2026-10-17",
+    "update": "* Entrance door from WA is ready for collection.\n* x2 flyscreen at GF and x1 flyscreen at FF to be installation completed.\n* Snagging and final cleaning to be done. Awaiting for access from Gulfo (fitout contractor).",
+    "status": "In Progress",
+    "remarks": ""
+  },
+  {
+    "section": "current",
+    "contractor": "MACS",
+    "site": "MEADOWS 1, VILLA 3",
+    "scope": "2x EFP F43 FIXED WINDOW\n3x EFP SINGLE HINGED DOOR\n2x EFP TOP HUNG WINDOW\n8x ASE 36 PD ME SLIDING DOOR\n3x ASE 36 PD ME SLIDING WINDOW",
+    "installDate": "2026-07-31",
+    "targetFinish": "2026-10-15",
+    "update": "* Bettio Flyscreen delivered to the site on Sept 29 and to be installed on 12/10/2026\n* Snagging and final cleaning to be done.",
+    "status": "In Progress",
+    "remarks": "Bettio Flyscreen to install on 12/10/2026 and start snagging and cleaning same day and complete on 15/10/2026."
+  },
+  {
+    "section": "current",
+    "contractor": "MACS",
+    "site": "MEADOWS 5, VILLA 43, STREET 3",
+    "scope": "8x F45 FIXED WINDOW\n3x S28 SLDIING WINDOW\n3x S28 SLIDING DOOR\n1x S36 SLIDING DOOR\n5x TOP HUNG WINDOW\n1x EUROLUX EFP SINGLE HINGED DOOR",
+    "installDate": "2026-07-31",
+    "targetFinish": "2026-10-17",
+    "update": "* Item 03 pressure plate and cover missing on site. Replacement already ordered from WA.\n* Snagging and final cleaning to be done.",
+    "status": "In Progress",
+    "remarks": "1. When is the items from WA expected to arrive ? - Fadil to check the expected delivery date on 05/10/2026.\n2. When have you \"indicatively planned to complete the snagging and cleaning. - snagging and final cleaning to start on 14/10/2026 and complete on 17/10/2026"
+  },
+  {
+    "section": "current",
+    "contractor": "MACS",
+    "site": "SANCTUARY FALLS, VILLA 40",
+    "scope": "x6 new items\nx20 items to be removed and re-use",
+    "installDate": "2026-08-25",
+    "targetFinish": "TBC",
+    "update": "* Awaiting for MACS to complete the extension and prepare all openings for re-installation of removed items.",
+    "status": "In Progress",
+    "remarks": "No update yet from MACS about when the openings will be ready."
+  },
+  {
+    "section": "current",
+    "contractor": "GTS",
+    "site": "VILLA 3, DESERT LEAF 3, AL BARARI",
+    "scope": "8x CW35 FIXED CURTAIN WALL WINDOW - JUMBO\n1x CW35 FIXED CURTAIN WALL WINDOW (4 PANELS)\n45x F45 FIXED WINDOW\n2x S28 SLIDING DOOR\n6x S36 SLIDING DOOR\n5x SINGLE HINGED DOOR\n3x TOP HUNG WINDOW\n1x ATLAS ROOF LANTERN SKYLIGHT\n1x FLAT SKYLIGHT",
+    "installDate": "2026-08-14",
+    "targetFinish": "2026-10-31",
+    "update": "* Frame & glass installation in progress with Albert's Team.\n* All the glasses are at the site.\n* x1 Skylight not ready for measurement.\n* On hold Item 23 & 46. Glass already delivered to site.",
+    "status": "In Progress",
+    "remarks": ""
+  },
+  {
+    "section": "current",
+    "contractor": "MACS",
+    "site": "VILLA 10, DESERT LEAF 6, AL BARARI",
+    "scope": "1x SKYLIGHT\n1x PIVOT DOOR WITH CW35 FIXED CURTAIN WALL\n2x BOTTOM HUNG WINDOW\n15x CW35 FIXED CURTAIN WALL WINDOW\n5x S28 SLIDING DOOR\n13x S36 SLIDING DOOR\n1x S44 SLIDING DOOR\n2x SIDE HUNG WINDOW\n2x SINGLE HINGED DOOR WITH FIXED PANEL\n6x TILT & TURN WINDOW\n2x VETROSLIDE 28 SLIDING DOOR",
+    "installDate": "2026-08-31",
+    "targetFinish": "2026-10-10",
+    "update": "* Garage door to be resized as per new size requirement. Glass type is not confirmed.\n* Maid's room door panel bonding done and installed.\n* Skylight drawing and measurements to be confirmed with Macs. Site access for measurement not ready.\n* Front door (Aluminum panel still not confirm by MACs). Glass delivered to site.\n* Item 12B lock of side hung window to get a replacement from BES. To check if ready for collection.\n* Item 37 sliding door missing bottom clips requested a replacement to BES by Fadil on 09/10/2026. To follow up the status.",
+    "status": "In Progress",
+    "remarks": "Oct 5th - Lucito will send Su Wai details of Item 12 parts"
+  },
+  {
+    "section": "current",
+    "contractor": "GTS",
+    "site": "VILLA 8, DESERT LEAF 1, AL BARARI",
+    "scope": "12x CW35 FIXED CURTAIN WALL WINDOW (JUMBO)\n16x F45 FIXED WINDOW\n11x S36 SLIDING DOOR\n1x S36 SLIDING DOOR WITH CW35 FIXED CURTAIN WALL WINDOW (JUMBO)\n6x SINGLE HINGED DOOR\n2x TOP HUNG WINDOW",
+    "installDate": "2026-10-07",
+    "targetFinish": "2026-10-31",
+    "update": "* Frame delivered on site except openable windows which having issues with powder  coating.\n* Bonded glass collected from BES. 4pcs rejected for quality issue. Sejal delivered the replacement to BES for bonding.\n* Item 18 frame delivered. Glass will be Oct 5. to check the status.\n* Item 22 Jumbo glass delivered to site.\n* Installation started on 07/10/2026",
+    "status": "In Progress",
+    "remarks": ""
+  },
+  {
+    "section": "current",
+    "contractor": "JCT Contracting",
+    "site": "Meadows 9, St. 6, Villa 15",
+    "scope": "4x SCHÜCO 54 PD ME SLIDING DOOR\n3x SCHÜCO ADS 65 HD SINGLE HINGED DOOR\n8x SCHÜCO ASE 54 PD ME SLIDING WINDOW\n3x SCHÜCO AWS 65 FIXED WINDOW\n6x SCHÜCO AWS 65 TOP HUNG WINDOW",
+    "installDate": "2026-09-28",
+    "targetFinish": "2026-11-07",
+    "update": "* 6x 54PD, 3x hinged door, 3 FW, 2x top hung, collected on Sept 28. \n*1x 54PD (Item 3A) manufactured incorrectly; this will be delivered with the other x5, by End of October\n* 5 set of 54PD on the way (Final ETA Oct 2nd week 15/10/26). Ed will create MTO on Sept 28 and send to WA.\n* Glass order sent to GMI for 5set of 54PD\n* All glass delivered to WA.",
+    "status": "In Progress",
+    "remarks": ""
+  },
+  {
+    "section": "current",
+    "contractor": "LCI Fitout",
+    "site": "VILLA 80, ESMERALDA, VICTORY HEIGHTS",
+    "scope": "1x EFP F43 ARCHED FIXED WINDOW\n5x EFP F43 FIXED WINDOW\n4x EFP SINGLE HINGED DOOR\n2x EFP TOP HUNG WINDOW\n1x ADS 65 SINGLE HINGED ENTRANCE DOOR WITH FIXED PANEL\n5x ASE 36 PD ME SLIDING DOOR\n8x ASE 36 PD ME SLIDING WINDOW",
+    "installDate": "2026-07-09",
+    "targetFinish": "2026-10-31",
+    "update": "* Installation date to start on 07/09/2026. Other items not ready for installation.\n1. 4 units of 36PD new order from Schuco & 1 additional. (Balance end of sept) to WA. To be ready on Oct 23 latest. (Anyhow, Adnan confirmed all are in coating and will be ready on Oct 6)\n2. Glass 12pcs from GMI send to WA on Oct 3 for bonding.\n3. Front door RAL color is confirmed on 28/9/26, it is RAL 7021 SHR.WA informed.\n* SSF for item 9 delivered to site.",
+    "status": "In Progress",
+    "remarks": ""
+  },
+  {
+    "section": "current",
+    "contractor": "Mat",
+    "site": "Marsa AL Arab, Villa 2",
+    "scope": "x5 sets of SCHUCO french doors\nSingle\nDecomaster 35mm CW",
+    "installDate": "2026-09-21",
+    "targetFinish": "2026-10-31",
+    "update": "INSTALLATION - 30/9/26, RAL - TBC Matt & Lucito\n* WA frame tentative date is on Oct 10.\n* BES frame delivered\n* Glass is Double glazed with lamination with Lingson. Second week of Oct maybe\n* Removal of glass started on 21/09/2026\n* Customized bracket requested to BES. Need ASAP.\n* Crane permit to arrange ASAP.\n* Strong platform with sand bag and plywood to prepare at Son's Bedroom Balcony area for glass installation.",
+    "status": "In Progress",
+    "remarks": ""
+  },
+  {
+    "section": "current",
+    "contractor": "MACS",
+    "site": "C35, DISTRICT 6, JUMEIRAH PARK",
+    "scope": "1x ADS 65 HD ENTRANCE PIVOT DOOR\n1x ASE 54 PD ME SLIDING WINDOW\n1x ASE 54 SLIDING WINDOW WITH EFP CURTAIN WALL\n2x ASE 70 PD ME GEN2 POCKET SLIDING DOOR\n4x AWS 65 SIDE HUNG WINDOW WITH FIXED PANEL\n2x EFP 50 CURTAIN WALL WINDOW -",
+    "installDate": "2026-09-21",
+    "targetFinish": "TBC",
+    "update": "1. All material delivered except Pocket slider and Side Hung pending. (Pocket slider Frame will be ready on Oct 3. Side hung awaiting ETA)\n2. All the glass from Sejal and GMI were collected and delivered to both site and WA for bonding.",
+    "status": "In Progress",
+    "remarks": ""
+  },
+  {
+    "section": "current",
+    "contractor": "Nikki Farmer",
+    "site": "Marina Residence 2, apt 606",
+    "scope": "1x ADS 65 HD SINGLE HINGED DOOR\n1x ASE 54 PD ME SLIDING WINDOW\n5x ASE 55 LIFT & SLIDE SLIDING DOOR\n3x AWS 65 TOP HUNG WINDOW\n1x AWS 65 TOP HUNG WINDOW WITH FIXED PANEL BELOW",
+    "installDate": "2026-10-10",
+    "targetFinish": "2026-10-24",
+    "update": "1. Gatepass is ready and material to be delivered on 10/10/2026.\n2. 54PD missing parts and handle order confrimed with Schuco. ETA 1st week of Oct\n4. Blue glass SN50 Confirmed on Sept 18. Glass ordered with Suntech sent and ETA Oct 9 or earlier.",
+    "status": "In Progress",
+    "remarks": ""
+  },
+  {
+    "section": "current",
+    "contractor": "Natalie",
+    "site": "Jubail Island Villa, Abu Dhabi",
+    "scope": "8x Vetromax CW35 FIXED CURTAIN WALL WINDOW\n3x Vetromax SIDE HUNG WINDOW WITH CW35 FIXED CURTAIN WALL WINDOW",
+    "installDate": "2026-10-08",
+    "targetFinish": "2026-10-15",
+    "update": "* All materials delivered to site.\n*Installation in progress.",
+    "status": "In Progress",
+    "remarks": ""
+  },
+  {
+    "section": "current",
+    "contractor": "JCT",
+    "site": "Villa 190, Fairways, Dubai Hills",
+    "scope": "Schuco Pivot front door, with HPL and recessed handle",
+    "installDate": "2026-10-08",
+    "targetFinish": "2026-10-10",
+    "update": "* Material already delivered and installed.\n* 35x55 Door cylinder to provide ASAP.",
+    "status": "In Progress",
+    "remarks": ""
+  },
+  {
+    "section": "current",
+    "contractor": "Giovanni",
+    "site": "RASHA Vila - Villa 85",
+    "scope": "Full project order - Schüco ASE 36 PD sliding doors and Schuco AWS 65 Side hung windows & bottom hung window with fixed panels\nGlass Sunguard HP neutal + 50\nRal 8017Matt",
+    "installDate": "",
+    "targetFinish": "",
+    "update": "1. Frames are ready to collect. Glass delivered for bonding and will take up to 3days to bond. Will collect all together once we have pass from client.\n2. 54PD missing parts order (ETA 1st week of Oct)\n3. Glass Bonding required glass collected and deliver to the WA on Oct 2. Site glass will be collect once the site is ready for installation.\n4. AWS 65 will be ready on Oct 1.",
+    "status": "",
+    "remarks": ""
+  },
+  {
+    "section": "current",
+    "contractor": "Coco Nate Design Services",
+    "site": "Apartment 603, Kempinski Residences, Palm Jumeirah",
+    "scope": "1x Arched Fixed Curtain Wall Window\n7x Schuco ASE 80 LC Lift & Slide\n9x Schuco Fixed Curtain Wall Window",
+    "installDate": "",
+    "targetFinish": "",
+    "update": "1. All material at WA. In production and Revised delivery date is 28/09/26\n* But this will not require to install until Jan already informed WA.\n3. Glass from WA ready to collect on Sept 30 but requested to keep it at their warehouse until the job is ready to install.",
+    "status": "",
+    "remarks": ""
+  },
+  {
+    "section": "current",
+    "contractor": "MACS",
+    "site": "VILLA C19, REDWOOD PARK, JGE",
+    "scope": "1x SCHUCO ADS 65 HD ENTRANCE PIVOT DOOR\n4x SCHUCO ADS 65 HD SINGLE HINGED DOOR\n2x SCHUCO ASE 70 PD SLIDING WINDOW\n9x SCHUCO ASE 70 PD ME GEN2 SLIDING DOOR\n13x SCHUCO AWS 65 FIXED WINDOW\n6x SCHUCO AWS 65 TOP HUNG WINDOW WITH FIXED PANEL BELOW\n3x SCHUCO ADS 65 HD SINGLE HINGED DOOR",
+    "installDate": "",
+    "targetFinish": "",
+    "update": "* 15/9/26: Design approved today. Original paln is on Oct 10. This will move to Nov 10.\n* 24/9/26: Design update again and Christine confirmed verbally and will count installation date from here as we have to order 70PD as well. \n* Lucito to take site measurements on 10/10/2026",
+    "status": "",
+    "remarks": ""
+  },
+  {
+    "section": "current",
+    "contractor": "MACS",
+    "site": "VILLA D58, FLAMETREE RIDGE, JGE",
+    "scope": "3x ADS 65 HD SINGLE HINGED DOOR\n2x AS FD 90 HI BI-FOLDING DOOR\n4x ASE 70 PD ME GEN2 SLIDING DOOR\n19x AWS 65 FIXED WINDOW\n7x AWS 65 TOP HUNG WINDOW\n1x FWS 35 PD LC ME FIXED CURTAIN WALL",
+    "installDate": "",
+    "targetFinish": "",
+    "update": "1. Stock items can go for production - Sent to production in Sept 16 and requested for Oct 28.\n2. Missing 3items for AWS65 ordered from schuco on Sept 23. 8035795 (coming with UPS on sept 28)\n3. Item 19 Fadil confirmed this on Sept 28. including size change item Bifolding.\n4. New order for 70PD & 90HI, 36PD - 7pcs. ETA 2nd week of Oct. Bi folding size changes to smaller. Fadil sent updated MTO to WA\n5. Glass order done with GMI. (revise & update sent). ETA Oct 23.\n6. x2 Skylight (ATLAS)  is still on HOLD.\n7. x1 Skylight VETROMAX, size is not yet confirmed.\"",
+    "status": "",
+    "remarks": ""
+  },
+  {
+    "section": "current",
+    "contractor": "Neotech",
+    "site": "Villa 24, Street 4, Savannah",
+    "scope": "1x 54 PD ME SLIDING DOOR\n2x ADS 65 HD DOUBLE HINGED DOOR\n2x ADS 65 HD SINGLE HINGED DOOR\n2x ADS 65 HD SINGLE HINGED DOOR WITH FIXED PANEL\n1x AS FD 90 HI BI-FOLDING DOOR\n12x AWS 65 FIXED WINDOW\n7x AWS 65 TOP HUNG WINDOW",
+    "installDate": "",
+    "targetFinish": "",
+    "update": "1. Bi folding door partially arrvied on Sept 11. Balance will arrive Sept 29\n2. Sent confirmation on Sept 16 for production & request for Oct 5.\n3. Glass order with GMI. ETA is Oct 7\n4. Box section & L angle already purchased from Sirajco and sent to Al Bait Powder coating Sharjah.",
+    "status": "",
+    "remarks": ""
+  },
+  {
+    "section": "current",
+    "contractor": "Build Studio",
+    "site": "VILLA 50, HATTAN, ARABIAN RANCHES",
+    "scope": "1x CW35 FIXED CURTAIN WALL WINDOW\n16x F45 FIXED WINDOW\n5x S28 SLIDING DOOR\n4x SINGLE HINGED DOOR\n1x TILT & TURN WINDOW\n9x TILT & TURN WINDOW\n1x FLAT SKYLIGHT",
+    "installDate": "",
+    "targetFinish": "",
+    "update": "1. In production. Required date end of Oct\n2. Freedom flyscreen ordered with Oryx. End of Oct ETA.\n3. Glass not available with GMI & Suntech. Order sent to Sejal and WA but still not receive quotation.\n4. Skylight received setting out drawing on Sept 30 & needs some revise. Sent updated drawing to BES.\n5. Box section already purchased from Sirajco and sent to Al Bait Powder coating Sharjah.",
+    "status": "",
+    "remarks": ""
+  },
+  {
+    "section": "current",
+    "contractor": "GTS",
+    "site": "Villa 27, Lunaria, Al Barari",
+    "scope": "6x Vetromax C35 CURTAIN WALL WINDOW\n2x SCHUCO ADS 65 HD SINGLE HINGED DOOR (Sandwich Panel)\n2x VETROMAX S36 SLIDING DOOR",
+    "installDate": "",
+    "targetFinish": "",
+    "update": "1. In production and required for Oct 20. (Both WA & BES)\n2. Glass not available with GMI & suntech. Sent to Sejal on Oct 2. Awaiting for Quotation.\n3. SSF awaiting confirmation for Joint line to proceed with order. (Fadil needs to confirm)",
+    "status": "",
+    "remarks": ""
+  },
+  {
+    "section": "current",
+    "contractor": "GTS",
+    "site": "Mirador, Villa 14, Street 1, La Colleccion",
+    "scope": "1x Thiral DOUBLE HINGED ENTRANCE DOOR WITH FIXED PANEL WITH CONCEALED HINGES\n2x ADS 65 DOUBLE HINGED DOOR WITH FIXED PANEL ON BOTH SIDES\n4x ADS 65 HD DOUBLE HINGED DOOR\n1x ADS 65 HD SINGLE HINGED DOOR\n6x AWS 65 ARCHED FIXED WINDOW\n14x AWS 65 FIXED WINDOW\n1x SKYLIGHT\nSSF",
+    "installDate": "",
+    "targetFinish": "",
+    "update": "1. All the hinged door materials delivered to WA\n2. We will order all items from Schuco. Needs to prepare MTO and order.\n3. Design confirmed with comment on Sept 29.\n4. Site measurement done except 8 items not ready including skylight.",
+    "status": "",
+    "remarks": ""
+  },
+  {
+    "section": "current",
+    "contractor": "GTS",
+    "site": "Villa 46, Novelia, Victory Heights",
+    "scope": "\"4x ADS 65 HD SINGLE HINGED DOOR\n2x ASE 54 PD ME SLIDING DOOR\n5x AWS 65 FIXED WINDOW\n2x AWS 65 TILT & TURN WINDOW\n5x AWS 65 TOP HUNG WINDOW\n9x FWS 35 PD LC ME FIXED CURTAIN WALL\n1x FWS 35 PD LC ME FIXED CURTAIN WALL (JUMBO)\n1x FLAT SKYLIGHT\"\nSkylight",
+    "installDate": "",
+    "targetFinish": "",
+    "update": "1. Revised drawing sent on Sept 28. Delivery needs to be mid of Dec.\n2. To take from stock\n3. T&T schuco already confirmed that we can use from stock.",
+    "status": "",
+    "remarks": ""
+  },
+  {
+    "section": "current",
+    "contractor": "Venelin",
+    "site": "Apt 407, Palm, Golden Mile Private Villa",
+    "scope": "2x AWS 65 TOP HUNG WINDOW\n1x ADS 65 HD SINGLE HINGED DOOR\n1x ASE 54 PD ME SLIDING DOOR\n1x AWS 65 FIXED WINDOW\n3x FWS 35 PD LC ME FIXED CURTAIN WALL",
+    "installDate": "",
+    "targetFinish": "",
+    "update": "1. All item will be used from stock.Apart from c35 curtain wall. We will order this from DECOMASTER\n2. Drawing was confirmed on Aug 18. (RAL 8014 & SunGuard HP Neutral 40) was confirmed\n3. The customer is waiting for a response from Nakheel if the colour for the Frame & Glass is an approved to install.",
+    "status": "",
+    "remarks": ""
+  },
+  {
+    "section": "upcoming",
+    "contractor": "MACS",
+    "site": "Cluster 18 Villa 3, Jumeirah Islands",
+    "scope": "1x FIXED CURTAIN WALL WINDOW - JUMBO\n9x CW35 FIXED CURTAIN WALL WINDOW\n3x CW35 FIXED CURTAIN WALL WINDOW - JUMBO\n1x PIVOT DOOR WITH CW35 FIXED CURTAIN WALL\n2x S36 SLIDING DOOR\n2x SINGLE HINGED DOOR\n3x TOP HUNG WINDOW",
+    "installDate": "",
+    "targetFinish": "",
+    "update": "* Drawing sent to Kalpita on Sept 12. awaiting confirmation",
+    "status": "",
+    "remarks": ""
+  },
+  {
+    "section": "upcoming",
+    "contractor": "GTS",
+    "site": "Villa L30, Emirates Hills",
+    "scope": "22x VETROMAX CW35 FIXED CURTAIN WALL WINDOW\n14x VETROMAX CW35 FIXED CURTAIN WALL WINDOW (JUMBO)\n8x VETROMAX S36 SLIDING DOOR\n2x VETROMAX S44 SLIDING DOOR\n7x VETROMAX SINGLE HINGED DOOR\n2x VETROMAX TOP HUNG WINDOW",
+    "installDate": "",
+    "targetFinish": "",
+    "update": "Farah sent initial drawing to GTS on Aug 13. sign off pending.\n28/9/26: Update quotation with changes sent as per client request.\n2/10/26: Sent breakdown of items quotation as per client request.",
+    "status": "",
+    "remarks": ""
+  },
+  {
+    "section": "upcoming",
+    "contractor": "Bolsover",
+    "site": "Villa 170, Sidra 2, Dubai Hills",
+    "scope": "2x SCHUCO AS FD 90 HI FOLDING DOOR\n5x SCHÜCO FWS 35 PD LC ME FIXED CURTAIN WALL\n1x SCHÜCO FWS 35 PD LC ME FIXED CURTAIN WALL W/ SIDE HUNG WINDOW\n1x CURVED FIXED CURTAIN WALL\n2x Skylight - DECOMASTER\n2x Blackout films , Item 05 & Item 08.",
+    "installDate": "",
+    "targetFinish": "",
+    "update": "1. Farah sent revised drawing on Sept 14. (Design approved in principle on 24th September. Glass & RAL submitted on Sept 28)\n2. Skylight quote received from WA QTN-2487R0. But skylight is from Decomaster\n3. Client wants tempered curved glass but this is not possible. Only clear glass is possible and Farah needs to communicate with client upon approval. \n4. Only 4 items ready for site measurements.",
+    "status": "",
+    "remarks": ""
+  },
+  {
+    "section": "upcoming",
+    "contractor": "Living Space",
+    "site": "H37 Emirates Hills Villa",
+    "scope": "Schuco ADS 65 HD Double Leaf Hinged Door",
+    "installDate": "",
+    "targetFinish": "",
+    "update": "Fadil Sent revised drawing on Sept 19.\nClient is awaiting confirmation from their client as per Oct 2 update.",
+    "status": "",
+    "remarks": ""
+  },
+  {
+    "section": "upcoming",
+    "contractor": "Hannah",
+    "site": "Villa 1, Street 15, Meadows 2",
+    "scope": "6x ASE 55 LIFT & SLIDE SLIDING DOOR\n1x AWS 65 FIXED WINDOW",
+    "installDate": "",
+    "targetFinish": "",
+    "update": "Revised drawing with actual size measurement sent on Oct 2 to steve. Awaiting confirmation",
+    "status": "",
+    "remarks": ""
+  },
+  {
+    "section": "upcoming",
+    "contractor": "MAC",
+    "site": "VILLA 13, CLUSTER 28, JUMEIRAH ISLANDS",
+    "scope": "1x SCHUCO ADS 65 HD HINGED ENTRANCE DOOR A A WITH CONCEALED HINGES\n3x SCHUCO ADS 65 HD SINGLE HINGED DOOR\n5x SCHUCO ASE 54 PD ME SLIDING DOOR\n16x VETROMAX CW35 CURTAIN WALL WINDOW\n2x SCHÜCO AWS 65 TOP HUNG WINDOW\n2x VETROMAX CW35 ARCHED FIXED CURTAIN WALL WINDOW",
+    "installDate": "",
+    "targetFinish": "",
+    "update": "* Initial drawing sent on Sept 9. Fadil sent revised drawing on Sept 30.\n* Site measurement will be ready on 12/10/2026.\n* Arch window to discuss with Macs if we can proceed for production as per drawing.",
+    "status": "",
+    "remarks": ""
+  },
+  {
+    "section": "upcoming",
+    "contractor": "GTS",
+    "site": "Villa 19, Carmen Village, Victory Heights",
+    "scope": "4x SCHÜCO ADS 65 HD SINGLE HINGED DOOR\n3x SCHUCO ASE 54 PD ME SLIDING DOOR\n1x SCHUCO ASE 70 PD ME GEN2 SLIDING DOOR WITH VETROMAX C35 CURTAIN WALL\n7x SCHÜCO AWS 65 FIXED WINDOW\n1x SCHÜCO AWS 65 SIDE HUNG WINDOW\n5x SCHÜCO AWS 65 TOP HUNG WINDOW WITH FIXED PANEL BELOW\n2x VETROMAX CW35 FIXED CURTAIN WALL WINDOW",
+    "installDate": "",
+    "targetFinish": "",
+    "update": "Revised drawing sent on Oct 1. Awaiting confirmation",
+    "status": "",
+    "remarks": ""
+  },
+  {
+    "section": "upcoming",
+    "contractor": "MACS",
+    "site": "Villa 79, Alvorada 4, Arabian Ranches",
+    "scope": "Schuco",
+    "installDate": "",
+    "targetFinish": "",
+    "update": "Close Won",
+    "status": "",
+    "remarks": ""
+  },
+  {
+    "section": "upcoming",
+    "contractor": "Rushab",
+    "site": "VILLA 12, CLUSTER 48, JUMEIRAH ISLANDS",
+    "scope": "Vetromax",
+    "installDate": "",
+    "targetFinish": "",
+    "update": "Client will confirm with Steve for order. Measurement might be ready on Oct. No urgent",
+    "status": "",
+    "remarks": ""
+  },
+  {
+    "section": "upcoming",
+    "contractor": "MACS",
+    "site": "K37, WILDFLOWER, JGE",
+    "scope": "Vetromax",
+    "installDate": "",
+    "targetFinish": "",
+    "update": "Close Won",
+    "status": "",
+    "remarks": ""
+  },
+  {
+    "section": "upcoming",
+    "contractor": "MAC",
+    "site": "Villa 40, Sanctuary Falls",
+    "scope": "Schuco",
+    "installDate": "",
+    "targetFinish": "",
+    "update": "Close Won",
+    "status": "",
+    "remarks": ""
+  },
+  {
+    "section": "upcoming",
+    "contractor": "MAC",
+    "site": "Villa 40, Sanctuary Falls",
+    "scope": "Schuco",
+    "installDate": "",
+    "targetFinish": "",
+    "update": "Close Won",
+    "status": "",
+    "remarks": ""
+  },
+  {
+    "section": "upcoming",
+    "contractor": "Rushab",
+    "site": "Villa 12, Cluster 48, Jumeirah Islands",
+    "scope": "Vetromax",
+    "installDate": "",
+    "targetFinish": "",
+    "update": "Close Won",
+    "status": "",
+    "remarks": ""
+  }
+];
 
-  var state = { projects: null, bannerDismissed:false, customTeams: [], waRows: [], dailyTasks: [] };
+
+  // Known Installation Status values, same known/"Other" pattern as
+  // p.projectStatus (see PROJECT_STATUS_OPTIONS/projectStatusCellHTML):
+  // picking one of these fills row.status directly, anything else is kept
+  // verbatim in row.statusOther with row.status set to "__other__".
+  var INSTALL_STATUS_OPTIONS = ["Not Started", "In Progress", "On Hold", "Completed", "TBC", "Close Won"];
+
+  function newInstallationStatusRow(section){
+    return { id:"is"+Date.now().toString(36)+Math.random().toString(36).slice(2,7),
+      section: section === "upcoming" ? "upcoming" : "current",
+      contractor:"", site:"", scope:"", installDate:"", targetFinish:"",
+      update:"", status:"", statusOther:"", remarks:"" };
+  }
+
+  function normalizeInstallationStatusRow(r){
+    if (r.id==null) r.id = "is"+Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+    if (r.section !== "upcoming") r.section = "current";
+    if (r.contractor==null) r.contractor = "";
+    if (r.site==null) r.site = "";
+    if (r.scope==null) r.scope = "";
+    if (r.installDate==null) r.installDate = "";
+    if (r.targetFinish==null) r.targetFinish = "";
+    if (r.update==null) r.update = "";
+    if (r.status==null) r.status = "";
+    if (r.statusOther==null) r.statusOther = "";
+    if (r.remarks==null) r.remarks = "";
+    return r;
+  }
+
+  // Seeded once, the first time the Installation Status tab is used (see
+  // loadLocalState()/applyDoc() below: only when installationStatusRows is
+  // completely absent from the saved data, never when it's just an empty
+  // array the user emptied on purpose) — transcribed from the "Installation
+  // status" worksheet Steve shared on 19/10/2026, 51 rows (38 current + 13
+  // upcoming), in the same INSTALL_STATUS_OPTIONS casing above.
+  function seedInstallationStatusRows(){
+    return INSTALLATION_STATUS_SEED_RAW.map(function(r, idx){
+      return normalizeInstallationStatusRow({
+        id: "is"+Date.now().toString(36)+Math.random().toString(36).slice(2,7)+idx,
+        section: r.section, contractor: r.contractor, site: r.site, scope: r.scope,
+        installDate: r.installDate, targetFinish: r.targetFinish, update: r.update,
+        status: r.status, statusOther: "", remarks: r.remarks
+      });
+    });
+  }
+
+
+  var state = { projects: null, bannerDismissed:false, customTeams: [], waRows: [], dailyTasks: [], installationStatusRows: [] };
   var saveTimer = null;
   // True from the instant a Firestore write is kicked off until it settles.
   // Firestore's local-cache echoes a write back through onSnapshot almost
@@ -3876,6 +4552,7 @@
     state.customTeams = [];
     state.waRows = JSON.parse(JSON.stringify(WA.SEED_ROWS));
     state.dailyTasks = [];
+    state.installationStatusRows = seedInstallationStatusRows();
   }
 
   function loadLocalState(){
@@ -3889,6 +4566,10 @@
           state.customTeams = Array.isArray(data.customTeams) ? data.customTeams : [];
           state.waRows = Array.isArray(data.waRows) ? data.waRows.map(WA.normalizeRow) : JSON.parse(JSON.stringify(WA.SEED_ROWS));
           state.dailyTasks = Array.isArray(data.dailyTasks) ? data.dailyTasks.map(normalizeDailyTask) : [];
+          // Only seed the real tracker data in on the very first load that's
+          // missing the field entirely — once it's an array (even an empty
+          // one the user cleared on purpose), respect it as-is.
+          state.installationStatusRows = Array.isArray(data.installationStatusRows) ? data.installationStatusRows.map(normalizeInstallationStatusRow) : seedInstallationStatusRows();
           if (data.updatedAt) markUpdated(data.updatedAt);
           return;
         }
@@ -3932,7 +4613,7 @@
     // truthy forever after the first edit of the session.
     saveTimer = null;
     if (applyingRemoteUpdate) return; // don't echo back a change we just received
-    var payload = { projects: state.projects, bannerDismissed: state.bannerDismissed, customTeams: state.customTeams||[], waRows: state.waRows||[], dailyTasks: state.dailyTasks||[] };
+    var payload = { projects: state.projects, bannerDismissed: state.bannerDismissed, customTeams: state.customTeams||[], waRows: state.waRows||[], dailyTasks: state.dailyTasks||[], installationStatusRows: state.installationStatusRows||[] };
     if (backendMode === "firebase" && fsDocRef){
       writeInFlight = true;
       fsDocRef.set({
@@ -3941,6 +4622,7 @@
         customTeams: payload.customTeams,
         waRows: payload.waRows,
         dailyTasks: payload.dailyTasks,
+        installationStatusRows: payload.installationStatusRows,
         updatedAt: firebase.firestore.FieldValue.serverTimestamp()
       }, { merge: true })
         .then(function(){
@@ -4005,6 +4687,11 @@
             state.customTeams = Array.isArray(data.customTeams) ? data.customTeams : [];
             state.waRows = Array.isArray(data.waRows) ? data.waRows.map(WA.normalizeRow) : [];
             state.dailyTasks = Array.isArray(data.dailyTasks) ? data.dailyTasks.map(normalizeDailyTask) : [];
+            // Same "seed only if the field is entirely missing" rule as
+            // loadLocalState() — this shared doc may predate the
+            // Installation Status feature, in which case this device seeds
+            // it with the real tracker data for everyone on next save.
+            state.installationStatusRows = Array.isArray(data.installationStatusRows) ? data.installationStatusRows.map(normalizeInstallationStatusRow) : seedInstallationStatusRows();
             if (data.updatedAt) markUpdated(data.updatedAt);
           }
           applyingRemoteUpdate = false;
@@ -4689,6 +5376,7 @@
     if (currentView === "allocation") renderAllocation();
     if (currentView === "wa") renderWaView();
     if (currentView === "daily") renderDailyView();
+    if (currentView === "installstatus") renderInstallStatusView();
     var gridBackdrop = document.getElementById("grid-modal-backdrop");
     if (gridBackdrop && !gridBackdrop.hidden) renderGridModal();
     // The single-project detail page (see #detail-view below) is reached
@@ -4697,6 +5385,8 @@
     // it's open (editing a date/team/% complete/status there goes through
     // the exact same code paths as the grid and ends up here too).
     if (detailViewProjectId) renderDetailView();
+    // Same reasoning for the Installation Status detail page.
+    if (installStatusDetailId) renderInstallStatusDetailView();
 
     restoreFocusInfo(focusInfo);
   }
@@ -5123,7 +5813,7 @@
       return '<div style="margin-bottom:18px;">'+
         '<div style="display:flex; align-items:center; gap:8px; margin-bottom:6px;">'+
           '<span style="width:11px; height:11px; border-radius:50%; background:'+dot+'; display:inline-block;"></span>'+
-          '<strong style="font-family:\'Playfair Display\',Georgia,serif; font-size:15px;">'+escText(label)+'</strong>'+
+          '<strong style="font-family:var(--font-sans); font-size:15px;">'+escText(label)+'</strong>'+
         '</div>'+
         '<ul style="margin:0; padding-left:20px;">'+items+'</ul>'+
       '</div>';
@@ -5765,6 +6455,15 @@
         scheduleSave();
         showToast("Task deleted.", "Undo", undoLast);
       }
+    } else if (action.type === "delete-installstatus"){
+      var isIdx = (state.installationStatusRows||[]).findIndex(function(r){return r.id===action.id;});
+      if (isIdx>-1){
+        lastSnapshotForUndo = cloneState();
+        state.installationStatusRows.splice(isIdx,1);
+        render();
+        scheduleSave();
+        showToast("Entry deleted.", "Undo", undoLast);
+      }
     } else if (action.type === "clear-all"){
       lastSnapshotForUndo = cloneState();
       var n = state.projects.length;
@@ -6257,17 +6956,20 @@
     datePopupEl.hidden = true;
   }
 
-  // The app's page zoom (see body{zoom:...} in CSS) scales up all text and
-  // layout for readability. Popups like this one are plain children of
-  // <body>, so they sit inside that zoomed subtree: their own offsetWidth/
-  // offsetHeight and any style.left/style.top we assign are measured in
-  // <body>'s *local*, pre-zoom pixels, while btn.getBoundingClientRect()
-  // and window.innerWidth/innerHeight report the *real*, post-zoom pixels
-  // actually on screen (the browser multiplies local px by the zoom factor
-  // when it paints). Mixing the two without converting is what pushed
-  // popups off-screen. positionZoomedPopup() does the on-screen-fit math
-  // in real pixels, then divides back down to local units before writing
-  // style.left/style.top, so it stays correct at any zoom level (including 1).
+  // CSS zoom on <body> (a brief experiment to enlarge all text at once —
+  // since reverted, so this is dormant at zoom:1 right now) scales up text
+  // and layout together. Popups like this one are plain children of <body>,
+  // so if zoom is ever reintroduced they'd sit inside that zoomed subtree:
+  // their own offsetWidth/offsetHeight and any style.left/style.top we
+  // assign are measured in <body>'s *local*, pre-zoom pixels, while
+  // btn.getBoundingClientRect() and window.innerWidth/innerHeight report
+  // the *real*, post-zoom pixels actually on screen (the browser multiplies
+  // local px by the zoom factor when it paints) — mixing the two without
+  // converting is exactly what pushed popups off-screen the last time zoom
+  // was tried. positionZoomedPopup() does the on-screen-fit math in real
+  // pixels, then divides back down to local units before writing
+  // style.left/style.top, so it stays correct at any zoom level, including
+  // today's 1 (where it's simply a no-op multiply/divide).
   function pageZoomFactor(){
     var z = parseFloat(getComputedStyle(document.body).zoom);
     return (z && !isNaN(z)) ? z : 1;
@@ -6848,6 +7550,8 @@
     if (dateBtn){ openDatePopup(dateBtn); return; }
     var waDateBtn = e.target.closest("[data-wa-date-btn]");
     if (waDateBtn){ openWaDatePopup(waDateBtn); return; }
+    var installStatusDateBtn = e.target.closest("[data-installstatus-date-btn]");
+    if (installStatusDateBtn){ openInstallStatusDatePopup(installStatusDateBtn, installStatusDateBtn.dataset.id, installStatusDateBtn.dataset.installstatusDateBtn); return; }
     if (datePopupState){
       // Use composedPath() rather than e.target.closest(): a click inside the
       // popup (month nav, a day) re-renders the popup's innerHTML in the
@@ -6973,6 +7677,10 @@
       openDeleteDailyConfirm(delDaily.dataset.id);
       return;
     }
+    var installStatusOpenBtn = e.target.closest("[data-installstatus-open]");
+    if (installStatusOpenBtn){ openInstallStatusDetail(installStatusOpenBtn.dataset.installstatusOpen); return; }
+    var installStatusDelBtn = e.target.closest("[data-installstatus-del]");
+    if (installStatusDelBtn){ openDeleteInstallStatusConfirm(installStatusDelBtn.dataset.installstatusDel); return; }
     if (e.target.id === "confirm-modal-cancel" || e.target.id === "confirm-modal-backdrop"){
       closeConfirmModal();
       return;
@@ -7265,6 +7973,223 @@
     renderAllocation();
   });
 
+  // ---- Installation Status tab: list view + single-entry detail page.
+  // Parallel, independent data system from state.projects/waRows/dailyTasks
+  // (own state.installationStatusRows array, own [data-installstatus-*]
+  // attributes, own findInstallStatusRow()/scheduleSave() wiring) — same
+  // "separate domain, shared save/sync backend" pattern already used for
+  // the WA tracker and Daily Schedule. The detail page reuses the exact
+  // same .detail-fields/.detail-field/detailFieldRow() CSS and markup as
+  // the single-project detail page so it looks and behaves identically. ----
+  var installStatusDetailId = null; // row id while its detail page is open, else null
+  var installStatusSearchQuery = "";
+  var installStatusStatusFilter = "";
+
+  function findInstallStatusRow(id){ return (state.installationStatusRows||[]).find(function(r){ return r.id===id; }); }
+
+  // Most dates here are plain ISO strings from the date popup, but a good
+  // number of rows (see INSTALLATION_STATUS_SEED_RAW above) came in from the
+  // source spreadsheet as "TBC" rather than a real date — fmtDateDisplay()
+  // itself assumes a strict yyyy-mm-dd string, so this wrapper only hands it
+  // one, and otherwise shows whatever free text is actually stored.
+  function fmtInstallStatusDate(v){
+    if (!v) return "";
+    return /^\d{4}-\d{2}-\d{2}$/.test(v) ? fmtDateDisplay(v) : v;
+  }
+
+  function installStatusLabel(r){ return r.status === "__other__" ? (r.statusOther || "Other") : (r.status || ""); }
+  var INSTALL_STATUS_PILL_CLASS = { "Not Started":"is-notstarted", "In Progress":"is-inprogress", "On Hold":"is-onhold", "Completed":"is-completed", "TBC":"is-tbc", "Close Won":"is-closewon" };
+  function installStatusPillClass(label){ return INSTALL_STATUS_PILL_CLASS[label] || "is-none"; }
+
+  function installStatusMatchesFilter(r, q){
+    if (installStatusStatusFilter && installStatusLabel(r) !== installStatusStatusFilter) return false;
+    if (!q) return true;
+    var hay = [r.contractor, r.site, r.scope, r.update, r.remarks, installStatusLabel(r)].join(" ").toLowerCase();
+    return hay.indexOf(q) !== -1;
+  }
+
+  function installStatusRowSummaryHTML(r){
+    var label = installStatusLabel(r);
+    var preview = (r.update || r.remarks || "").split("\n")[0].trim();
+    return '<div class="installstatus-row">'+
+      '<div class="installstatus-row-main" data-installstatus-open="'+r.id+'" role="button" tabindex="0">'+
+        '<div class="installstatus-row-top">'+
+          '<span class="installstatus-row-site">'+escText(r.site||"Untitled site")+'</span>'+
+          '<span class="installstatus-row-contractor">'+escText(r.contractor||"No contractor set")+'</span>'+
+          '<span class="installstatus-status-pill '+installStatusPillClass(label)+'">'+(label?escText(label):"—")+'</span>'+
+        '</div>'+
+        '<div class="installstatus-row-sub">'+
+          '<span class="installstatus-row-date">Install: '+(fmtInstallStatusDate(r.installDate)||"—")+'</span>'+
+          '<span class="installstatus-row-date">Target finish: '+(fmtInstallStatusDate(r.targetFinish)||"—")+'</span>'+
+          (preview ? '<span class="installstatus-row-preview">'+escText(preview)+'</span>' : "")+
+        '</div>'+
+      '</div>'+
+      '<button type="button" class="installstatus-del" data-installstatus-del="'+r.id+'" aria-label="Delete this entry" title="Delete this entry">✕</button>'+
+    '</div>';
+  }
+
+  function renderInstallStatusView(){
+    var rows = state.installationStatusRows || [];
+    var filterSel = document.getElementById("installstatus-status-filter");
+    var knownLabels = INSTALL_STATUS_OPTIONS.slice();
+    rows.forEach(function(r){ var l = installStatusLabel(r); if (l && knownLabels.indexOf(l)===-1) knownLabels.push(l); });
+    filterSel.innerHTML = '<option value="">All statuses</option>'+
+      knownLabels.map(function(s){ return '<option value="'+escAttr(s)+'"'+(installStatusStatusFilter===s?" selected":"")+'>'+escText(s)+'</option>'; }).join("");
+
+    var q = installStatusSearchQuery.trim().toLowerCase();
+    var allCurrent = rows.filter(function(r){ return r.section !== "upcoming"; });
+    var allUpcoming = rows.filter(function(r){ return r.section === "upcoming"; });
+    var current = allCurrent.filter(function(r){ return installStatusMatchesFilter(r, q); });
+    var upcoming = allUpcoming.filter(function(r){ return installStatusMatchesFilter(r, q); });
+
+    var statsEl = document.getElementById("installstatus-stats");
+    var inProgressCount = rows.filter(function(r){ return installStatusLabel(r) === "In Progress"; }).length;
+    var onHoldCount = rows.filter(function(r){ return installStatusLabel(r) === "On Hold"; }).length;
+    statsEl.innerHTML =
+      '<span class="stat-pill">'+allCurrent.length+' current project'+(allCurrent.length===1?"":"s")+'</span>'+
+      '<span class="stat-pill">'+allUpcoming.length+' upcoming project'+(allUpcoming.length===1?"":"s")+'</span>'+
+      '<span class="stat-pill">'+inProgressCount+' in progress</span>'+
+      '<span class="stat-pill">'+onHoldCount+' on hold</span>';
+
+    var html = "";
+    html += '<div class="installstatus-section-head">Current Projects ('+current.length+(current.length!==allCurrent.length?" of "+allCurrent.length:"")+')</div>';
+    html += current.length ? current.map(installStatusRowSummaryHTML).join("") : '<div class="installstatus-empty">No current projects match this search/filter.</div>';
+    html += '<div class="installstatus-section-head">Upcoming Projects ('+upcoming.length+(upcoming.length!==allUpcoming.length?" of "+allUpcoming.length:"")+')</div>';
+    html += upcoming.length ? upcoming.map(installStatusRowSummaryHTML).join("") : '<div class="installstatus-empty">No upcoming projects match this search/filter.</div>';
+    document.getElementById("installstatus-board").innerHTML = html;
+  }
+
+  function installStatusDetailFieldsHTML(r){
+    var html = "";
+    html += detailFieldRow("Section", '<select class="field" data-installstatus-field="section" data-id="'+r.id+'" aria-label="Section">'+
+      '<option value="current"'+(r.section!=="upcoming"?" selected":"")+'>Current project</option>'+
+      '<option value="upcoming"'+(r.section==="upcoming"?" selected":"")+'>Upcoming project</option>'+
+      '</select>');
+    html += detailFieldRow("Main contractor", '<input class="field" data-installstatus-field="contractor" data-id="'+r.id+'" value="'+escAttr(r.contractor)+'" placeholder="Main contractor" aria-label="Main contractor">');
+
+    var known = INSTALL_STATUS_OPTIONS.indexOf(r.status) !== -1;
+    var isOther = !!r.status && !known && r.status !== "__other__";
+    var statusHTML = '<select class="field" data-installstatus-field="status" data-id="'+r.id+'" aria-label="Status">'+
+      '<option value=""'+(!r.status?" selected":"")+'>—</option>'+
+      INSTALL_STATUS_OPTIONS.map(function(s){ return '<option value="'+escAttr(s)+'"'+(r.status===s?" selected":"")+'>'+escText(s)+'</option>'; }).join("")+
+      '<option value="__other__"'+((isOther||r.status==="__other__")?" selected":"")+'>Other…</option>'+
+      '</select>';
+    if (isOther || r.status === "__other__"){
+      statusHTML += '<input class="field" style="margin-top:6px;" data-installstatus-field="statusOther" data-id="'+r.id+'" value="'+escAttr(r.statusOther||(isOther?r.status:""))+'" placeholder="Describe status" aria-label="Other status">';
+    }
+    html += detailFieldRow("Status", statusHTML);
+
+    html += detailFieldRow("Installation date", '<button type="button" class="date-btn'+(r.installDate?"":" placeholder")+'" data-installstatus-date-btn="installDate" data-id="'+r.id+'" aria-label="Installation date">'+(fmtInstallStatusDate(r.installDate)||"d/mm/yyyy")+'</button>');
+    html += detailFieldRow("Target finish date", '<button type="button" class="date-btn'+(r.targetFinish?"":" placeholder")+'" data-installstatus-date-btn="targetFinish" data-id="'+r.id+'" aria-label="Target finish date">'+(fmtInstallStatusDate(r.targetFinish)||"d/mm/yyyy")+'</button>');
+
+    html += detailFieldRow("Scope", '<textarea class="field autosize-field" data-installstatus-field="scope" data-id="'+r.id+'" placeholder="Scope of work" aria-label="Scope">'+escText(r.scope)+'</textarea>', true);
+    html += detailFieldRow("Installation update", '<textarea class="field autosize-field" data-installstatus-field="update" data-id="'+r.id+'" placeholder="Latest installation update" aria-label="Installation update">'+escText(r.update)+'</textarea>', true);
+    html += detailFieldRow("Remarks / actions", '<textarea class="field autosize-field" data-installstatus-field="remarks" data-id="'+r.id+'" placeholder="Remarks / actions" aria-label="Remarks / actions">'+escText(r.remarks)+'</textarea>', true);
+    return html;
+  }
+
+  function renderInstallStatusDetailView(){
+    if (!installStatusDetailId) return;
+    var r = findInstallStatusRow(installStatusDetailId);
+    if (!r){ installStatusDetailId = null; switchView("installstatus"); return; } // deleted while its detail page was open
+    var titleEl = document.getElementById("installstatus-detail-title");
+    titleEl.dataset.installstatusField = "site";
+    titleEl.dataset.id = r.id;
+    titleEl.title = r.site;
+    if (document.activeElement !== titleEl) titleEl.value = r.site || "";
+    autosizeTextarea(titleEl);
+    document.getElementById("installstatus-detail-fields").innerHTML = installStatusDetailFieldsHTML(r);
+    autosizeAllTextareas(document.getElementById("installstatus-detail-fields"));
+  }
+
+  function openInstallStatusDetail(id){
+    var r = findInstallStatusRow(id);
+    if (!r) return;
+    closeDatePopup();
+    installStatusDetailId = id;
+    renderInstallStatusDetailView();
+    switchView("installstatus-detail");
+  }
+
+  function openInstallStatusDatePopup(btn, id, field){
+    var r = findInstallStatusRow(id);
+    if (!r) return;
+    var cur = /^\d{4}-\d{2}-\d{2}$/.test(r[field]) ? r[field] : "";
+    openDatePopupGeneric(btn, cur, function(isoVal){
+      r[field] = isoVal || "";
+      renderInstallStatusDetailView();
+      scheduleSave();
+    });
+  }
+
+  function openDeleteInstallStatusConfirm(id){
+    var r = findInstallStatusRow(id);
+    if (!r) return;
+    pendingConfirm = { type:"delete-installstatus", id:id };
+    openConfirmModal(
+      "Delete this entry?",
+      'Delete "'+(r.site || "Untitled site")+'" from Installation Status? This can be undone right after with the Undo button, but not once you leave or refresh the page.',
+      "Delete"
+    );
+  }
+
+  // ---- Installation Status: field/select/textarea editing — same
+  // "patch the model, no render() here" reasoning as the WA tracker's own
+  // [data-wa-field] listener, so typing never loses focus. "section" and
+  // "status" are the two exceptions: both can change what the detail page
+  // itself needs to show (the grouping label isn't shown there, but
+  // "status" flipping to/from "Other…" reveals/hides the free-text field
+  // below it), so those two re-render just the detail fields, same as
+  // projectStatus does for the grid.
+  document.addEventListener("input", function(e){
+    var t = e.target;
+    if (!t.matches("[data-installstatus-field]")) return;
+    var r = findInstallStatusRow(t.dataset.id);
+    if (!r) return;
+    var field = t.dataset.installstatusField;
+    r[field] = t.value;
+    if (field === "site") t.title = t.value;
+    if (field === "status" || field === "section"){
+      renderInstallStatusDetailView();
+    } else if (t.classList.contains("autosize-field")){
+      autosizeTextarea(t);
+    }
+    scheduleSave();
+  });
+
+  document.getElementById("installstatus-add-current-btn").addEventListener("click", function(){
+    var r = newInstallationStatusRow("current");
+    if (!Array.isArray(state.installationStatusRows)) state.installationStatusRows = [];
+    state.installationStatusRows.unshift(r);
+    renderInstallStatusView();
+    scheduleSave();
+    openInstallStatusDetail(r.id);
+  });
+  document.getElementById("installstatus-add-upcoming-btn").addEventListener("click", function(){
+    var r = newInstallationStatusRow("upcoming");
+    if (!Array.isArray(state.installationStatusRows)) state.installationStatusRows = [];
+    state.installationStatusRows.unshift(r);
+    renderInstallStatusView();
+    scheduleSave();
+    openInstallStatusDetail(r.id);
+  });
+
+  document.getElementById("installstatus-search-input").addEventListener("input", function(e){
+    installStatusSearchQuery = e.target.value;
+    document.getElementById("installstatus-search-clear-btn").hidden = !e.target.value;
+    renderInstallStatusView();
+  });
+  document.getElementById("installstatus-search-clear-btn").addEventListener("click", function(){
+    installStatusSearchQuery = "";
+    document.getElementById("installstatus-search-input").value = "";
+    document.getElementById("installstatus-search-clear-btn").hidden = true;
+    renderInstallStatusView();
+  });
+  document.getElementById("installstatus-status-filter").addEventListener("change", function(e){
+    installStatusStatusFilter = e.target.value;
+    renderInstallStatusView();
+  });
+
   // ---- view switching (Schedule / Team Allocation / Dashboard / WA Tracker) ----
   var currentView = "schedule";
   function switchView(view){
@@ -7275,6 +8200,8 @@
     document.getElementById("wa-view").hidden = (view !== "wa");
     document.getElementById("daily-view").hidden = (view !== "daily");
     document.getElementById("detail-view").hidden = (view !== "detail");
+    document.getElementById("installstatus-view").hidden = (view !== "installstatus");
+    document.getElementById("installstatus-detail-view").hidden = (view !== "installstatus-detail");
     document.getElementById("tab-schedule").classList.toggle("active", view==="schedule");
     document.getElementById("tab-schedule").setAttribute("aria-selected", view==="schedule");
     document.getElementById("tab-allocation").classList.toggle("active", view==="allocation");
@@ -7285,10 +8212,13 @@
     document.getElementById("tab-wa").setAttribute("aria-selected", view==="wa");
     document.getElementById("tab-daily").classList.toggle("active", view==="daily");
     document.getElementById("tab-daily").setAttribute("aria-selected", view==="daily");
+    document.getElementById("tab-installstatus").classList.toggle("active", view==="installstatus" || view==="installstatus-detail");
+    document.getElementById("tab-installstatus").setAttribute("aria-selected", view==="installstatus" || view==="installstatus-detail");
     if (view === "dashboard") renderDashboard();
     if (view === "allocation") renderAllocation();
     if (view === "wa") renderWaView();
     if (view === "daily") renderDailyView();
+    if (view === "installstatus") renderInstallStatusView();
     // Textareas that auto-grow to fit Scope/Comments can't measure their
     // real height while the Schedule tab is hidden (display:none collapses
     // layout, so scrollHeight reads as 0) — e.g. importing or clearing
@@ -7303,6 +8233,9 @@
     // and a pending entry's text was invisible outright. Re-measure the
     // whole page now that it's actually on screen.
     if (view === "detail" && detailViewProjectId) autosizeAllTextareas(document.getElementById("detail-view"));
+    // Same again for the Installation Status detail page — see
+    // openInstallStatusDetail()/renderInstallStatusDetailView().
+    if (view === "installstatus-detail" && installStatusDetailId) autosizeAllTextareas(document.getElementById("installstatus-detail-view"));
     updateToolbarForView(view);
   }
 
@@ -7335,6 +8268,8 @@
   document.getElementById("tab-dashboard").addEventListener("click", function(){ switchView("dashboard"); });
   document.getElementById("tab-wa").addEventListener("click", function(){ switchView("wa"); });
   document.getElementById("tab-daily").addEventListener("click", function(){ switchView("daily"); });
+  document.getElementById("tab-installstatus").addEventListener("click", function(){ switchView("installstatus"); });
+  document.getElementById("installstatus-detail-back-btn").addEventListener("click", function(){ switchView("installstatus"); });
 
   document.getElementById("add-btn").addEventListener("click", function(){
     var p = newProject();
