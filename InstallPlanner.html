@@ -120,7 +120,7 @@
   body{
     background:var(--bg); color:var(--text);
     font-family:var(--font-sans);
-    font-size:13px; line-height:1.4;
+    font-size:14px; line-height:1.45;
     -webkit-font-smoothing:antialiased;
     /* A global zoom:1.15 briefly lived here to make text bigger everywhere
        at once, but it made the app look worse overall (everything just
@@ -153,7 +153,7 @@
   .toolbar h1{ font-size:19px; font-weight:700; letter-spacing:-0.01em; color:var(--nav-text); }
   .toolbar .range{ font-family:var(--font-sans); font-size:12px; color:rgba(255,255,255,.6); margin-top:4px; }
   .toolbar-actions{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
-  .stat-row{ display:flex; gap:8px; align-items:center; flex-wrap:wrap; font-size:12px; color:var(--text-muted); font-family:var(--font-sans); }
+  .stat-row{ display:flex; gap:8px; align-items:center; flex-wrap:wrap; font-size:13px; color:var(--text-muted); font-family:var(--font-sans); }
   .stat-pill{ background:var(--surface); border:none; border-radius:var(--radius); padding:5px 12px; box-shadow:var(--shadow); }
   .stat-pill.clickable{ cursor:pointer; }
   .stat-pill.clickable:hover{ box-shadow:var(--shadow-lg); color:var(--text); }
@@ -161,7 +161,7 @@
   .filter-clear{ background:none; border:none; color:var(--text); font-family:inherit; font-size:12px; font-weight:600; cursor:pointer; padding:3px 6px; text-decoration:underline; }
 
   .view-tabs{ display:flex; background:transparent; border:1px solid var(--nav-border); border-radius:999px; padding:3px; gap:2px; }
-  .tab-btn{ border:none; background:transparent; color:rgba(255,255,255,.7); font-family:var(--font-sans); font-size:12px; font-weight:600; padding:7px 14px; border-radius:999px; cursor:pointer; }
+  .tab-btn{ border:none; background:transparent; color:rgba(255,255,255,.7); font-family:var(--font-sans); font-size:13px; font-weight:600; padding:7px 14px; border-radius:999px; cursor:pointer; }
   .tab-btn:hover{ color:#fff; background:var(--nav-hover); }
   .tab-btn.active{ background:#fff; color:#000; box-shadow:none; }
 
@@ -207,7 +207,7 @@
   @keyframes sync-pulse{ 0%,100%{ opacity:1; } 50%{ opacity:.3; } }
 
   .search-box{ position:relative; display:flex; align-items:center; }
-  .search-field{ width:230px; max-width:100%; padding:8px 30px 8px 12px; border-radius:var(--radius); border:1px solid var(--border-strong); background:var(--surface); color:var(--text); font-family:inherit; font-size:13px; box-shadow:none; }
+  .search-field{ width:230px; max-width:100%; padding:8px 30px 8px 12px; border-radius:var(--radius); border:1px solid var(--border-strong); background:var(--surface); color:var(--text); font-family:inherit; font-size:14px; box-shadow:none; }
   .search-field:focus{ outline:none; border-color:var(--accent); }
   .search-field::-webkit-search-cancel-button{ display:none; }
   .search-clear{ position:absolute; right:6px; background:none; border:none; color:var(--text-faint); font-size:16px; line-height:1; cursor:pointer; padding:4px 6px; border-radius:4px; }
@@ -220,7 +220,7 @@
 
   /* ---- Legend ---- */
   .legend{ display:flex; flex-wrap:wrap; gap:8px 16px; padding:10px 14px; background:var(--surface); border:none; border-radius:6px; box-shadow:var(--shadow); }
-  .legend-item{ display:flex; align-items:center; gap:6px; font-size:12px; color:var(--text-muted); background:none; border:1px solid transparent; border-radius:4px; padding:3px 6px; font-family:inherit; cursor:pointer; }
+  .legend-item{ display:flex; align-items:center; gap:6px; font-size:13px; color:var(--text-muted); background:none; border:1px solid transparent; border-radius:4px; padding:3px 6px; font-family:inherit; cursor:pointer; }
   .legend-item:hover{ background:var(--surface-2); }
   .legend-item.active{ border-color:var(--accent); background:var(--accent-soft); color:var(--text); font-weight:600; }
   .legend-dot{ width:10px; height:10px; border-radius:3px; flex:none; }
@@ -316,7 +316,7 @@
   .row-head.day .num{ font-weight:600; color:var(--nav-text); font-variant-numeric:tabular-nums; }
   .row-head.day.today{ box-shadow: inset 0 0 0 1.5px var(--nav-text); }
 
-  .meta-head{ position:sticky; top:0; z-index:9; background:var(--nav-bg); font-size:10.5px; font-weight:600; text-transform:uppercase; letter-spacing:.04em; color:var(--nav-text); border-bottom:1px solid var(--nav-bg); }
+  .meta-head{ position:sticky; top:0; z-index:9; background:var(--nav-bg); font-size:11.5px; font-weight:600; text-transform:uppercase; letter-spacing:.04em; color:var(--nav-text); border-bottom:1px solid var(--nav-bg); }
 
   .day-cell{ padding:0; border-right:1px solid var(--border); background:var(--surface); position:relative; }
   .day-cell.weekend{ background:var(--surface-2); }
@@ -333,7 +333,7 @@
   .conflict-stripe.cap-l{ border-top-left-radius:5px; border-bottom-left-radius:5px; left:2px; }
   .conflict-stripe.cap-r{ border-top-right-radius:5px; border-bottom-right-radius:5px; right:2px; }
 
-  .field{ width:100%; border:1px solid transparent; background:transparent; color:var(--text); font-family:inherit; font-size:12.5px; padding:6px 4px; border-radius:6px; min-width:0; }
+  .field{ width:100%; border:1px solid transparent; background:transparent; color:var(--text); font-family:inherit; font-size:13.5px; padding:6px 4px; border-radius:6px; min-width:0; }
   .field::placeholder{ color:var(--text-faint); opacity:1; }
   input.field{ text-overflow:ellipsis; }
   .field:hover{ background:var(--surface-2); }
@@ -343,7 +343,7 @@
      autosizeTextarea()) instead of clipping/scrolling inside a fixed box. */
   textarea.field.autosize-field{ height:auto; min-height:44px; overflow:hidden; }
   input[type="number"].field{ font-family:var(--font-sans); }
-  select.field{ font-size:12px; font-weight:600; padding:5px 4px; cursor:pointer; }
+  select.field{ font-size:13px; font-weight:600; padding:5px 4px; cursor:pointer; }
 
   /* Start/Finish date cells: a plain button showing our own d/mm/yyyy format
      (native <input type="date"> displays in whatever format/behavior the
@@ -352,7 +352,7 @@
      columns). Clicking the button opens our own calendar dropdown, built
      entirely in-page (see .date-popup), so both the format and the picker
      behavior are identical and reliable in every browser. */
-  .date-btn{ width:100%; height:100%; border:1px solid transparent; background:transparent; color:var(--text); font-family:var(--font-sans); font-size:11.5px; padding:6px 4px; border-radius:6px; text-align:left; cursor:pointer; }
+  .date-btn{ width:100%; height:100%; border:1px solid transparent; background:transparent; color:var(--text); font-family:var(--font-sans); font-size:12.5px; padding:6px 4px; border-radius:6px; text-align:left; cursor:pointer; }
   .date-btn:hover{ background:var(--surface-2); }
   .date-btn.active, .date-btn:focus-visible{ background:var(--surface); box-shadow:inset 0 0 0 1px var(--accent); outline:none; }
   .date-btn.placeholder{ color:var(--text-faint); }
@@ -424,14 +424,15 @@
      hover-to-reveal language as the row's delete "✕" button, so it's
      discoverable without adding visual noise to every row all the time. */
   .open-detail-btn{ position:absolute; top:2px; right:2px; width:16px; height:16px; line-height:1; font-size:11px; border-radius:4px; border:1px solid var(--border); background:var(--surface); color:var(--text-faint); opacity:0; cursor:pointer; display:flex; align-items:center; justify-content:center; padding:0; transition:opacity .1s ease; z-index:2; }
-  .c-name:hover .open-detail-btn, .c-name .open-detail-btn:focus-visible{ opacity:1; }
+  .c-name:hover .open-detail-btn, .c-name .open-detail-btn:focus-visible,
+  .is-c-site:hover .open-detail-btn, .is-c-site .open-detail-btn:focus-visible{ opacity:1; }
   .open-detail-btn:hover{ background:var(--accent-soft); color:var(--accent); border-color:var(--accent); }
 
   /* The idx column shows a plain row number by default (so it's obvious at
      a glance how many projects are in the list — the last number IS the
      count), and swaps to the delete "✕" button on hover/focus so deleting
      still only takes one click. */
-  .row-num{ font-family:var(--font-sans); font-size:11.5px; font-weight:600; color:var(--text-faint); transition:opacity .1s ease; }
+  .row-num{ font-family:var(--font-sans); font-size:12px; font-weight:600; color:var(--text-faint); transition:opacity .1s ease; }
   .c-idx:hover .row-num, .c-idx:focus-within .row-num{ opacity:0; }
   .del-btn{ position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:22px; height:22px; border-radius:6px; border:1px solid transparent; background:transparent; color:var(--text-faint); cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:13px; opacity:0; pointer-events:none; transition:opacity .1s ease; }
   .del-btn:hover{ background:var(--danger-soft); color:var(--danger); border-color:var(--danger); }
@@ -439,7 +440,7 @@
 
   .pct-text{ font-family:var(--font-sans); }
 
-  .empty-state{ padding:40px 20px; text-align:center; color:var(--text-muted); font-size:13px; }
+  .empty-state{ padding:40px 20px; text-align:center; color:var(--text-muted); font-size:14px; }
 
   .import-input{ display:none; }
 
@@ -477,7 +478,7 @@
   /* ---- Team allocation (3-month Gantt) view ---- */
   .alloc-toolbar{ display:flex; align-items:center; gap:10px; margin-bottom:10px; }
   .alloc-range{ font-family:var(--font-sans); font-size:12.5px; font-weight:600; color:var(--text); min-width:170px; text-align:center; }
-  .alloc-meta-head{ position:sticky; left:0; top:0; z-index:9; background:var(--nav-bg); font-size:10.5px; font-weight:600; text-transform:uppercase; letter-spacing:.04em; color:var(--nav-text); border-bottom:1px solid var(--nav-bg); width:var(--w-alloc-team); }
+  .alloc-meta-head{ position:sticky; left:0; top:0; z-index:9; background:var(--nav-bg); font-size:11.5px; font-weight:600; text-transform:uppercase; letter-spacing:.04em; color:var(--nav-text); border-bottom:1px solid var(--nav-bg); width:var(--w-alloc-team); }
   .alloc-team-label{ position:sticky; left:0; z-index:4; width:var(--w-alloc-team); background:var(--surface); font-weight:700; font-size:12.5px; display:flex; align-items:center; gap:8px; border-right:2px solid var(--border-strong); box-shadow:2px 0 4px rgba(0,0,0,.05); }
   .alloc-day-cell{ padding:0; border-right:1px solid var(--border); border-bottom:1px solid var(--border); background:var(--surface); }
   .alloc-day-cell.weekend{ background:var(--surface-2); }
@@ -713,9 +714,9 @@
   .daily-task-project:hover, .daily-task-project:focus{ border-color:var(--border-strong); background:var(--surface); }
   .daily-task-row2{ display:flex; }
   .daily-support-btn{ width:auto; min-height:0; min-width:0; padding:3px 6px; }
-  .daily-task-desc{ width:100%; resize:none; border:1px solid transparent; background:transparent; color:var(--text); font-family:inherit; font-size:13px; line-height:1.4; padding:6px 4px; border-radius:6px; min-height:22px; }
+  .daily-task-desc{ width:100%; resize:none; border:1px solid transparent; background:transparent; color:var(--text); font-family:inherit; font-size:14px; line-height:1.4; padding:6px 4px; border-radius:6px; min-height:22px; }
   .daily-task-desc:hover, .daily-task-desc:focus{ border-color:var(--border-strong); background:var(--surface); }
-  .daily-task-comments{ width:100%; resize:none; border:1px solid transparent; background:transparent; color:var(--text-muted); font-family:inherit; font-style:italic; font-size:12px; line-height:1.4; padding:6px 4px; border-radius:6px; min-height:20px; }
+  .daily-task-comments{ width:100%; resize:none; border:1px solid transparent; background:transparent; color:var(--text-muted); font-family:inherit; font-style:italic; font-size:13px; line-height:1.4; padding:6px 4px; border-radius:6px; min-height:20px; }
   .daily-task-comments:hover, .daily-task-comments:focus{ border-color:var(--border-strong); background:var(--surface); color:var(--text); }
   .daily-task-comments::placeholder, .daily-task-desc::placeholder, .daily-task-project::placeholder{ color:var(--text-faint); font-style:italic; }
 
@@ -764,7 +765,7 @@
   .installstatus-board .is-c-site{ position:relative; }
   /* Full-width "Current Projects (N)" / "Upcoming Projects (N)" divider row,
      styled like the WA Tracker's .wa-group-row group headers. */
-  .installstatus-section-row{ padding:0 14px; background:var(--surface-2); border-bottom:1px solid var(--border-strong); position:sticky; top:42px; z-index:8; display:flex; align-items:center; gap:10px; font-family:var(--font-sans); font-weight:700; font-size:12.5px; color:var(--text); text-transform:uppercase; letter-spacing:.03em; }
+  .installstatus-section-row{ padding:0 14px; background:var(--surface-2); border-bottom:1px solid var(--border-strong); position:sticky; top:42px; z-index:8; display:flex; align-items:center; gap:10px; font-family:var(--font-sans); font-weight:700; font-size:13px; color:var(--text); text-transform:uppercase; letter-spacing:.03em; }
   .installstatus-section-row .installstatus-section-count{ font-size:11px; font-weight:600; color:var(--text-muted); background:var(--surface); border:1px solid var(--border-strong); border-radius:100px; padding:1px 8px; text-transform:none; letter-spacing:normal; }
 
   /* ---- Main list (Schedule tab): meta columns only, no day grid — see
@@ -845,7 +846,7 @@
   .pending-entry-date-btn{ flex:0 0 auto; min-width:76px; font-weight:700; color:var(--text-muted); font-size:12px; font-family:inherit; border:1px solid transparent; background:transparent; border-radius:4px; padding:2px 4px; margin:-2px 0 0 -4px; cursor:pointer; text-align:left; }
   .pending-entry-date-btn:hover{ background:var(--surface-2); color:var(--text); }
   .pending-entry-date-btn.active, .pending-entry-date-btn:focus-visible{ background:var(--surface); color:var(--text); box-shadow:inset 0 0 0 1px var(--accent); outline:none; }
-  .pending-entry-text-field{ flex:1 1 auto; display:block; width:100%; min-width:0; white-space:pre-wrap; font-size:13px; font-family:inherit; line-height:1.4; color:var(--text); border:1px solid transparent; background:transparent; resize:none; overflow:hidden; padding:2px 4px; margin:-2px 0 0 -4px; border-radius:4px; }
+  .pending-entry-text-field{ flex:1 1 auto; display:block; width:100%; min-width:0; white-space:pre-wrap; font-size:14px; font-family:inherit; line-height:1.4; color:var(--text); border:1px solid transparent; background:transparent; resize:none; overflow:hidden; padding:2px 4px; margin:-2px 0 0 -4px; border-radius:4px; }
   .pending-entry-text-field:hover{ border-color:var(--border); }
   .pending-entry-text-field:focus{ border-color:var(--accent); background:var(--surface); outline:none; }
   .pending-entry-source{ flex:0 0 auto; font-size:10px; text-transform:uppercase; letter-spacing:.03em; color:var(--text-faint); }
@@ -895,7 +896,7 @@
   .detail-fields{ display:grid; grid-template-columns:repeat(auto-fill, minmax(150px, 1fr)); gap:14px 22px; margin-bottom:26px; }
   .detail-field{ display:flex; flex-direction:column; gap:3px; min-width:0; }
   .detail-field.detail-field-wide{ grid-column:1 / -1; }
-  .detail-field-label{ font-size:10.5px; font-weight:700; text-transform:uppercase; letter-spacing:.04em; color:var(--text-muted); }
+  .detail-field-label{ font-size:11.5px; font-weight:700; text-transform:uppercase; letter-spacing:.04em; color:var(--text-muted); }
   .detail-field .field, .detail-field .date-btn, .detail-field .teams-btn{ width:100%; box-sizing:border-box; }
   .detail-field textarea.field{ min-height:60px; resize:none; overflow:hidden; }
   .detail-pending-section{ border-top:1px solid var(--border-strong); padding-top:20px; }
@@ -954,7 +955,7 @@
         <span class="sync-dot"></span><span id="sync-label"></span>
       </div>
       <button class="btn" id="sync-now-btn" type="button" title="Force an immediate sync, or retry connecting to the shared database">Sync now</button>
-      <button class="btn" id="share-limited-link-btn" type="button" title="Copy a link that only shows Daily Schedule and Installation Status — safe to send to subcontractors or site staff">🔗 Share Daily/Status Link</button>
+      <button class="btn" id="share-limited-link-btn" type="button" title="Copy a link that only shows Installation Status — safe to send to subcontractors or site staff">🔗 Share Installation Status Link</button>
       <div class="view-tabs" id="view-tabs" role="tablist" aria-label="View">
         <button class="tab-btn active" id="tab-schedule" type="button" role="tab" aria-selected="true">Schedule</button>
         <button class="tab-btn" id="tab-allocation" type="button" role="tab" aria-selected="false">Team Allocation</button>
@@ -8321,29 +8322,30 @@ var INSTALLATION_STATUS_SEED_RAW = [
     renderInstallStatusView();
   });
 
-  // ---- Limited-access link (?limited=1): shows only Daily Schedule and
-  // Installation Status — meant for subcontractors/site staff so they aren't
-  // looking at (or able to touch) the full project schedule, team
-  // allocation, dashboard or WA tracker. It's the exact same app, reading
-  // and writing the exact same shared Firestore document — a focused view
-  // for convenience, not a separate security boundary: anyone who already
-  // has the full app link (or this one) has always been able to read/write
-  // the shared data, same as every link this app has ever handed out (see
-  // README.md, "Shared backend setup"). The "🔗 Share Daily/Status Link"
-  // button copies the current page's URL with ?limited=1 appended. ----
+  // ---- Limited-access link (?limited=1): shows only Installation Status —
+  // meant for subcontractors/site staff so they aren't looking at (or able
+  // to touch) the full project schedule, team allocation, dashboard, WA
+  // tracker or Daily Schedule. It's the exact same app, reading and writing
+  // the exact same shared Firestore document — a focused view for
+  // convenience, not a separate security boundary: anyone who already has
+  // the full app link (or this one) has always been able to read/write the
+  // shared data, same as every link this app has ever handed out (see
+  // README.md, "Shared backend setup"). The "🔗 Share Installation Status
+  // Link" button copies the current page's URL with ?limited=1 appended. ----
   var LIMITED_MODE = (function(){
     try { return new URLSearchParams(location.search).get("limited") === "1"; }
     catch (e) { return false; }
   })();
 
-  // Hides every schedule-only toolbar/page element. Called once from init()
-  // and again at the end of every render() — several of these (the example
-  // banner, the conflict notification) set their own "hidden" based on data
-  // every time render() runs, which would otherwise un-hide them right back.
+  // Hides every tab/page element other than Installation Status. Called
+  // once from init() and again at the end of every render() — several of
+  // these (the example banner, the conflict notification) set their own
+  // "hidden" based on data every time render() runs, which would otherwise
+  // un-hide them right back.
   function applyLimitedModeUI(){
     if (!LIMITED_MODE) return;
     [
-      "tab-schedule","tab-allocation","tab-dashboard","tab-wa",
+      "tab-schedule","tab-allocation","tab-dashboard","tab-wa","tab-daily",
       "date-filter-btn","stat-row","legend","example-banner","conflict-notif-btn",
       "import-btn","import-input","export-pdf-btn","add-btn","share-limited-link-btn",
       "date-range-label"
@@ -8359,7 +8361,7 @@ var INSTALLATION_STATUS_SEED_RAW = [
     // LIMITED_MODE is on (the tabs/buttons that would are hidden by
     // applyLimitedModeUI()), but redirect here too in case anything else
     // ever calls switchView() directly with one of them.
-    if (LIMITED_MODE && (view==="schedule" || view==="allocation" || view==="dashboard" || view==="wa" || view==="detail")) view = "daily";
+    if (LIMITED_MODE && view!=="installstatus" && view!=="installstatus-detail") view = "installstatus";
     currentView = view;
     document.getElementById("schedule-view").hidden = (view !== "schedule");
     document.getElementById("allocation-view").hidden = (view !== "allocation");
@@ -8439,23 +8441,26 @@ var INSTALLATION_STATUS_SEED_RAW = [
   document.getElementById("installstatus-detail-back-btn").addEventListener("click", function(){ switchView("installstatus"); });
 
   // Copies a link that opens this same app with ?limited=1 — see
-  // applyLimitedModeUI()/LIMITED_MODE above for what that link shows.
+  // applyLimitedModeUI()/LIMITED_MODE above for what that link shows. Same
+  // proven pattern as shareFactoryLink() below: a toast on success, or — if
+  // the browser blocks clipboard access (or throws outright, which a couple
+  // of browsers do synchronously instead of rejecting the promise) — a
+  // native prompt() dialog showing the link, so clicking this always visibly
+  // confirms something rather than failing silently.
   document.getElementById("share-limited-link-btn").addEventListener("click", function(){
     var url = location.origin + location.pathname + "?limited=1";
-    function copied(){ showToast("Link copied — anyone who opens it only sees Daily Schedule and Installation Status."); }
-    function failed(){ showToast("Couldn't copy automatically — here's the link: " + url); }
-    if (navigator.clipboard && navigator.clipboard.writeText){
-      navigator.clipboard.writeText(url).then(copied, failed);
-    } else {
-      try {
-        var ta = document.createElement("textarea");
-        ta.value = url; ta.style.position = "fixed"; ta.style.opacity = "0";
-        document.body.appendChild(ta); ta.select();
-        document.execCommand("copy");
-        document.body.removeChild(ta);
-        copied();
-      } catch (e){ failed(); }
+    function fallback(){
+      window.prompt("Copy this link and send it to whoever should only see Installation Status:", url);
     }
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText){
+        navigator.clipboard.writeText(url).then(function(){
+          showToast("Link copied — anyone who opens it only sees Installation Status.", null, null);
+        }).catch(fallback);
+      } else {
+        fallback();
+      }
+    } catch (e){ fallback(); }
   });
 
   document.getElementById("add-btn").addEventListener("click", function(){
@@ -8886,7 +8891,7 @@ var INSTALLATION_STATUS_SEED_RAW = [
     boardHScroll.init();
 
     applyLimitedModeUI();
-    if (LIMITED_MODE) switchView("daily");
+    if (LIMITED_MODE) switchView("installstatus");
 
     setSaveStatus("connecting");
     await initBackend();

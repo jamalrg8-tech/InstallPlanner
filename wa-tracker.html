@@ -80,7 +80,7 @@
   body{
     background:var(--bg); color:var(--text);
     font-family:var(--font-sans);
-    font-size:13px; line-height:1.4;
+    font-size:14px; line-height:1.45;
     -webkit-font-smoothing:antialiased;
   }
   h1{font-family:var(--font-sans); font-weight:700; text-wrap:balance; margin:0;}
@@ -208,7 +208,7 @@
 
   /* ---- Search (filters rows by Project Name — see matchesSearch()) ---- */
   .search-box{ position:relative; display:flex; align-items:center; }
-  .search-field{ width:230px; max-width:100%; padding:8px 30px 8px 12px; border-radius:var(--radius); border:1px solid var(--border-strong); background:var(--surface); color:var(--text); font-family:inherit; font-size:13px; box-shadow:none; }
+  .search-field{ width:230px; max-width:100%; padding:8px 30px 8px 12px; border-radius:var(--radius); border:1px solid var(--border-strong); background:var(--surface); color:var(--text); font-family:inherit; font-size:14px; box-shadow:none; }
   .search-field:focus{ outline:none; border-color:var(--accent); }
   .search-field::-webkit-search-cancel-button{ display:none; }
   .search-clear{ position:absolute; right:6px; background:none; border:none; color:var(--text-faint); font-size:16px; line-height:1; cursor:pointer; padding:4px 6px; border-radius:4px; }
@@ -264,18 +264,18 @@
   .cell.wa-field-recent-edit{ background:var(--edit-soft); }
   .cell.wa-field-recent-edit .field,
   .cell.wa-field-recent-edit .date-btn{ font-weight:700; }
-  .meta-head{ position:sticky; top:0; z-index:9; background:var(--nav-bg); font-size:10.5px; font-weight:600; text-transform:uppercase; letter-spacing:.04em; color:var(--nav-text); border-bottom:1px solid var(--nav-bg); }
+  .meta-head{ position:sticky; top:0; z-index:9; background:var(--nav-bg); font-size:11.5px; font-weight:600; text-transform:uppercase; letter-spacing:.04em; color:var(--nav-text); border-bottom:1px solid var(--nav-bg); }
 
-  .field{ width:100%; border:1px solid transparent; background:transparent; color:var(--text); font-family:inherit; font-size:12.5px; padding:6px 4px; border-radius:6px; min-width:0; }
+  .field{ width:100%; border:1px solid transparent; background:transparent; color:var(--text); font-family:inherit; font-size:13.5px; padding:6px 4px; border-radius:6px; min-width:0; }
   .field::placeholder{ color:var(--text-faint); opacity:1; }
   input.field{ text-overflow:ellipsis; }
   .field:hover{ background:var(--surface-2); }
   .field:focus{ background:var(--surface); border-color:var(--accent); outline:none; }
   textarea.field{ resize:none; font-family:inherit; line-height:1.3; height:44px; }
   textarea.field.autosize-field{ height:auto; min-height:44px; overflow:hidden; }
-  select.field{ font-size:12px; font-weight:600; padding:5px 4px; cursor:pointer; }
+  select.field{ font-size:13px; font-weight:600; padding:5px 4px; cursor:pointer; }
 
-  .date-btn{ width:100%; height:100%; border:1px solid transparent; background:transparent; color:var(--text); font-family:var(--font-sans); font-size:11.5px; padding:6px 4px; border-radius:6px; text-align:left; cursor:pointer; }
+  .date-btn{ width:100%; height:100%; border:1px solid transparent; background:transparent; color:var(--text); font-family:var(--font-sans); font-size:12.5px; padding:6px 4px; border-radius:6px; text-align:left; cursor:pointer; }
   .date-btn:hover{ background:var(--surface-2); }
   .date-btn.active, .date-btn:focus-visible{ background:var(--surface); box-shadow:inset 0 0 0 1px var(--accent); outline:none; }
   .date-btn.placeholder{ color:var(--text-faint); }
@@ -331,7 +331,7 @@
   .wa-rowheight-label{ display:flex; align-items:center; gap:6px; font-size:12.5px; color:var(--text-muted); white-space:nowrap; }
   .wa-rowheight-label select{ width:auto; padding:6px 8px; }
 
-  .empty-state{ padding:40px 20px; text-align:center; color:var(--text-muted); font-size:13px; }
+  .empty-state{ padding:40px 20px; text-align:center; color:var(--text-muted); font-size:14px; }
 
   .toast{ position:fixed; bottom:20px; left:50%; transform:translateX(-50%); background:var(--text); color:var(--bg); padding:10px 16px; border-radius:6px; font-size:13px; box-shadow:var(--shadow-lg); display:flex; gap:14px; align-items:center; z-index:100; opacity:0; pointer-events:none; transition:opacity .2s ease; }
   .toast.show{ opacity:1; pointer-events:auto; }
