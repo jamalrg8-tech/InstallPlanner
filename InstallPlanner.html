@@ -195,6 +195,18 @@
   .import-merge-label:hover{ opacity:1; }
   .import-merge-label input{ margin:0; }
 
+  /* Settings modal (see #settings-modal-backdrop) — plain light modal body,
+     not the dark toolbar, so the merge checkbox label needs its own
+     (readable) color instead of .import-merge-label's nav-bar-toned one. */
+  .settings-section{ padding:14px 0; border-bottom:1px solid var(--border); }
+  .settings-section:last-child{ border-bottom:none; padding-bottom:0; }
+  .settings-section h3{ font-size:14px; font-weight:700; margin:0 0 4px; color:var(--text); }
+  .settings-section-desc{ font-size:12.5px; color:var(--text-muted); margin:0 0 10px; }
+  .settings-section-row{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+  .settings-merge-label{ color:var(--text-muted); opacity:1; font-size:12.5px; margin-top:10px; }
+  .settings-merge-label:hover{ color:var(--text); }
+  #settings-user-guide-link{ text-decoration:none; }
+
   .sync-status{ display:flex; align-items:center; gap:7px; font-size:12px; color:var(--text-muted); font-family:var(--font-sans); padding:7px 12px; border:1px solid var(--border); border-radius:100px; background:var(--surface); white-space:nowrap; }
   .sync-dot{ width:8px; height:8px; border-radius:50%; flex:none; background:var(--text-faint); }
   .sync-status.state-synced{ border-color:#15803D; color:var(--text); }
@@ -757,7 +769,7 @@
      .detail-fields/.detail-field from the single-project detail page below.
      See renderInstallStatusView()/installStatusRowHTML() in the script. ---- */
   .installstatus-toolbar{ margin-bottom:10px; }
-  .installstatus-status-filter{ width:auto; min-width:150px; }
+  .installstatus-status-filter, .installstatus-priority-filter{ width:auto; min-width:150px; }
   .installstatus-stats{ margin-bottom:14px; }
   /* Grid list (same .board/.board-list/.cell/.meta-head/.date-btn/.del-btn/
      .open-detail-btn/.row-num/.empty-state machinery the Schedule tab's own
@@ -767,8 +779,28 @@
      since this grid's columns aren't individually resizable/sticky) with
      just enough position:relative for the del/open-detail buttons to anchor
      against. */
-  .installstatus-board .is-c-idx{ position:relative; justify-content:center; padding:0; }
-  .installstatus-board .is-c-site{ position:relative; }
+  /* Freeze the row-number and Site/Project columns while scrolling the grid
+     horizontally (same idea as the Schedule tab's own .c-idx/.c-name sticky
+     columns) — without this, "Site / Project" scrolled away with everything
+     else the moment you panned right to see Status/Priority/Team/etc., which
+     made it hard to tell which site a given row even was. idx's width is
+     fixed (44px, never hideable — see IS_ALL_COLS), so site's sticky offset
+     can just hardcode that instead of needing a CSS variable. Selectors use
+     .cell.is-c-idx/.cell.is-c-site (3 class selectors), not just
+     ".is-c-idx" (2), specifically to out-specificity ".board-list .cell{
+     left:auto; }" above, which otherwise wins this exact tie (both are
+     2-class selectors, so source order would decide, and that rule comes
+     later) and was neutralizing "left" on every cell here the same way it
+     deliberately does for the Schedule tab's own plain list — this grid
+     doesn't have that rule's reason to disable sticky columns (no day-grid
+     to misalign with), so it's opted back in just for these two columns. */
+  .installstatus-board .cell.is-c-idx{ position:sticky; left:0; z-index:3; justify-content:center; padding:0; }
+  .installstatus-board .cell.is-c-site{ position:sticky; left:44px; z-index:3; }
+  /* The header row's own idx/site cells are both top-sticky (.meta-head,
+     z-index:9) and now left-sticky (the rule above, z-index:3) — restore
+     the higher z-index for that top-left corner specifically so scrolled-up
+     row content can never paint over the frozen header there. */
+  .installstatus-board .cell.meta-head.is-c-idx, .installstatus-board .cell.meta-head.is-c-site{ z-index:9; }
   /* Full-width "Current Projects (N)" / "Upcoming Projects (N)" divider row,
      styled like the WA Tracker's .wa-group-row group headers. */
   .installstatus-section-row{ padding:0 14px; background:var(--surface-2); border-bottom:1px solid var(--border-strong); position:sticky; top:42px; z-index:8; display:flex; align-items:center; gap:10px; font-family:var(--font-sans); font-weight:700; font-size:13px; color:var(--text); text-transform:uppercase; letter-spacing:.03em; }
@@ -955,9 +987,81 @@
   #schedule-view.view-compact .board-list .date-btn{ padding:3px 4px; }
   #schedule-view.view-compact .board-list .row-num{ font-size:11px; }
 
+  /* Same Normal/Compact density toggle, for Installation Status's own grid
+     (#installstatus-density-btn/applyInstallStatusViewDensity() below) —
+     identical rules, just scoped to #installstatus-view instead of
+     #schedule-view so the two toggles never affect each other. */
+  #installstatus-view.view-compact .board-list .cell{ padding:0 5px; }
+  #installstatus-view.view-compact .board-list .field{ padding:2px 4px; font-size:11.5px; }
+  #installstatus-view.view-compact .board-list select.field{ padding:2px 4px; }
+  #installstatus-view.view-compact .board-list textarea.field{ height:26px; }
+  #installstatus-view.view-compact .board-list textarea.field.autosize-field{ min-height:24px; }
+  #installstatus-view.view-compact .board-list .date-btn{ padding:3px 4px; }
+  #installstatus-view.view-compact .board-list .row-num{ font-size:11px; }
+
   @media (max-width: 1100px){
     .dash-grid{ grid-template-columns:repeat(2,1fr); }
     .dash-panels{ grid-template-columns:1fr; }
+  }
+
+  /* ---- Phone/tablet pass ----------------------------------------------
+     This app is a set of wide, many-column grids (Schedule, Team
+     Allocation, WA Tracker, Installation Status) — making those genuinely
+     single-column "card" layouts on a phone would be a full rebuild of how
+     every tab renders, which isn't what was asked for (Compact view is the
+     actual ask for "fit more on a small screen" — see
+     applyInstallStatusViewDensity()/applyViewDensity() above). Instead this
+     keeps every tab's grid intact and makes sure: nothing is literally
+     stuck off-screen or unreachable by touch, toolbars/the tab bar wrap or
+     scroll instead of overflowing, modals/popups fit the viewport, and the
+     hover-only delete/open-detail buttons — which a touchscreen can never
+     ":hover" onto — are always visible instead. ------------------------- */
+
+  /* .del-btn/.open-detail-btn are opacity:0 + pointer-events:none until a
+     mouse hovers their row (see the Schedule/Installation Status hover
+     rules above) — on a touchscreen there's no hover event at all, so
+     those buttons would be permanently invisible AND unclickable. Force
+     them on whenever the primary input can't hover/is coarse (a finger),
+     regardless of screen width (this also covers a touchscreen laptop). */
+  @media (hover: none), (pointer: coarse){
+    .del-btn{ opacity:1; pointer-events:auto; }
+    .open-detail-btn{ opacity:1; pointer-events:auto; }
+  }
+
+  @media (max-width: 1024px){
+    /* Re-enable native swipe-to-scroll on the Schedule/WA Tracker grids —
+       normally overflow-x is hidden there in favor of the thin custom
+       scrollbar at the bottom (#board-hbar), which still works but is a
+       fiddly target to drag with a fingertip. Both stay in sync either way
+       (see WA.createHScrollbar()'s attachSync(), which listens on the
+       native scroll event too), so this is purely additive. */
+    #schedule-view .board-scroll, .wa-board-wrap .board-scroll{ overflow-x:auto; -webkit-overflow-scrolling:touch; }
+    .board-scroll{ -webkit-overflow-scrolling:touch; touch-action:pan-x pan-y; }
+    .wa-hbar{ height:20px; }
+  }
+
+  @media (max-width: 860px){
+    .app{ padding:12px 10px 24px; gap:12px; }
+    .toolbar{ padding:12px 14px; gap:10px 14px; }
+    .toolbar h1{ font-size:16px; }
+    /* The tab bar (Schedule/Team Allocation/Dashboard/WA Tracker/Daily
+       Schedule/Installation Status) doesn't wrap internally — six pills
+       side by side don't fit a phone's width, so let it scroll
+       horizontally instead of clipping or forcing the whole toolbar wider
+       than the screen. */
+    .view-tabs{ max-width:100%; overflow-x:auto; -webkit-overflow-scrolling:touch; min-width:0; }
+    .toolbar-actions{ min-width:0; }
+    .tab-btn{ flex:none; }
+    .report-modal-backdrop, .confirm-modal-backdrop, .grid-modal-backdrop{ padding:10px; }
+    .report-modal-card{ max-height:min(92vh, 900px); }
+    .date-popup, .teams-popup{ max-width:calc(100vw - 20px); }
+  }
+
+  @media (max-width: 560px){
+    .dash-grid{ grid-template-columns:1fr 1fr; gap:8px; }
+    .dash-toolbar{ justify-content:flex-start; flex-wrap:wrap; }
+    .kpi-card{ padding:10px 12px; }
+    .btn{ padding:0.5rem 0.85rem; }
   }
 
   @media (prefers-reduced-motion: reduce){ .toast{ transition:none; } }
@@ -994,11 +1098,6 @@
       <button class="btn" id="reset-cols-btn" type="button" title="Reset column widths and the details panel back to defaults">Reset columns</button>
       <button class="btn columns-btn" id="columns-btn" type="button" title="Show or hide any column">Show/Hide Columns</button>
       <button class="btn" id="toggle-hidden-rows-btn" type="button" title="Hide/unhide individual projects with the row's eye button, then use this to find them again">Show hidden rows</button>
-      <button class="btn" id="import-btn" type="button">Import Excel / CSV</button>
-      <input class="import-input" id="import-input" type="file" accept=".xlsx,.xls,.csv">
-      <label class="import-merge-label" title="When checked, a sheet row whose Project name matches a project already on the board fills in that project's blank fields (like Project Value or RAL/Glass) and adds any Pending Status / Installation Pending / Remark / SuWai Handover notes it doesn't already have — nothing that's already filled in gets overwritten. A sheet row with no matching project is still added as new either way.">
-        <input type="checkbox" id="import-merge-toggle"> Merge into existing by name
-      </label>
       <button class="btn" id="export-pdf-btn" type="button">Export PDF</button>
       <button class="btn primary" id="add-btn" type="button">+ Add project</button>
     </div>
@@ -1159,6 +1258,7 @@
         <option value="Low">Low priority</option>
       </select>
       <button class="btn" id="installstatus-hide-completed-btn" type="button" aria-pressed="false">Hide completed</button>
+      <button class="btn" id="installstatus-density-btn" type="button" title="Switch between normal and compact row height">Compact view</button>
       <button class="btn columns-btn" id="installstatus-columns-btn" type="button" title="Show or hide any field">Show/Hide Fields</button>
       <button class="btn" id="installstatus-add-current-btn" type="button">+ Add current project</button>
       <button class="btn" id="installstatus-add-upcoming-btn" type="button">+ Add upcoming project</button>
@@ -1263,6 +1363,39 @@
     <div class="confirm-modal-actions">
       <button type="button" class="btn" id="confirm-modal-cancel">Cancel</button>
       <button type="button" class="btn danger" id="confirm-modal-delete">Delete</button>
+    </div>
+  </div>
+</div>
+
+<!-- Settings — reached from the Dashboard's "⚙ Settings" button (see
+     renderDashboard()'s toolbarHTML/openSettingsModal() below). Holds the
+     Schedule tab's own Import Excel/CSV + "Merge into existing by name"
+     (moved out of the main toolbar so it's not sitting there on every tab)
+     and a link to the User Guide PDF. Reuses the generic report-modal-card
+     shell, same as the Pending actions/Paste schedule modals. -->
+<div class="report-modal-backdrop" id="settings-modal-backdrop" hidden>
+  <div class="report-modal-card" role="dialog" aria-modal="true" aria-labelledby="settings-modal-title" style="width:min(480px, 100%);">
+    <div class="report-modal-header">
+      <h2 id="settings-modal-title">Settings</h2>
+      <button type="button" class="report-modal-close" id="settings-modal-close" aria-label="Close">×</button>
+    </div>
+    <div class="report-modal-body">
+      <div class="settings-section">
+        <h3>Import projects into Schedule</h3>
+        <p class="settings-section-desc">Bring in projects from an Excel/CSV sheet, same columns as the office tracker.</p>
+        <div class="settings-section-row">
+          <button class="btn" id="import-btn" type="button">Import Excel / CSV</button>
+          <input class="import-input" id="import-input" type="file" accept=".xlsx,.xls,.csv">
+        </div>
+        <label class="import-merge-label settings-merge-label" title="When checked, a sheet row whose Project name matches a project already on the board fills in that project's blank fields (like Project Value or RAL/Glass) and adds any Pending Status / Installation Pending / Remark / SuWai Handover notes it doesn't already have — nothing that's already filled in gets overwritten. A sheet row with no matching project is still added as new either way.">
+          <input type="checkbox" id="import-merge-toggle"> Merge into existing by name
+        </label>
+      </div>
+      <div class="settings-section">
+        <h3>Help</h3>
+        <p class="settings-section-desc">A walkthrough of every tab and feature in the app.</p>
+        <a class="btn" id="settings-user-guide-link" href="User-Guide.pdf" target="_blank" rel="noopener">📄 View User Guide (PDF)</a>
+      </div>
     </div>
   </div>
 </div>
@@ -6551,7 +6684,8 @@ var INSTALLATION_STATUS_SEED_RAW = [
     var dashEl = document.getElementById("dashboard-view");
     var projects = state.projects;
     if (!projects.length){
-      dashEl.innerHTML = '<div class="dash-empty">No projects yet — add or import some to see the dashboard.</div>';
+      dashEl.innerHTML = '<div class="dash-toolbar"><button type="button" class="btn" id="dashboard-settings-btn">⚙ Settings</button></div>'+
+        '<div class="dash-empty">No projects yet — add or import some to see the dashboard.</div>';
       return;
     }
     var pctSum=0, unassigned=0, notStarted=0, inProgress=0, complete=0;
@@ -6571,6 +6705,7 @@ var INSTALLATION_STATUS_SEED_RAW = [
       '<button type="button" class="btn" id="view-grid-btn">View schedule grid</button>'+
       '<button type="button" class="btn" id="view-wa-btn">WA production tracker</button>'+
       '<button type="button" class="btn" id="view-all-report-btn">View all projects (report)</button>'+
+      '<button type="button" class="btn" id="dashboard-settings-btn">⚙ Settings</button>'+
       '</div>';
 
     var kpiHTML = '<div class="dash-grid">'+
@@ -7215,6 +7350,18 @@ var INSTALLATION_STATUS_SEED_RAW = [
     pendingModalState = null;
     document.getElementById("pending-modal-backdrop").hidden = true;
   }
+
+  // ---- Settings modal (reached from the Dashboard's "⚙ Settings" button) —
+  // holds the Schedule tab's Import Excel/CSV + "Merge into existing by
+  // name" (moved out of the main toolbar, see #settings-modal-backdrop
+  // above) and a link to the User Guide PDF. Same open/close pattern as
+  // every other report-modal-backdrop-based modal in the app. ----
+  function openSettingsModal(){
+    document.getElementById("settings-modal-backdrop").hidden = false;
+  }
+  function closeSettingsModal(){
+    document.getElementById("settings-modal-backdrop").hidden = true;
+  }
   function addPendingEntry(){
     if (!pendingModalState) return;
     var p = findProject(pendingModalState.projectId);
@@ -7667,6 +7814,9 @@ var INSTALLATION_STATUS_SEED_RAW = [
     var densityBtn = e.target.closest("#view-density-btn");
     if (densityBtn){ toggleViewDensity(); return; }
 
+    var installStatusDensityBtn = e.target.closest("#installstatus-density-btn");
+    if (installStatusDensityBtn){ toggleInstallStatusViewDensity(); return; }
+
     var hideRowBtn = e.target.closest("[data-action=\"togglehide\"]");
     if (hideRowBtn){ toggleRowHidden(hideRowBtn.dataset.id); return; }
 
@@ -7859,6 +8009,11 @@ var INSTALLATION_STATUS_SEED_RAW = [
       closePendingModal();
       return;
     }
+    if (e.target.id === "dashboard-settings-btn"){ openSettingsModal(); return; }
+    if (e.target.id === "settings-modal-close" || e.target.id === "settings-modal-backdrop"){
+      closeSettingsModal();
+      return;
+    }
     var pendingDelBtn = e.target.closest("[data-pending-del]");
     if (pendingDelBtn){ deletePendingEntry(pendingDelBtn.dataset.pendingDel); return; }
     var pendingDateEditBtn = e.target.closest("[data-pending-date-edit]");
@@ -7929,7 +8084,9 @@ var INSTALLATION_STATUS_SEED_RAW = [
       var conflictBackdrop = document.getElementById("conflict-modal-backdrop");
       if (conflictBackdrop && !conflictBackdrop.hidden){ closeConflictModal(); return; }
       var pendingBackdrop = document.getElementById("pending-modal-backdrop");
-      if (pendingBackdrop && !pendingBackdrop.hidden) closePendingModal();
+      if (pendingBackdrop && !pendingBackdrop.hidden){ closePendingModal(); return; }
+      var settingsBackdrop = document.getElementById("settings-modal-backdrop");
+      if (settingsBackdrop && !settingsBackdrop.hidden) closeSettingsModal();
       return;
     }
     if (e.key === "Enter" || e.key === " "){
@@ -8080,6 +8237,7 @@ var INSTALLATION_STATUS_SEED_RAW = [
   // of this app's filters (they reset to "show everything" on reload).
   var installStatusHiddenCols = [];
   var installStatusHideCompleted = false;
+  var installStatusViewDensity = "normal"; // "normal" | "compact" — see applyInstallStatusViewDensity()
   var INSTALLSTATUS_PREFS_KEY = "installPlanner.installStatusPrefs.v1";
   function loadInstallStatusPrefs(){
     try{
@@ -8088,10 +8246,25 @@ var INSTALLATION_STATUS_SEED_RAW = [
       var data = JSON.parse(raw);
       if (data && Array.isArray(data.hiddenCols)) installStatusHiddenCols = data.hiddenCols.filter(function(k){ return IS_ALL_COLS.some(function(c){ return c.key===k && c.hideable; }); });
       if (data && typeof data.hideCompleted === "boolean") installStatusHideCompleted = data.hideCompleted;
+      if (data && (data.viewDensity === "normal" || data.viewDensity === "compact")) installStatusViewDensity = data.viewDensity;
     } catch(e){}
   }
   function saveInstallStatusPrefs(){
-    try{ localStorage.setItem(INSTALLSTATUS_PREFS_KEY, JSON.stringify({ hiddenCols:installStatusHiddenCols, hideCompleted:installStatusHideCompleted })); } catch(e){}
+    try{ localStorage.setItem(INSTALLSTATUS_PREFS_KEY, JSON.stringify({ hiddenCols:installStatusHiddenCols, hideCompleted:installStatusHideCompleted, viewDensity:installStatusViewDensity })); } catch(e){}
+  }
+  function applyInstallStatusViewDensity(){
+    var sv = document.getElementById("installstatus-view");
+    if (sv) sv.classList.toggle("view-compact", installStatusViewDensity === "compact");
+    var btn = document.getElementById("installstatus-density-btn");
+    if (btn){
+      btn.textContent = (installStatusViewDensity === "compact") ? "Normal view" : "Compact view";
+      btn.classList.toggle("active", installStatusViewDensity === "compact");
+    }
+  }
+  function toggleInstallStatusViewDensity(){
+    installStatusViewDensity = (installStatusViewDensity === "compact") ? "normal" : "compact";
+    applyInstallStatusViewDensity();
+    saveInstallStatusPrefs();
   }
 
   function findInstallStatusRow(id){ return (state.installationStatusRows||[]).find(function(r){ return r.id===id; }); }
@@ -9197,6 +9370,7 @@ var INSTALLATION_STATUS_SEED_RAW = [
     updateWaHideDeliveredBtn();
     loadInstallStatusPrefs();
     updateInstallStatusHideCompletedBtn();
+    applyInstallStatusViewDensity();
 
     boardHScroll = WA.createHScrollbar({
       boardEl: boardEl,
