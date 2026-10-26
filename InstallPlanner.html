@@ -1106,16 +1106,22 @@
         <input type="search" class="search-field" id="search-input" placeholder="Search project name…" aria-label="Search projects by name">
         <button type="button" class="search-clear" id="search-clear-btn" hidden aria-label="Clear search">×</button>
       </div>
-      <button class="btn" id="date-filter-btn" type="button" title="Find projects starting or finishing in a given month">Date filter</button>
+      <button class="btn" id="date-filter-btn" type="button" title="Find projects starting or finishing in a given month" hidden>Date filter</button>
       <div class="sync-status" id="sync-status" title="Whether your changes are shared with everyone or saved on just this device">
         <span class="sync-dot"></span><span id="sync-label"></span>
       </div>
       <button class="btn" id="sync-now-btn" type="button" title="Force an immediate sync, or retry connecting to the shared database">Sync now</button>
       <button class="btn" id="share-limited-link-btn" type="button" title="Copy a link that only shows Installation Status — safe to send to subcontractors or site staff">🔗 Share Installation Status Link</button>
+      <!-- Schedule and Team Allocation tabs are retired (per user request) — hidden
+           rather than deleted outright, same non-destructive "keep it, just don't
+           show it" approach taken with their underlying project data (still in the
+           shared database, just with no tab left to reach it). See switchView()/
+           applyLimitedModeUI() below — nothing in the UI can navigate to either
+           view anymore, so #schedule-view/#allocation-view just sit there unused. -->
       <div class="view-tabs" id="view-tabs" role="tablist" aria-label="View">
-        <button class="tab-btn active" id="tab-schedule" type="button" role="tab" aria-selected="true">Schedule</button>
-        <button class="tab-btn" id="tab-allocation" type="button" role="tab" aria-selected="false">Team Allocation</button>
-        <button class="tab-btn" id="tab-dashboard" type="button" role="tab" aria-selected="false">Dashboard</button>
+        <button class="tab-btn" id="tab-schedule" type="button" role="tab" aria-selected="false" hidden>Schedule</button>
+        <button class="tab-btn" id="tab-allocation" type="button" role="tab" aria-selected="false" hidden>Team Allocation</button>
+        <button class="tab-btn active" id="tab-dashboard" type="button" role="tab" aria-selected="true">Dashboard</button>
         <button class="tab-btn" id="tab-wa" type="button" role="tab" aria-selected="false">WA Tracker</button>
         <button class="tab-btn" id="tab-daily" type="button" role="tab" aria-selected="false">Daily Schedule</button>
         <button class="tab-btn" id="tab-installstatus" type="button" role="tab" aria-selected="false">Installation Status</button>
@@ -1124,14 +1130,16 @@
       <button class="btn" id="reset-cols-btn" type="button" title="Reset column widths and the details panel back to defaults">Reset columns</button>
       <button class="btn columns-btn" id="columns-btn" type="button" title="Show or hide any column">Show/Hide Columns</button>
       <button class="btn" id="toggle-hidden-rows-btn" type="button" title="Hide/unhide individual projects with the row's eye button, then use this to find them again">Show hidden rows</button>
-      <button class="btn" id="export-pdf-btn" type="button">Export PDF</button>
-      <button class="btn primary" id="add-btn" type="button">+ Add project</button>
+      <button class="btn" id="export-pdf-btn" type="button" hidden>Export PDF</button>
+      <button class="btn primary" id="add-btn" type="button" hidden>+ Add project</button>
     </div>
   </div>
 
-  <div class="stat-row" id="stat-row"></div>
+  <!-- Schedule's own project-count chips and team-color legend — Schedule-only,
+       so permanently hidden now that tab is retired (see note above). -->
+  <div class="stat-row" id="stat-row" hidden></div>
 
-  <div class="legend" id="legend"></div>
+  <div class="legend" id="legend" hidden></div>
 
   <div class="banner" id="example-banner" hidden>
     <span>These three rows are examples so you can see how the schedule works. Edit them, delete them, or use <strong>Import Excel / CSV</strong> to bring in your real project list.</span>
@@ -1144,7 +1152,7 @@
     <option value="GTS"><option value="MACS"><option value="JCT"><option value="GreenBull">
   </datalist>
 
-  <div class="board-wrap" id="schedule-view">
+  <div class="board-wrap" id="schedule-view" hidden>
     <div class="wa-hbar" id="board-hbar" title="Drag to scroll across all columns"><div class="wa-hbar-inner" id="board-hbar-inner"></div></div>
     <div class="board-scroll" id="board-scroll">
       <div class="board" id="board"></div>
@@ -1190,7 +1198,21 @@
     </div>
   </div>
 
-  <div id="dashboard-view" class="dashboard" hidden></div>
+  <div id="dashboard-view" class="dashboard"></div>
+
+  <!-- Dashboard "drill down" page — opened by clicking a team/month/status bar
+       on the Dashboard (see openDashboardDrilldown() below). A simple read-only
+       list of the matching Installation Status projects, each row opening that
+       project's own detail page, plus an explicit "Back to Dashboard" button. -->
+  <div id="dashboard-drilldown-view" hidden>
+    <div class="dash-toolbar">
+      <button type="button" class="btn" id="dashboard-drilldown-back-btn">← Back to Dashboard</button>
+    </div>
+    <div class="panel">
+      <h2 id="dashboard-drilldown-title"></h2>
+      <div id="dashboard-drilldown-body"></div>
+    </div>
+  </div>
 
   <!-- WA production tracker — a separate glass/frame/coating fabrication
        status board, shown as its own full-screen tab (not a popup). Its
@@ -1406,7 +1428,14 @@
       <button type="button" class="report-modal-close" id="settings-modal-close" aria-label="Close">×</button>
     </div>
     <div class="report-modal-body">
-      <div class="settings-section">
+      <!-- Schedule tab is retired (see view-tabs note above) — this section
+           only ever fed Schedule's own project list, which there's no longer
+           a tab to view/edit, so it's hidden rather than something you could
+           still use to import data you could never see again. Left in the DOM
+           (not deleted) so nothing downstream (import-input's change handler
+           etc.) needs touching — same non-destructive approach as everywhere
+           else Schedule/Team Allocation was retired this round. -->
+      <div class="settings-section" hidden>
         <h3>Import projects into Schedule</h3>
         <p class="settings-section-desc">Bring in projects from an Excel/CSV sheet, same columns as the office tracker.</p>
         <div class="settings-section-row">
@@ -5603,12 +5632,12 @@ var INSTALLATION_STATUS_SEED_RAW = [
     renderLegend();
     renderStats();
 
-    var hasExamplesOnly = state.projects.length>0 && state.projects.every(function(p){return p.isExample;});
-    var banner = document.getElementById("example-banner");
-    banner.hidden = state.bannerDismissed || !hasExamplesOnly;
-
-    computeConflicts();
-    renderConflictNotif();
+    // The example-row banner and the scheduling-conflict notification are
+    // both Schedule-only concepts — Schedule's tab is retired (hidden, not
+    // deleted, see view-tabs note in the HTML), so neither is computed
+    // anymore and both stay permanently hidden (their default state) rather
+    // than popping up on Dashboard/Installation Status/etc. referencing data
+    // there's no longer a tab to see or fix.
 
     // Row hide/unhide (see toggleRowHidden()/showHiddenRows above) only ever
     // affects this plain Schedule-list array — the Schedule grid modal,
@@ -6729,96 +6758,145 @@ var INSTALLATION_STATUS_SEED_RAW = [
     }
   }
 
+  // Colors for the Status breakdown bar — Installation Status's own status
+  // list (INSTALL_STATUS_TEAMS has its own dedicated --team-* vars already;
+  // these reuse that same palette family for visual consistency, since the
+  // two never overlap on screen). "No status" shares Not Started's color —
+  // both read as "hasn't begun" at a glance.
+  var INSTALLSTATUS_STATUS_COLOR = {
+    "Not Started": "var(--text-faint)",
+    "In Progress": "var(--accent)",
+    "On Hold": "var(--team-angelo)",
+    "Completed": "var(--team-alex)",
+    "TBC": "var(--team-norberto)",
+    "Close Won": "var(--team-edson)",
+    "No status": "var(--text-faint)"
+  };
+  function installStatusStatusColor(label){ return INSTALLSTATUS_STATUS_COLOR[label] || "var(--team-none)"; }
+
+  // Groups every Installation Status row by the month its Install date falls
+  // in (e.g. "November 2026"), sorted chronologically, with a trailing
+  // "No install date set" bucket for rows with a blank date or the literal
+  // "TBC" placeholder (see fmtInstallStatusDate) — those aren't a real date
+  // to group by. Shared by the "Projects by month" panel below.
+  function installStatusMonthGroups(){
+    var rows = state.installationStatusRows || [];
+    var byMonth = {}, unscheduled = [];
+    rows.forEach(function(r){
+      var v = r.installDate;
+      if (v && /^\d{4}-\d{2}-\d{2}$/.test(v)){
+        var key = v.slice(0,7);
+        (byMonth[key] = byMonth[key] || []).push(r);
+      } else {
+        unscheduled.push(r);
+      }
+    });
+    var groups = Object.keys(byMonth).sort().map(function(key){
+      var y = +key.slice(0,4), m = +key.slice(5,7);
+      return { key:key, label: monthName(m)+" "+y, rows: byMonth[key] };
+    });
+    if (unscheduled.length) groups.push({ key:"unscheduled", label:"No install date set", rows: unscheduled });
+    return groups;
+  }
+
+  // One row of the Dashboard "drill down" list (see openDashboardDrilldown()
+  // below) — same five fields regardless of whether you got here by
+  // clicking a team, a month, or a status, since they're all slices of the
+  // same Installation Status data. Clicking a row opens that project's own
+  // detail page (see the data-dashboard-drilldown-row handler below).
+  function installStatusDrilldownRowHTML(r){
+    return '<tr class="clickable-row" data-dashboard-drilldown-row="'+r.id+'">'+
+      '<td>'+escText(r.site || "Untitled site")+'</td>'+
+      '<td>'+escText(r.contractor || "—")+'</td>'+
+      '<td>'+escText(installStatusLabel(r) || "—")+'</td>'+
+      '<td>'+escText(installStatusTeamLabel(r) || "—")+'</td>'+
+      '<td>'+(fmtInstallStatusDate(r.installDate) || "—")+'</td>'+
+    '</tr>';
+  }
+  function openDashboardDrilldown(title, rows){
+    document.getElementById("dashboard-drilldown-title").textContent = title;
+    var bodyEl = document.getElementById("dashboard-drilldown-body");
+    bodyEl.innerHTML = rows.length ?
+      ('<table class="report-table"><thead><tr><th>Site / Project</th><th>Main contractor</th><th>Status</th><th>Team</th><th>Install date</th></tr></thead><tbody>'+
+        rows.map(installStatusDrilldownRowHTML).join("")+'</tbody></table>')
+      : '<div class="report-empty">No projects match.</div>';
+    switchView("dashboard-drilldown");
+  }
+
+  // ---- Dashboard — entirely driven by Installation Status data (the
+  // Schedule tab it used to read from is retired; see view-tabs note in the
+  // HTML). "Projects by team" and "Projects by month" are both clickable,
+  // opening the drill-down list above; "Projects by client" has no
+  // equivalent (Installation Status tracks a contractor, not a client) so
+  // it's gone, along with "Avg. completion", "Due soon / overdue", and
+  // "Clear all projects" (all removed per request — none had a clean
+  // Installation Status equivalent, or were asked to go outright). ----
   function renderDashboard(){
     var dashEl = document.getElementById("dashboard-view");
-    var projects = state.projects;
-    if (!projects.length){
-      dashEl.innerHTML = '<div class="dash-toolbar"><button type="button" class="btn" id="dashboard-settings-btn">⚙ Settings</button></div>'+
-        '<div class="dash-empty">No projects yet — add or import some to see the dashboard.</div>';
+    var rows = state.installationStatusRows || [];
+    if (!rows.length){
+      dashEl.innerHTML = '<div class="dash-toolbar">'+
+          '<button type="button" class="btn" id="view-wa-btn">WA production tracker</button>'+
+          '<button type="button" class="btn" id="dashboard-settings-btn">⚙ Settings</button>'+
+        '</div>'+
+        '<div class="dash-empty">No Installation Status projects yet — add some on the Installation Status tab to see the dashboard.</div>';
       return;
     }
-    var pctSum=0, unassigned=0, notStarted=0, inProgress=0, complete=0;
-    var byTeam = {}; allTeamNames().forEach(function(t){ byTeam[t]=0; });
-    var byClient = {};
-    projects.forEach(function(p){
-      pctSum += Number(p.pct)||0;
-      if (!p.team) unassigned++; else byTeam[p.team] = (byTeam[p.team]||0)+1;
-      var b = statusBucket(p);
-      if (b==="notStarted") notStarted++; else if (b==="complete") complete++; else inProgress++;
-      var c = (p.client||"").trim() || "No client";
-      byClient[c] = (byClient[c]||0) + 1;
+
+    var unassigned=0, inProgressCount=0;
+    var byTeam = {}; INSTALL_STATUS_TEAMS.forEach(function(t){ byTeam[t]=0; });
+    var byStatus = {};
+    rows.forEach(function(r){
+      var teamLabel = installStatusTeamLabel(r);
+      if (!teamLabel) unassigned++; else byTeam[teamLabel] = (byTeam[teamLabel]||0)+1;
+      var statusLabel = installStatusLabel(r) || "No status";
+      byStatus[statusLabel] = (byStatus[statusLabel]||0)+1;
+      if (statusLabel === "In Progress") inProgressCount++;
     });
-    var avgPct = Math.round(pctSum/projects.length);
 
     var toolbarHTML = '<div class="dash-toolbar">'+
-      '<button type="button" class="btn" id="view-grid-btn">View schedule grid</button>'+
       '<button type="button" class="btn" id="view-wa-btn">WA production tracker</button>'+
-      '<button type="button" class="btn" id="view-all-report-btn">View all projects (report)</button>'+
       '<button type="button" class="btn" id="dashboard-settings-btn">⚙ Settings</button>'+
       '</div>';
 
     var kpiHTML = '<div class="dash-grid">'+
-        kpiCard("Total projects", projects.length, projects.length+" tracked", "all") +
-        kpiCard("In progress", inProgress, "currently underway", "inProgress") +
-        kpiCard("Avg. completion", avgPct+"%", "mean of all % complete", "all") +
-        kpiCard("Unassigned", unassigned, unassigned ? "need a team" : "fully staffed", "unassigned") +
+        kpiCard("Total projects", rows.length, rows.length+" tracked", null) +
+        kpiCard("In progress", inProgressCount, "currently underway", null) +
+        kpiCard("Unassigned", unassigned, unassigned ? "need a team" : "fully staffed", null) +
       '</div>';
 
-    var teamRows = allTeamNames().map(function(t){ return {label:t, value:byTeam[t]||0, color:teamColorValue(t)}; })
-      .sort(function(a,b){ return b.value-a.value; });
+    var teamRows = INSTALL_STATUS_TEAMS.map(function(t){ return {label:t, value:byTeam[t]||0, color:teamColorValue(t), key:t}; });
+    if (unassigned) teamRows.push({label:"Unassigned", value:unassigned, color:"var(--team-none)", key:"__unassigned__"});
+    teamRows.sort(function(a,b){ return b.value-a.value; });
     var maxTeam = Math.max.apply(null, [1].concat(teamRows.map(function(r){return r.value;})));
-    var teamHTML = teamRows.map(function(r){ return barRow(r.label, String(r.value), r.value/maxTeam, r.color, 'data-report-team="'+escAttr(r.label)+'"'); }).join("");
+    var teamHTML = teamRows.map(function(r){
+      return barRow(r.label, String(r.value), r.value/maxTeam, r.color, 'data-dash-team="'+escAttr(r.key)+'"');
+    }).join("");
 
-    var clientEntries = Object.keys(byClient).map(function(c){ return {label:c, value:byClient[c]}; })
-      .sort(function(a,b){ return b.value-a.value; }).slice(0,8);
-    var maxClient = Math.max.apply(null, [1].concat(clientEntries.map(function(r){return r.value;})));
-    var clientHTML = clientEntries.length ? clientEntries.map(function(r){ return barRow(r.label, String(r.value), r.value/maxClient, "var(--accent)", 'data-report-client="'+escAttr(r.label)+'"'); }).join("")
-      : '<div class="dash-empty">No client data yet.</div>';
-
-    var statusTotal = (notStarted+inProgress+complete) || 1;
+    var statusKeys = Object.keys(byStatus).sort(function(a,b){ return byStatus[b]-byStatus[a]; });
+    var statusTotal = rows.length || 1;
     var statusHTML = '<div class="bar-track" style="display:flex; height:16px;">'+
-        segment(notStarted/statusTotal, "var(--text-faint)") +
-        segment(inProgress/statusTotal, "var(--accent)") +
-        segment(complete/statusTotal, "var(--team-alex)") +
+        statusKeys.map(function(k){ return segment(byStatus[k]/statusTotal, installStatusStatusColor(k)); }).join("") +
       '</div>'+
       '<div class="status-legend" style="flex-direction:row; flex-wrap:wrap; gap:16px; margin-top:10px;">'+
-        legendDot("var(--text-faint)", "Not started", notStarted, "notStarted") +
-        legendDot("var(--accent)", "In progress", inProgress, "inProgress") +
-        legendDot("var(--team-alex)", "Complete", complete, "complete") +
+        statusKeys.map(function(k){
+          return '<span class="clickable" data-dash-status="'+escAttr(k==="No status"?"__none__":k)+'" tabindex="0" role="button">'+
+            '<span class="dot" style="background:'+installStatusStatusColor(k)+';"></span>'+escText(k)+' ('+byStatus[k]+')</span>';
+        }).join("") +
       '</div>';
 
-    var soonList = projects.filter(function(p){ return !!p.finish; })
-      .map(function(p){ return { p:p, days: daysBetween(TODAY_ISO, p.finish) }; })
-      .filter(function(x){ return x.days <= 14; })
-      .sort(function(a,b){ return a.days - b.days; })
-      .slice(0, 10);
-    var upcomingHTML = soonList.length ? (
-      '<table class="upcoming-table"><thead><tr><th>Project</th><th>Client</th><th>Team</th><th>Finish</th></tr></thead><tbody>'+
-      soonList.map(function(x){
-        var p = x.p;
-        var tag = x.days < 0 ? '<span class="tag-overdue">Overdue '+Math.abs(x.days)+'d</span>'
-          : (x.days===0 ? '<span class="tag-overdue">Due today</span>' : '<span class="tag-soon">Due in '+x.days+'d</span>');
-        return '<tr class="clickable-row" data-report-project="'+p.id+'"><td>'+escText(p.name||"Untitled")+'</td><td>'+escText(p.client||"—")+'</td><td>'+escText(p.team||"—")+'</td><td>'+fmtDateDisplay(p.finish)+'<br>'+tag+'</td></tr>';
-      }).join("") +
-      '</tbody></table>'
-    ) : '<div class="dash-empty">Nothing overdue or due in the next 14 days.</div>';
-
-    var settingsHTML = '<div class="panel">'+
-      '<h2>Settings</h2>'+
-      '<p style="font-size:12px; color:var(--text-muted); margin:0 0 12px;">This affects everyone sharing this planner — use it right before importing a fresh project list.</p>'+
-      '<button type="button" class="btn danger" id="clear-all-btn" title="Delete every project — for everyone sharing this planner — so you can start fresh">Clear all projects</button>'+
-      '</div>';
+    var monthGroups = installStatusMonthGroups();
+    var maxMonth = Math.max.apply(null, [1].concat(monthGroups.map(function(g){return g.rows.length;})));
+    var monthHTML = monthGroups.length ? monthGroups.map(function(g){
+      return barRow(g.label, String(g.rows.length), g.rows.length/maxMonth, "var(--accent)", 'data-dash-month="'+escAttr(g.key)+'" data-dash-month-label="'+escAttr(g.label)+'"');
+    }).join("") : '<div class="dash-empty">No install dates set yet.</div>';
 
     dashEl.innerHTML = toolbarHTML + kpiHTML +
       '<div class="dash-panels">'+
         '<div class="panel"><h2>Projects by team</h2>'+teamHTML+'</div>'+
-        '<div class="panel"><h2>Projects by client</h2>'+clientHTML+'</div>'+
-      '</div>'+
-      '<div class="dash-panels">'+
         '<div class="panel"><h2>Status breakdown</h2>'+statusHTML+'</div>'+
-        '<div class="panel"><h2>Due soon / overdue</h2>'+upcomingHTML+'</div>'+
       '</div>'+
-      settingsHTML;
+      '<div class="panel"><h2>Projects by month (install date)</h2>'+monthHTML+'</div>';
   }
 
   // ---- team allocation view: a full-page, 3-month Gantt-style summary —
@@ -7994,61 +8072,46 @@ var INSTALLATION_STATUS_SEED_RAW = [
       return;
     }
 
-    // ---- dashboard: click any of these to view the matching projects as a read-only report ----
-    if (e.target.id === "view-all-report-btn"){
-      openReport("All projects", state.projects.length+" project"+(state.projects.length===1?"":"s"), state.projects);
-      return;
-    }
-    if (e.target.id === "view-grid-btn"){ openGridModal(); return; }
+    // ---- dashboard: click a team/month/status bar to drill into the
+    // matching Installation Status projects (see openDashboardDrilldown()
+    // and renderDashboard() above) ----
     if (e.target.id === "view-wa-btn"){ switchView("wa"); return; }
-    if (e.target.id === "clear-all-btn"){ openClearAllConfirm(); return; }
     if (e.target.id === "conflict-notif-btn"){ openConflictModal(); return; }
     if (e.target.id === "conflict-modal-close" || e.target.id === "conflict-modal-backdrop"){
       closeConflictModal();
       return;
     }
-    var kpiEl = e.target.closest('[data-report-kpi]');
-    if (kpiEl){
-      var kpiKey = kpiEl.dataset.reportKpi;
-      if (kpiKey === "unassigned"){
-        var unassignedList = state.projects.filter(function(p){ return !p.team; });
-        openReport("Unassigned projects", unassignedList.length+" project"+(unassignedList.length===1?"":"s")+" without a team", unassignedList);
-      } else if (kpiKey === "inProgress"){
-        var inProgressList = state.projects.filter(function(p){ return statusBucket(p) === "inProgress"; });
-        openReport("In progress projects", inProgressList.length+" project"+(inProgressList.length===1?"":"s"), inProgressList);
-      } else {
-        openReport("All projects", state.projects.length+" project"+(state.projects.length===1?"":"s"), state.projects);
-      }
+    var dashTeamEl = e.target.closest('[data-dash-team]');
+    if (dashTeamEl){
+      var dashTeam = dashTeamEl.dataset.dashTeam;
+      var dashTeamRows = (state.installationStatusRows||[]).filter(function(r){
+        return dashTeam === "__unassigned__" ? !installStatusTeamLabel(r) : installStatusTeamLabel(r) === dashTeam;
+      });
+      openDashboardDrilldown((dashTeam==="__unassigned__"?"Unassigned":dashTeam)+" — projects", dashTeamRows);
       return;
     }
-    var teamBarEl = e.target.closest('[data-report-team]');
-    if (teamBarEl){
-      var teamName = teamBarEl.dataset.reportTeam;
-      var teamList = state.projects.filter(function(p){ return p.team === teamName; });
-      openReport(teamName+" — projects", teamList.length+" project"+(teamList.length===1?"":"s"), teamList);
+    var dashMonthEl = e.target.closest('[data-dash-month]');
+    if (dashMonthEl){
+      var dashMonthKey = dashMonthEl.dataset.dashMonth;
+      var dashMonthRows = (state.installationStatusRows||[]).filter(function(r){
+        var v = r.installDate;
+        var hasDate = v && /^\d{4}-\d{2}-\d{2}$/.test(v);
+        return dashMonthKey === "unscheduled" ? !hasDate : (hasDate && v.slice(0,7) === dashMonthKey);
+      });
+      openDashboardDrilldown((dashMonthEl.dataset.dashMonthLabel || dashMonthKey)+" — installs", dashMonthRows);
       return;
     }
-    var clientBarEl = e.target.closest('[data-report-client]');
-    if (clientBarEl){
-      var clientName = clientBarEl.dataset.reportClient;
-      var clientList = state.projects.filter(function(p){ return ((p.client||"").trim()||"No client") === clientName; });
-      openReport(clientName+" — projects", clientList.length+" project"+(clientList.length===1?"":"s"), clientList);
+    var dashStatusEl = e.target.closest('[data-dash-status]');
+    if (dashStatusEl){
+      var dashStatus = dashStatusEl.dataset.dashStatus;
+      var dashStatusRows = (state.installationStatusRows||[]).filter(function(r){
+        return dashStatus === "__none__" ? !installStatusLabel(r) : installStatusLabel(r) === dashStatus;
+      });
+      openDashboardDrilldown((dashStatus==="__none__"?"No status":dashStatus)+" — projects", dashStatusRows);
       return;
     }
-    var statusEl = e.target.closest('[data-report-status]');
-    if (statusEl){
-      var statusKey = statusEl.dataset.reportStatus;
-      var statusList = state.projects.filter(function(p){ return statusBucket(p) === statusKey; });
-      var statusLabel = {notStarted:"Not started", inProgress:"In progress", complete:"Complete"}[statusKey] || statusKey;
-      openReport(statusLabel+" projects", statusList.length+" project"+(statusList.length===1?"":"s"), statusList);
-      return;
-    }
-    var projRowEl = e.target.closest('[data-report-project]');
-    if (projRowEl){
-      var reportProj = findProject(projRowEl.dataset.reportProject);
-      if (reportProj) openSingleProjectReport(reportProj);
-      return;
-    }
+    var drilldownRowEl = e.target.closest('[data-dashboard-drilldown-row]');
+    if (drilldownRowEl){ openInstallStatusDetail(drilldownRowEl.dataset.dashboardDrilldownRow); return; }
 
     if (e.target.id === "report-modal-close" || e.target.id === "report-modal-backdrop"){
       closeReport();
@@ -8147,7 +8210,7 @@ var INSTALLATION_STATUS_SEED_RAW = [
       return;
     }
     if (e.key === "Enter" || e.key === " "){
-      var reportTrigger = e.target.closest('[data-report-kpi],[data-report-team],[data-report-client],[data-report-status]');
+      var reportTrigger = e.target.closest('[data-dash-team],[data-dash-month],[data-dash-status]');
       if (reportTrigger){ e.preventDefault(); reportTrigger.click(); }
     }
   });
@@ -8980,7 +9043,7 @@ var INSTALLATION_STATUS_SEED_RAW = [
   }
 
   // ---- view switching (Schedule / Team Allocation / Dashboard / WA Tracker) ----
-  var currentView = "schedule";
+  var currentView = "dashboard"; // was "schedule" — Schedule tab is retired, Dashboard is the new landing view
   function switchView(view){
     // Belt-and-braces: nothing in the UI links to these views when
     // LIMITED_MODE is on (the tabs/buttons that would are hidden by
@@ -8991,6 +9054,7 @@ var INSTALLATION_STATUS_SEED_RAW = [
     document.getElementById("schedule-view").hidden = (view !== "schedule");
     document.getElementById("allocation-view").hidden = (view !== "allocation");
     document.getElementById("dashboard-view").hidden = (view !== "dashboard");
+    document.getElementById("dashboard-drilldown-view").hidden = (view !== "dashboard-drilldown");
     document.getElementById("wa-view").hidden = (view !== "wa");
     document.getElementById("daily-view").hidden = (view !== "daily");
     document.getElementById("detail-view").hidden = (view !== "detail");
@@ -9000,8 +9064,8 @@ var INSTALLATION_STATUS_SEED_RAW = [
     document.getElementById("tab-schedule").setAttribute("aria-selected", view==="schedule");
     document.getElementById("tab-allocation").classList.toggle("active", view==="allocation");
     document.getElementById("tab-allocation").setAttribute("aria-selected", view==="allocation");
-    document.getElementById("tab-dashboard").classList.toggle("active", view==="dashboard");
-    document.getElementById("tab-dashboard").setAttribute("aria-selected", view==="dashboard");
+    document.getElementById("tab-dashboard").classList.toggle("active", view==="dashboard" || view==="dashboard-drilldown");
+    document.getElementById("tab-dashboard").setAttribute("aria-selected", view==="dashboard" || view==="dashboard-drilldown");
     document.getElementById("tab-wa").classList.toggle("active", view==="wa");
     document.getElementById("tab-wa").setAttribute("aria-selected", view==="wa");
     document.getElementById("tab-daily").classList.toggle("active", view==="daily");
@@ -9039,7 +9103,7 @@ var INSTALLATION_STATUS_SEED_RAW = [
   // actively filtering, never stacked with a second search field). This is
   // the one place that decides what's visible, so any new per-tab-only
   // toolbar control should be added here rather than left shown everywhere.
-  var searchCapableViews = { schedule:true, wa:true };
+  var searchCapableViews = { wa:true };
   function updateToolbarForView(view){
     var showColsControls = (view === "schedule");
     ["reset-cols-btn","columns-btn","toggle-hidden-rows-btn","view-density-btn"].forEach(function(id){
@@ -9064,6 +9128,7 @@ var INSTALLATION_STATUS_SEED_RAW = [
   document.getElementById("tab-daily").addEventListener("click", function(){ switchView("daily"); });
   document.getElementById("tab-installstatus").addEventListener("click", function(){ switchView("installstatus"); });
   document.getElementById("installstatus-detail-back-btn").addEventListener("click", function(){ switchView("installstatus"); });
+  document.getElementById("dashboard-drilldown-back-btn").addEventListener("click", function(){ switchView("dashboard"); });
 
   // Copies a link that opens this same app with ?limited=1 — see
   // applyLimitedModeUI()/LIMITED_MODE above for what that link shows. Same
