@@ -802,9 +802,35 @@
      row content can never paint over the frozen header there. */
   .installstatus-board .cell.meta-head.is-c-idx, .installstatus-board .cell.meta-head.is-c-site{ z-index:9; }
   /* Full-width "Current Projects (N)" / "Upcoming Projects (N)" divider row,
-     styled like the WA Tracker's .wa-group-row group headers. */
-  .installstatus-section-row{ padding:0 14px; background:var(--surface-2); border-bottom:1px solid var(--border-strong); position:sticky; top:42px; z-index:8; display:flex; align-items:center; gap:10px; font-family:var(--font-sans); font-weight:700; font-size:13px; color:var(--text); text-transform:uppercase; letter-spacing:.03em; }
+     styled like the WA Tracker's .wa-group-row group headers. Given a visible
+     top AND bottom border (not just bottom) so it reads as a distinct bar
+     separating the two groups, per the user's explicit request for "a bar
+     to separate" Current from Upcoming — not just a label above each group. */
+  .installstatus-section-row{ padding:0 14px; background:var(--surface-2); border-top:2px solid var(--border-strong); border-bottom:2px solid var(--border-strong); position:sticky; top:42px; z-index:8; display:flex; align-items:center; gap:10px; font-family:var(--font-sans); font-weight:700; font-size:13px; color:var(--text); text-transform:uppercase; letter-spacing:.03em; }
   .installstatus-section-row .installstatus-section-count{ font-size:11px; font-weight:600; color:var(--text-muted); background:var(--surface); border:1px solid var(--border-strong); border-radius:100px; padding:1px 8px; text-transform:none; letter-spacing:normal; }
+  /* "Move to Current ▸" button that sits inside the Upcoming Projects divider
+     bar itself, right after the label/count — opens
+     #movetocurrent-modal-backdrop. Deliberately NOT pushed to the far right
+     of the row (margin-left:auto) because the divider row spans the full,
+     very wide board (grid-column:1 / span IS_TOTAL_COLS) and is only
+     vertically sticky, not horizontally — a right-aligned button would sit
+     off-screen until the user scrolled the board all the way right. Staying
+     right after the count keeps it visible at scrollLeft:0, same as the
+     "Current Projects"/"Upcoming Projects" label itself. Normal-case +
+     normal-weight so it doesn't visually fight the uppercase/bold label. */
+  .installstatus-section-row .installstatus-move-btn{ text-transform:none; letter-spacing:normal; font-weight:600; padding:4px 12px; font-size:12px; }
+
+  /* "Move upcoming to Current" modal — same checklist-with-select-all shape
+     as the Daily Schedule "Paste schedule" preview list, just renamed. */
+  .movetocurrent-select-all-row{ display:flex; align-items:center; gap:8px; font-size:12.5px; font-weight:600; color:var(--text); padding-bottom:10px; border-bottom:1px solid var(--border); margin-bottom:10px; }
+  .movetocurrent-list{ border:1px solid var(--border); border-radius:8px; max-height:340px; overflow:auto; }
+  .movetocurrent-row{ display:flex; align-items:flex-start; gap:10px; padding:10px 12px; border-bottom:1px solid var(--border); }
+  .movetocurrent-row:last-child{ border-bottom:none; }
+  .movetocurrent-row input[type="checkbox"]{ margin-top:2px; }
+  .movetocurrent-row-site{ font-family:var(--font-sans); font-weight:600; font-size:13px; }
+  .movetocurrent-row-sub{ font-size:11.5px; color:var(--text-muted); margin-top:2px; }
+  .movetocurrent-empty{ padding:24px; text-align:center; color:var(--text-muted); font-size:12.5px; }
+  .movetocurrent-modal-actions{ display:flex; justify-content:flex-end; gap:8px; margin-top:14px; }
 
   /* Priority field + its "High priority ⇒ bold red" styling. Applied per-row
      in the list grid (each .cell gets the extra .is-row-high class — see
@@ -1395,6 +1421,29 @@
         <h3>Help</h3>
         <p class="settings-section-desc">A walkthrough of every tab and feature in the app.</p>
         <a class="btn" id="settings-user-guide-link" href="User-Guide.pdf" target="_blank" rel="noopener">📄 View User Guide (PDF)</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Installation Status: "Move to Current" — opened from the Upcoming
+     Projects divider bar, lists every upcoming project with a checkbox so
+     several can be moved into Current in one go. See openMoveToCurrentModal()/
+     renderMoveToCurrentList()/performMoveToCurrent() in the script below. -->
+<div class="report-modal-backdrop" id="movetocurrent-modal-backdrop" hidden>
+  <div class="report-modal-card" role="dialog" aria-modal="true" aria-labelledby="movetocurrent-modal-title" style="width:min(520px, 100%);">
+    <div class="report-modal-header">
+      <h2 id="movetocurrent-modal-title">Move upcoming projects to Current</h2>
+      <button type="button" class="report-modal-close" id="movetocurrent-modal-close" aria-label="Close">×</button>
+    </div>
+    <div class="report-modal-body">
+      <label class="movetocurrent-select-all-row">
+        <input type="checkbox" id="movetocurrent-select-all"> Select all
+      </label>
+      <div class="movetocurrent-list" id="movetocurrent-list"></div>
+      <div class="movetocurrent-modal-actions">
+        <button type="button" class="btn" id="movetocurrent-cancel-btn">Cancel</button>
+        <button type="button" class="btn primary" id="movetocurrent-confirm-btn" disabled>Move selected to Current</button>
       </div>
     </div>
   </div>
@@ -8014,6 +8063,12 @@ var INSTALLATION_STATUS_SEED_RAW = [
       closeSettingsModal();
       return;
     }
+    if (e.target.id === "installstatus-move-to-current-btn"){ openMoveToCurrentModal(); return; }
+    if (e.target.id === "movetocurrent-modal-close" || e.target.id === "movetocurrent-modal-backdrop" || e.target.id === "movetocurrent-cancel-btn"){
+      closeMoveToCurrentModal();
+      return;
+    }
+    if (e.target.id === "movetocurrent-confirm-btn"){ performMoveToCurrent(); return; }
     var pendingDelBtn = e.target.closest("[data-pending-del]");
     if (pendingDelBtn){ deletePendingEntry(pendingDelBtn.dataset.pendingDel); return; }
     var pendingDateEditBtn = e.target.closest("[data-pending-date-edit]");
@@ -8086,7 +8141,9 @@ var INSTALLATION_STATUS_SEED_RAW = [
       var pendingBackdrop = document.getElementById("pending-modal-backdrop");
       if (pendingBackdrop && !pendingBackdrop.hidden){ closePendingModal(); return; }
       var settingsBackdrop = document.getElementById("settings-modal-backdrop");
-      if (settingsBackdrop && !settingsBackdrop.hidden) closeSettingsModal();
+      if (settingsBackdrop && !settingsBackdrop.hidden){ closeSettingsModal(); return; }
+      var movetocurrentBackdrop = document.getElementById("movetocurrent-modal-backdrop");
+      if (movetocurrentBackdrop && !movetocurrentBackdrop.hidden) closeMoveToCurrentModal();
       return;
     }
     if (e.key === "Enter" || e.key === " "){
@@ -8229,6 +8286,7 @@ var INSTALLATION_STATUS_SEED_RAW = [
   var installStatusStatusFilter = "";
   var installStatusSectionFilter = ""; // "", "current", "upcoming" — set by clicking the "N current/upcoming projects" stat pill
   var installStatusPriorityFilter = ""; // "", "High", "Low" — set by the priority filter dropdown
+  var moveToCurrentSelection = {}; // {rowId: true} — which upcoming rows are checked while the "Move to Current" modal is open
 
   // Persisted prefs: which columns are hidden (Show/Hide Fields) and whether
   // completed jobs are hidden — same localStorage-blob pattern as the WA
@@ -8372,10 +8430,11 @@ var INSTALLATION_STATUS_SEED_RAW = [
     }).join("");
   }
 
-  function installStatusSectionRowHTML(label, shownCount, totalCount, gridRow){
+  function installStatusSectionRowHTML(label, shownCount, totalCount, gridRow, actionHtml){
     return '<div class="cell installstatus-section-row" style="grid-column:1 / span '+IS_TOTAL_COLS+'; grid-row:'+gridRow+';">'+
       '<span>'+escText(label)+'</span>'+
       '<span class="installstatus-section-count">'+shownCount+(shownCount!==totalCount?" of "+totalCount:"")+'</span>'+
+      (actionHtml || "") +
     '</div>';
   }
 
@@ -8501,12 +8560,20 @@ var INSTALLATION_STATUS_SEED_RAW = [
     var rowCursor = 2;
     var rowHeights = ["42px"];
 
+    // "Move to Current ▸" lives in the Upcoming Projects bar only, and only
+    // when there's at least one upcoming project anywhere (not just within
+    // the current search/filter) to move — openMoveToCurrentModal() lists
+    // every upcoming project regardless of the active filter, same reasoning
+    // as "show me the list of upcoming projects" in the user's request.
+    var moveToCurrentBtnHTML = allUpcoming.length ?
+      '<button type="button" class="btn installstatus-move-btn" id="installstatus-move-to-current-btn">Move to Current ▸</button>' : "";
+
     [
-      { show: showCurrent, label: "Current Projects", shown: current, all: allCurrent, emptyMsg: "No current projects match this search/filter." },
-      { show: showUpcoming, label: "Upcoming Projects", shown: upcoming, all: allUpcoming, emptyMsg: "No upcoming projects match this search/filter." }
+      { show: showCurrent, label: "Current Projects", shown: current, all: allCurrent, emptyMsg: "No current projects match this search/filter.", action: "" },
+      { show: showUpcoming, label: "Upcoming Projects", shown: upcoming, all: allUpcoming, emptyMsg: "No upcoming projects match this search/filter.", action: moveToCurrentBtnHTML }
     ].forEach(function(section){
       if (!section.show) return;
-      html += installStatusSectionRowHTML(section.label, section.shown.length, section.all.length, rowCursor);
+      html += installStatusSectionRowHTML(section.label, section.shown.length, section.all.length, rowCursor, section.action);
       rowHeights.push("34px");
       rowCursor++;
       if (section.shown.length){
@@ -8613,6 +8680,61 @@ var INSTALLATION_STATUS_SEED_RAW = [
       'Delete "'+(r.site || "Untitled site")+'" from Installation Status? This can be undone right after with the Undo button, but not once you leave or refresh the page.',
       "Delete"
     );
+  }
+
+  // ---- Installation Status: "Move to Current" bulk action — opened from the
+  // Upcoming Projects divider bar. Lists EVERY upcoming row (ignoring any
+  // active search/filter, same as "show me the list of upcoming projects"),
+  // lets several be checked at once, then flips r.section to "current" for
+  // each on confirm. One Undo-able step via lastSnapshotForUndo, same
+  // pattern as every other bulk action in the app (see cloneState() usage
+  // elsewhere). ----
+  function openMoveToCurrentModal(){
+    moveToCurrentSelection = {};
+    document.getElementById("movetocurrent-select-all").checked = false;
+    renderMoveToCurrentList();
+    document.getElementById("movetocurrent-modal-backdrop").hidden = false;
+  }
+  function closeMoveToCurrentModal(){
+    document.getElementById("movetocurrent-modal-backdrop").hidden = true;
+  }
+  function moveToCurrentUpcomingRows(){
+    return (state.installationStatusRows || []).filter(function(r){ return r.section === "upcoming"; });
+  }
+  function renderMoveToCurrentList(){
+    var rows = moveToCurrentUpcomingRows();
+    var listEl = document.getElementById("movetocurrent-list");
+    if (!rows.length){
+      listEl.innerHTML = '<div class="movetocurrent-empty">No upcoming projects right now.</div>';
+    } else {
+      listEl.innerHTML = rows.map(function(r){
+        var checked = !!moveToCurrentSelection[r.id];
+        return '<label class="movetocurrent-row">'+
+          '<input type="checkbox" data-movetocurrent-id="'+r.id+'"'+(checked?" checked":"")+'>'+
+          '<span><span class="movetocurrent-row-site">'+escText(r.site || "Untitled site")+'</span>'+
+          (r.contractor ? '<span class="movetocurrent-row-sub">'+escText(r.contractor)+'</span>' : "")+
+          '</span>'+
+        '</label>';
+      }).join("");
+    }
+    var selectedCount = rows.filter(function(r){ return moveToCurrentSelection[r.id]; }).length;
+    var selectAllEl = document.getElementById("movetocurrent-select-all");
+    selectAllEl.checked = rows.length > 0 && selectedCount === rows.length;
+    selectAllEl.disabled = !rows.length;
+    document.getElementById("movetocurrent-confirm-btn").disabled = selectedCount === 0;
+  }
+  function performMoveToCurrent(){
+    var ids = Object.keys(moveToCurrentSelection).filter(function(id){ return moveToCurrentSelection[id]; });
+    if (!ids.length) return;
+    lastSnapshotForUndo = cloneState();
+    var moved = 0;
+    (state.installationStatusRows || []).forEach(function(r){
+      if (ids.indexOf(r.id) !== -1 && r.section === "upcoming"){ r.section = "current"; moved++; }
+    });
+    closeMoveToCurrentModal();
+    render();
+    scheduleSave();
+    showToast(moved+' project'+(moved===1?"":"s")+' moved to Current.', "Undo", undoLast);
   }
 
   // ---- Installation Status: field/select/textarea editing — same
@@ -8735,6 +8857,22 @@ var INSTALLATION_STATUS_SEED_RAW = [
   document.addEventListener("change", function(e){
     if (!e.target.matches("[data-installstatus-colcheck]")) return;
     toggleInstallStatusColHidden(e.target.dataset.installstatusColcheck);
+  });
+  document.addEventListener("change", function(e){
+    if (e.target.matches("[data-movetocurrent-id]")){
+      var id = e.target.dataset.movetocurrentId;
+      if (e.target.checked) moveToCurrentSelection[id] = true; else delete moveToCurrentSelection[id];
+      renderMoveToCurrentList();
+      return;
+    }
+    if (e.target.id === "movetocurrent-select-all"){
+      var checkedAll = e.target.checked;
+      moveToCurrentUpcomingRows().forEach(function(r){
+        if (checkedAll) moveToCurrentSelection[r.id] = true; else delete moveToCurrentSelection[r.id];
+      });
+      renderMoveToCurrentList();
+      return;
+    }
   });
 
   // ---- Export Excel / PDF for Installation Status — same libraries/pattern
