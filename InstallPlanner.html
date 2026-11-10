@@ -514,6 +514,8 @@
      the row label is a project name rather than a short team name, so it
      needs to truncate instead of overflowing the sticky label column. */
   #installstatus-gantt-board .alloc-team-label{ white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  #installstatus-gantt-board .alloc-team-label.clickable{ cursor:pointer; }
+  #installstatus-gantt-board .alloc-team-label.clickable:hover{ color:var(--accent); text-decoration:underline; }
   .legend-add-team{ font-weight:700; color:var(--accent); border-color:var(--border); }
   .legend-add-team:hover{ border-color:var(--accent); background:var(--accent-soft); }
 
@@ -1358,6 +1360,7 @@
       <button class="btn" id="installstatus-gantt-next" type="button">Next month ›</button>
       <button class="btn" id="installstatus-gantt-today" type="button">Today</button>
       <button class="btn" id="installstatus-gantt-groupby-btn" type="button" title="Switch between one row per team and one row per project">Group by: Team</button>
+      <button class="btn" id="installstatus-gantt-range-btn" type="button" title="Switch between a 1-month and a 3-month view">View: 3 months</button>
     </div>
     <div class="board-wrap">
       <div class="board-scroll" id="installstatus-gantt-scroll" style="max-height:calc(100vh - 260px);">
@@ -6949,7 +6952,7 @@ var INSTALLATION_STATUS_SEED_RAW = [
   // valid Install date — one with no date (or the literal "TBC") can't be
   // placed on a timeline, but it still shows up in the plain table below the
   // chart so the report never silently drops a project. ----
-  var INSTALLSTATUS_GANTT_MONTHS = 3;
+  var installStatusGanttRangeMonths = 3; // 1 | 3 — toggled by #installstatus-gantt-range-btn
   var installStatusGanttStart = { y: BASE_START.y, m: BASE_START.m };
   var INSTALLSTATUS_GANTT_DAYS = [];
   var INSTALLSTATUS_GANTT_MONTH_GROUPS = [];
@@ -6959,7 +6962,7 @@ var INSTALLATION_STATUS_SEED_RAW = [
   function rebuildInstallStatusGanttRange(){
     INSTALLSTATUS_GANTT_DAYS = [];
     var y = installStatusGanttStart.y, m = installStatusGanttStart.m;
-    for (var i=0;i<INSTALLSTATUS_GANTT_MONTHS;i++){
+    for (var i=0;i<installStatusGanttRangeMonths;i++){
       var dim = daysInMonth(y,m);
       for (var d=1; d<=dim; d++){
         var dow = weekdayOf(y,m,d);
@@ -7054,6 +7057,8 @@ var INSTALLATION_STATUS_SEED_RAW = [
     if (rangeLabelEl) rangeLabelEl.textContent = installStatusGanttRangeLabel();
     var groupByBtn = document.getElementById("installstatus-gantt-groupby-btn");
     if (groupByBtn) groupByBtn.textContent = "Group by: " + (installStatusGanttGroupBy==="team" ? "Team" : "Project");
+    var rangeBtn = document.getElementById("installstatus-gantt-range-btn");
+    if (rangeBtn) rangeBtn.textContent = "View: " + (installStatusGanttRangeMonths===1 ? "1 month" : "3 months");
 
     var ganttBoardEl = document.getElementById("installstatus-gantt-board");
     if (!ganttBoardEl) return;
@@ -7097,12 +7102,12 @@ var INSTALLATION_STATUS_SEED_RAW = [
       var totalLanes = teamData.reduce(function(s,td){ return s+td.info.laneCount; }, 0);
       if (!totalLanes){
         ganttBoardEl.style.gridTemplateRows = "30px 42px 64px";
-        bodyHTML += '<div class="cell empty-state" style="grid-column:1 / span '+totalCols+'; grid-row:3; justify-content:center;">No team has a project with an install date in this 3-month window.</div>';
+        bodyHTML += '<div class="cell empty-state" style="grid-column:1 / span '+totalCols+'; grid-row:3; justify-content:center;">No team has a project with an install date in this '+installStatusGanttRangeMonths+'-month window.</div>';
       } else {
         teamData.forEach(function(td){
           var laneCount = td.info.laneCount;
           for (var L=0; L<laneCount; L++) rowSizes.push("34px");
-          bodyHTML += '<div class="cell alloc-team-label" style="grid-column:1; grid-row:'+gridRow+' / span '+laneCount+';" title="'+escAttr(td.name)+'">'+
+          bodyHTML += '<div class="cell alloc-team-label clickable" style="grid-column:1; grid-row:'+gridRow+' / span '+laneCount+';" title="View '+escAttr(td.name)+'’s projects in Installation Status" data-gantt-team-click="'+escAttr(td.key)+'" tabindex="0" role="button">'+
             '<span class="legend-dot" style="background:'+teamColorValue(td.key==="__unassigned__"?null:td.name)+'"></span>'+escText(td.name)+'</div>';
           for (var L2=0; L2<laneCount; L2++) bodyHTML += installStatusGanttDayCellsHTML(gridRow+L2);
           td.info.items.forEach(function(item){
@@ -7124,7 +7129,7 @@ var INSTALLATION_STATUS_SEED_RAW = [
       projItems.sort(function(a,b){ return a.range.start<b.range.start ? -1 : (a.range.start>b.range.start?1:0); });
       if (!projItems.length){
         ganttBoardEl.style.gridTemplateRows = "30px 42px 64px";
-        bodyHTML += '<div class="cell empty-state" style="grid-column:1 / span '+totalCols+'; grid-row:3; justify-content:center;">No project has an install date in this 3-month window.</div>';
+        bodyHTML += '<div class="cell empty-state" style="grid-column:1 / span '+totalCols+'; grid-row:3; justify-content:center;">No project has an install date in this '+installStatusGanttRangeMonths+'-month window.</div>';
       } else {
         projItems.forEach(function(it){
           rowSizes.push("34px");
@@ -8393,6 +8398,12 @@ var INSTALLATION_STATUS_SEED_RAW = [
     var drilldownRowEl = e.target.closest('[data-dashboard-drilldown-row]');
     if (drilldownRowEl){ openInstallStatusDetail(drilldownRowEl.dataset.dashboardDrilldownRow); return; }
 
+    // ---- Timeline/Gantt report: click a team's row label to jump to
+    // Installation Status filtered to that team (see viewInstallStatusForTeam()
+    // above and renderInstallStatusGantt()'s team-mode row labels) ----
+    var ganttTeamEl = e.target.closest('[data-gantt-team-click]');
+    if (ganttTeamEl){ viewInstallStatusForTeam(ganttTeamEl.dataset.ganttTeamClick); return; }
+
     if (e.target.id === "report-modal-close" || e.target.id === "report-modal-backdrop"){
       closeReport();
       return;
@@ -8490,7 +8501,7 @@ var INSTALLATION_STATUS_SEED_RAW = [
       return;
     }
     if (e.key === "Enter" || e.key === " "){
-      var reportTrigger = e.target.closest('[data-dash-team],[data-dash-month],[data-dash-status]');
+      var reportTrigger = e.target.closest('[data-dash-team],[data-dash-month],[data-dash-status],[data-gantt-team-click]');
       if (reportTrigger){ e.preventDefault(); reportTrigger.click(); }
     }
   });
@@ -8630,6 +8641,10 @@ var INSTALLATION_STATUS_SEED_RAW = [
     installStatusGanttGroupBy = (installStatusGanttGroupBy === "team") ? "project" : "team";
     renderInstallStatusGantt();
   });
+  document.getElementById("installstatus-gantt-range-btn").addEventListener("click", function(){
+    installStatusGanttRangeMonths = (installStatusGanttRangeMonths === 1) ? 3 : 1;
+    renderInstallStatusGantt();
+  });
 
   // ---- Installation Status tab: list view + single-entry detail page.
   // Parallel, independent data system from state.projects/waRows/dailyTasks
@@ -8644,6 +8659,7 @@ var INSTALLATION_STATUS_SEED_RAW = [
   var installStatusStatusFilter = "";
   var installStatusSectionFilter = ""; // "", "current", "upcoming" — set by clicking the "N current/upcoming projects" stat pill
   var installStatusPriorityFilter = ""; // "", "High", "Low" — set by the priority filter dropdown
+  var installStatusTeamFilter = ""; // "", a team name, or "__unassigned__" — set by clicking a team's row label in the Timeline/Gantt report
   var moveToCurrentSelection = {}; // {rowId: true} — which upcoming rows are checked while the "Move to Current" modal is open
 
   // Persisted prefs: which columns are hidden (Show/Hide Fields) and whether
@@ -8702,6 +8718,10 @@ var INSTALLATION_STATUS_SEED_RAW = [
   function installStatusMatchesFilter(r, q){
     if (installStatusStatusFilter && installStatusLabel(r) !== installStatusStatusFilter) return false;
     if (installStatusPriorityFilter && r.priority !== installStatusPriorityFilter) return false;
+    if (installStatusTeamFilter){
+      var teamMatches = (installStatusTeamFilter === "__unassigned__") ? !installStatusTeamLabel(r) : (installStatusTeamLabel(r) === installStatusTeamFilter);
+      if (!teamMatches) return false;
+    }
     if (installStatusHideCompleted && installStatusLabel(r) === "Completed") return false;
     if (!q) return true;
     var hay = [r.contractor, r.site, r.scope, r.update, r.remarks, installStatusLabel(r), installStatusTeamLabel(r)].join(" ").toLowerCase();
@@ -8718,8 +8738,15 @@ var INSTALLATION_STATUS_SEED_RAW = [
     installStatusStatusFilter = (installStatusStatusFilter === key) ? "" : key;
     renderInstallStatusView();
   }
+  // Used by the Timeline/Gantt report when a team's row label is clicked —
+  // jumps to the actual Installation Status list (not the lightweight
+  // Dashboard-style drilldown) pre-filtered to that team's projects.
+  function viewInstallStatusForTeam(teamKey){
+    installStatusTeamFilter = teamKey;
+    switchView("installstatus");
+  }
   function clearInstallStatusFilters(){
-    installStatusSectionFilter = ""; installStatusStatusFilter = ""; installStatusPriorityFilter = ""; installStatusSearchQuery = "";
+    installStatusSectionFilter = ""; installStatusStatusFilter = ""; installStatusPriorityFilter = ""; installStatusTeamFilter = ""; installStatusSearchQuery = "";
     var searchInput = document.getElementById("installstatus-search-input");
     if (searchInput) searchInput.value = "";
     var searchClearBtn = document.getElementById("installstatus-search-clear-btn");
@@ -8898,11 +8925,12 @@ var INSTALLATION_STATUS_SEED_RAW = [
       installStatusStatPill("upcoming project"+(allUpcoming.length===1?"":"s"), allUpcoming.length, "data-installstatus-section-pill", "upcoming", installStatusSectionFilter==="upcoming")+
       installStatusStatPill("in progress", inProgressCount, "data-installstatus-status-pill", "In Progress", installStatusStatusFilter==="In Progress")+
       installStatusStatPill("on hold", onHoldCount, "data-installstatus-status-pill", "On Hold", installStatusStatusFilter==="On Hold");
-    if (installStatusSectionFilter || installStatusStatusFilter || installStatusPriorityFilter || installStatusSearchQuery){
+    if (installStatusSectionFilter || installStatusStatusFilter || installStatusPriorityFilter || installStatusTeamFilter || installStatusSearchQuery){
       var parts = [];
       if (installStatusSectionFilter) parts.push(installStatusSectionFilter==="current"?"Current projects":"Upcoming projects");
       if (installStatusStatusFilter) parts.push(installStatusStatusFilter);
       if (installStatusPriorityFilter) parts.push(installStatusPriorityFilter+" priority");
+      if (installStatusTeamFilter) parts.push("team: "+(installStatusTeamFilter==="__unassigned__"?"Unassigned":installStatusTeamFilter));
       if (installStatusSearchQuery) parts.push('text contains "'+installStatusSearchQuery+'"');
       chips += '<button type="button" class="filter-clear" id="installstatus-clear-filter-btn">Showing: '+escText(parts.join(" + "))+' — clear ×</button>';
     }
